@@ -24,7 +24,7 @@ class NewsletterEmail
     /**
      * @var string $email
      *
-     * @ORM\Column(name="email", type="string", length=255)
+     * @ORM\Column(name="email", type="string", length=255, unique=true)
      */
     private $email;
 

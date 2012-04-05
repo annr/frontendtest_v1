@@ -70,7 +70,7 @@ td { vertical-align: top; }
 
 
 h1 {
-	font-size: 2.8em;
+	font-size: 2.9em;
 	margin-top: 30px; 
 	font-weight: 700;
 	line-height: 120%;
@@ -89,7 +89,7 @@ h3, .whyTest {
 	font-size: 1.3em;
 }
 
-.infoColumn p {
+.infoColumn p,.formColumn p {
 	margin: 24px 0;
 }
 
@@ -125,20 +125,19 @@ div.formColumn label { font-size: larger;}
 	min-width: 400px;
 	height: 80%;
 	margin-bottom: 24px;
+	background: #FFF;
 }
 
-
-.formColumn {
-	background: #FFF;
+.formRow {
+	margin: 10px 0 24px;
 }
 
 .indicatorLights {
 	font-size: 20px;
-	letter-spacing: 1px;
-   font-size: 66px;
-line-height: 20%;
+	letter-spacing: 4px;
+	font-size: 60px;
+	line-height: 20%;
 	font-family: sans-serif;
-
 }
 
 .indicatorGreen {
@@ -187,10 +186,14 @@ div.formColumn label.smallLabel {
    color: white;
    font-size: 20pt;
    font-weight: bold;
-   margin: 24px 0;
+   margin: 24px 0 0;
 }
 .button:hover, .button:active {
    background: #690;
+}
+
+.formSubmittedMsg {
+	color: #967101;
 }
 
 label.error {

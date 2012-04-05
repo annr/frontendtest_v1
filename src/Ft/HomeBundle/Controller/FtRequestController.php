@@ -15,19 +15,16 @@ class FtRequestController extends Controller
       $ft_request->setUrl($_POST['url']);
       $ft_request->setCreated(new \DateTime('now'));
 
-      $em = $this->getDoctrine()->getEntityManager();
-      $em->persist($ft_request);
-      $em->flush();
-
       $product = new FreeProduct();
       $product->setEmail($_POST['email']);
       $product->setUrl($_POST['url']);
       $product->setCreated(new \DateTime('now'));
-      $product->setFtRequestId($ft_request->getId());
+      $product->setFtRequest($ft_request);
 
-      $em2 = $this->getDoctrine()->getEntityManager();
-      $em2->persist($product);
-      $em2->flush();
+      $em = $this->getDoctrine()->getEntityManager();
+      $em->persist($ft_request);
+      $em->persist($product);
+      $em->flush();
 
       //email support@ft with details.
       $message = \Swift_Message::newInstance()

@@ -3,7 +3,7 @@
 namespace Ft\HomeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Ft\HomeBundle\Entity\FtRequest
  *
@@ -300,5 +300,36 @@ class FtRequest
     public function getUpdated()
     {
         return $this->updated;
+    }
+
+    /**
+     * @ORM\OneToMany(targetEntity="FreeProduct", mappedBy="ft_request")
+     */
+    protected $free_products;
+
+    public function __construct()
+    {
+        $this->free_products = new ArrayCollection();
+    }
+
+
+    /**
+     * Add free_products
+     *
+     * @param Ft\HomeBundle\Entity\FreeProduct $freeProducts
+     */
+    public function addFreeProduct(\Ft\HomeBundle\Entity\FreeProduct $freeProducts)
+    {
+        $this->free_products[] = $freeProducts;
+    }
+
+    /**
+     * Get free_products
+     *
+     * @return Doctrine\Common\Collections\Collection 
+     */
+    public function getFreeProducts()
+    {
+        return $this->free_products;
     }
 }

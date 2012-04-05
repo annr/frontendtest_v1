@@ -6,6 +6,10 @@ _ft_request:
     pattern:  /ft_request
     defaults: { _controller: FtHomeBundle:FtRequest:index }
     
+_newsletter_email:
+    pattern:  /newsletter_email
+    defaults: { _controller: FtHomeBundle:NewsletterEmail:index }
+    
 _orig:
     pattern:  /homepage_v1/
     defaults: { _controller: FtHomeBundle:HomepageV1:index }

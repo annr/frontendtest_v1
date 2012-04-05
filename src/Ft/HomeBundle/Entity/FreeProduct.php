@@ -24,10 +24,15 @@ class FreeProduct
     /**
      * @var bigint $ft_request_id
      *
-     * @ORM\ManyToOne(targetEntity="FtRequest")
-     * @ORM\JoinColumn(name="ft_request_id", referencedColumnName="id")
      */
     private $ft_request_id;
+
+    /**
+     * @var FtRequest $ft_request
+  * @ORM\ManyToOne(targetEntity="FtRequest", inversedBy="free_products")
+  * @ORM\JoinColumn(name="ft_request_id", referencedColumnName="id")
+  */
+    protected $ft_request;
 
     /**
      * @var string $email
@@ -274,5 +279,45 @@ class FreeProduct
     public function getUpdated()
     {
         return $this->updated;
+    }
+
+    /**
+     * Set upsold
+     *
+     * @param boolean $upsold
+     */
+    public function setUpsold($upsold)
+    {
+        $this->upsold = $upsold;
+    }
+
+    /**
+     * Get upsold
+     *
+     * @return boolean 
+     */
+    public function getUpsold()
+    {
+        return $this->upsold;
+    }
+
+    /**
+     * Set ft_request
+     *
+     * @param Ft\HomeBundle\Entity\FtRequest $ftRequest
+     */
+    public function setFtRequest(\Ft\HomeBundle\Entity\FtRequest $ftRequest)
+    {
+        $this->ft_request = $ftRequest;
+    }
+
+    /**
+     * Get ft_request
+     *
+     * @return Ft\HomeBundle\Entity\FtRequest 
+     */
+    public function getFtRequest()
+    {
+        return $this->ft_request;
     }
 }

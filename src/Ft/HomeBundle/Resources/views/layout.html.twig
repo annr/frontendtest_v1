@@ -27,19 +27,18 @@
 		
 		
 		<form id="signup">
+			<div class="formRow">
 		  	 <label for="url">Web site to test</label><br>
-				<input type="url" name="url" id="url" placeholder="http://www.yourwebsite.com" required="required" size="30" style="margin-bottom: 16px;"><br>
-
+				<input type="url" name="url" id="url" placeholder="http://www.yourwebsite.com" required="required" size="30"></div>
+<div class="formRow">
 		  	 <label for="email">Email to send report</label><br>
-				<input type="email" name="email" id="email" placeholder="email@yourwebsite.com" required="required" size="30"><br>
-
-				<small style="display: block;margin-top:8px;">We will confirm your email address.</small><br>
+				<input type="email" name="email" id="email" placeholder="email@yourwebsite.com" required="required" size="30"></div>
 
 				<input type="checkbox" name="wantsMoreHelp"> <label for="wantsMoreHelp" class="smallLabel">I’m interested in having a web developer review my site.</label>
 			<input type="submit" class="button" value="Get Report"><br>
 			
 		</form>
-		
+		<p id="confirmFtRequest" class="formSubmittedMsg" style="display:none;">Submission received. A report will be sent after your email is confirmed.</p>
 		<p>
 	  	<b>Questions?</b> &nbsp;Email <a href="mailto:support@frontendtest.com">support@frontendtest.com</a>
 	  	</p>
@@ -48,7 +47,7 @@
 	
 	<div class="infoColumn tk-scrivano">
 		
-		<h2 class="marginBottom">Find out how to make your web site better, faster, and easier to maintain</h2>
+		<h2 class="marginBottom">Find out how to make your web site better, faster, and future-proof</h2>
 		
 		<h3>Discover</h3>
 		<ul>
@@ -138,8 +137,24 @@
     g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
     s.parentNode.insertBefore(g,s)}(document,'script'));
     
-    
+   
+	jQuery.validator.addMethod("complete_url", function(val, elem) {
+	    // if no url, don't do anything
+	    if (val.length == 0) { return true; }
+
+	    // if user has not entered http:// https:// or ftp:// assume they mean http://
+	    if(!/^(https?|ftp):\/\//i.test(val)) {
+	        val = 'http://'+val; // set both the value
+	        $(elem).val(val); // also update the form element
+	    }
+	    // now check if valid url
+	    // http://docs.jquery.com/Plugins/Validation/Methods/url
+	    // contributed by Scott Gonzalez: http://projects.scottsplayground.com/iri/
+	    return /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test(val);
+	});
+	 
     $(document).ready(function() {
+
     
     	$('#submitAirplane').hover(
 		  function () {
@@ -149,16 +164,24 @@
 			$(this).attr('src','{{ asset('img/ready.png') }}');
 		  }
 		);
-	
-		
+
+        $("#newsletterSignup").validate({
+            rules: {
+                email: {
+				  required: true,
+				  email: true
+				}
+            }
+        });
+			
 		$('#newsletterSignup').submit(function() {
 			
 			$.ajax({
 			  type: "POST",
-			  url: "newsletter_insert.php",
+			  url: "{{ path('_newsletter_email') }}",
 			  data: $(this).serialize(),
 			  success: function(data) {
-			  	if(data=='true') $('#newsletterFormSubmitMsg').html('whoosh.');
+			  	if(data=='true') $('#newsletterFormSubmitMsg').html('whoosh');
 			  }
 			});	
 		  		  
@@ -166,7 +189,6 @@
 		});
 
         $('#signup').submit(function() {
-        	console.log($('#url').val());
         	
 			if($('#url').val()==''){
 				$('#url').css('border','1px solid red');
@@ -186,13 +208,12 @@
 			
 			$.ajax({
 			  type: "POST",
-			  url: "ft_request",
+			  url: "{{ path('_ft_request') }}",
 			  data: $(this).serialize(),
-			  success: function(data) {			  	   
-					$('.popup').html('Thanks! We will contact you shortly.');
-				   closeDialogAfterPause();
+			  success: function(data) {
+			  	if(data=='true') $('#confirmFtRequest').show();
 			  }
-			});	
+			});
 		  		  
 		  	return false;
 		});
