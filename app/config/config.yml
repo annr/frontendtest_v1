@@ -59,11 +59,12 @@ doctrine:
 #   password:  %mailer_password%
 swiftmailer:
     transport:  smtp
-    encryption: ssl
+    encryption: tls
     auth_mode:  login
-    host:       smtp.gmail.com
-    username:   nosbora
-    password:   h34rt4nn
+    host:       mail.frontendtest.com
+    username:   support@frontendtest.com
+    password:   K1ngF1sher$
+    port:       587
 
 jms_security_extra:
     secure_controllers:  true
