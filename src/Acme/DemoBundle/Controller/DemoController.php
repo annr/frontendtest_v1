@@ -18,6 +18,12 @@ class DemoController extends Controller
      */
     public function indexAction()
     {
+		//var_dump(array('key' => $key));
+		//$request = $this->get('request');
+		//$key = $request->query->get('key');
+		//var_dump(array('key' => $key));
+		//echo $container->getParameter('acme_hello.foo');
+		echo $this->container->getParameter('acme_demo.email.from');
         return array();
     }
 

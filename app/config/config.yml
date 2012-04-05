@@ -1,6 +1,9 @@
 imports:
     - { resource: parameters.ini }
     - { resource: security.yml }
+    - { resource: @FtCoreBundle/Resources/config/config.yml }
+
+    
 
 framework:
     #esi:             ~
@@ -49,12 +52,24 @@ doctrine:
         auto_mapping: true
 
 # Swiftmailer Configuration
+#swiftmailer:
+#   transport: %mailer_transport%
+#   host:      %mailer_host%
+#   username:  %mailer_user%
+#   password:  %mailer_password%
 swiftmailer:
-    transport: %mailer_transport%
-    host:      %mailer_host%
-    username:  %mailer_user%
-    password:  %mailer_password%
+    transport:  smtp
+    encryption: ssl
+    auth_mode:  login
+    host:       smtp.gmail.com
+    username:   nosbora
+    password:   h34rt4nn
 
 jms_security_extra:
     secure_controllers:  true
     secure_all_services: false
+    
+ft_core:
+    secret: yes 
+#    bar: barValue
+    

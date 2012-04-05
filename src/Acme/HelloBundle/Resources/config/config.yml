@@ -1,0 +1,7 @@
+# app/config/config.yml
+imports:
+    - { resource: services.yml }
+    
+acme_hello:
+    foo: fooValue
+    bar: barValue

@@ -1,19 +1,13 @@
-; These parameters can be imported into other config files
-; by enclosing the key with % (like %database_user%)
-; Comments start with ';', as in php.ini
 [parameters]
-    database_driver   = pdo_mysql
-    database_host     = localhost
-    database_port     =
-    database_name     = symfony
-    database_user     = root
-    database_password =
-
-    mailer_transport  = smtp
-    mailer_host       = localhost
-    mailer_user       =
-    mailer_password   =
-
-    locale            = en
-
-    secret            = ThisTokenIsNotSoSecretChangeIt
+    database_driver="pdo_mysql"
+    database_host="localhost"
+    database_port=""
+    database_name="frontendtest"
+    database_user="root"
+    database_password="K1ngF1she$"
+    mailer_transport="smtp"
+    mailer_host="localhost"
+    mailer_user=""
+    mailer_password=""
+    locale="en"
+    secret="58e1ec927f21ecb82bf8cd2b907d86e3ef46ce4e"

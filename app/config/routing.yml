@@ -1,3 +1,19 @@
+FtAdminBundle:
+    resource: "@FtAdminBundle/Resources/config/routing.yml"
+    prefix:   /admin/
+
+FtCoreBundle:
+    resource: "@FtCoreBundle/Resources/config/routing.yml"
+    prefix:   /core/
+        
+FtHomeBundle:
+    resource: "@FtHomeBundle/Resources/config/routing.yml"
+    prefix:   /
+
+AcmeHelloBundle:
+    resource: "@AcmeHelloBundle/Resources/config/routing.yml"
+    prefix:   /hello/
+
 # Internal routing configuration to handle ESI
 #_internal:
 #   resource: "@FrameworkBundle/Resources/config/routing/internal.xml"

@@ -1,0 +1,11 @@
+FtHomeBundle_homepage:
+    pattern:  /
+    defaults: { _controller: FtHomeBundle:Default:index }
+
+_ft_request:
+    pattern:  /ft_request
+    defaults: { _controller: FtHomeBundle:FtRequest:index }
+    
+_orig:
+    pattern:  /homepage_v1/
+    defaults: { _controller: FtHomeBundle:HomepageV1:index }
