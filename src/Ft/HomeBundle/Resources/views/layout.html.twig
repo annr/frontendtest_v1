@@ -82,49 +82,32 @@
 </footer>
 
 
-  <!-- <script src="/js/libs/modernizr-2.5.3.min.js" defer="defer"></script> -->
+  <!-- <script src="{{ asset('js/libs/modernizr-2.5.3.min.js') }}" defer="defer"></script> -->
   
   <!-- local -->
    
+<!--
 <script type="text/javascript" src="http://use.typekit.com/jif1lwz.js"></script>
 <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
- <!--
+ -->
 <script type="text/javascript" src="http://use.typekit.com/cfs0wvw.js"></script>
 <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
--->
-
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script src="/js/libs/jquery-1.7.1.min.js"><\/script>')</script>
+  <script>window.jQuery || document.write('<script src="{{ asset('js/libs/jquery-1.7.1.min.js') }}"><\/script>')</script>
   
-  <script src="/js/jquery-ui-1.8.13.custom.min.js"></script>
-  <script src="/js/jquery.validate.min.js"></script>
+  <script src="{{ asset('js/jquery-ui-1.8.13.custom.min.js') }}"></script>
+  <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
 
-  <script src="/js/plugins.js"></script>
-  <script src="/js/script.js"></script>
+  <script src="{{ asset('js/plugins.js') }}"></script>
+  <script src="{{ asset('js/script.js') }}"></script>
 
   <script>
     var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
     (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
     g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
     s.parentNode.insertBefore(g,s)}(document,'script'));
-    
-   
-	jQuery.validator.addMethod("complete_url", function(val, elem) {
-	    // if no url, don't do anything
-	    if (val.length == 0) { return true; }
-
-	    // if user has not entered http:// https:// or ftp:// assume they mean http://
-	    if(!/^(https?|ftp):\/\//i.test(val)) {
-	        val = 'http://'+val; // set both the value
-	        $(elem).val(val); // also update the form element
-	    }
-	    // now check if valid url
-	    // http://docs.jquery.com/Plugins/Validation/Methods/url
-	    // contributed by Scott Gonzalez: http://projects.scottsplayground.com/iri/
-	    return /^(https?|ftp):\/\/(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test(val);
-	});
 
 	jQuery.extend(jQuery.validator.messages, {
 	    url: "Please enter a valid URL, inluding http:// or https://"
