@@ -1,5 +1,11 @@
 /* reset from YUI version: 3.0.0pr2 */
-html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,figure,figcaption{margin:0;padding:0;}th,td{margin:0;padding:0;}fieldset,img{border:0;}table{border-collapse:collapse;border-spacing:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}
+html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,p,blockquote,figure,figcaption{margin:0;padding:0;}th,td{margin:0;padding:0;}fieldset,img{border:0;}table{border-collapse:collapse;border-spacing:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}legend{color:#000;}
+
+/*
+input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}
+input,textarea,select{*font-size:100%;}
+*/
+input,textarea{margin:0;padding:0;}
 
 /* HTML5 Boilerplate  */
 
@@ -9,7 +15,10 @@ audio:not([controls]) { display: none; }
 [hidden] { display: none; }
 
 html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #eae9e1;}
-html, button, input, select, textarea { font-family: sans-serif; color: #222; }
+
+/* html, button, input, select, textarea { font-family: sans-serif; color: #222; } */
+
+input {font-size:inherit;}
 body { margin: 0; font-size: 1.2em; line-height: 1.4; font-family: "scrivano"; }
 
 ::-moz-selection { background: #fe57a1; color: #fff; text-shadow: none; }
@@ -48,7 +57,7 @@ figure { margin: 0; }
 
 form { margin: 0; }
 fieldset { border: 0; margin: 0; padding: 0; }
-
+/*
 label { cursor: pointer;}
 legend { border: 0; *margin-left: -7px; padding: 0; white-space: normal; }
 button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
@@ -62,7 +71,7 @@ button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
 textarea { overflow: auto; vertical-align: top; resize: vertical; }
 input:valid, textarea:valid {  }
 input:invalid, textarea:invalid { background-color: #f0dddd; }
-
+*/
 table { border-collapse: collapse; border-spacing: 0; }
 td { vertical-align: top; }
 
@@ -71,14 +80,21 @@ td { vertical-align: top; }
 
 h1 {
 	font-size: 2.9em;
-	margin-top: 30px; 
+	margin-top: 40px; 
 	font-weight: 700;
 	line-height: 120%;
 }
 
+.inlineH1 {
+	font-size: 2.9em;
+	margin-top: 40px; 
+	font-weight: 700;
+}
+
 h2 {
-	font-size: 1.4em;
+	font-size: 1.7em;
 	line-height: 130%;
+	margin-top: 12px;
 }
 
 h2.marginBottom {
@@ -89,7 +105,7 @@ h3, .whyTest {
 	font-size: 1.3em;
 }
 
-.infoColumn p,.formColumn p {
+.infoColumn p {
 	margin: 24px 0;
 }
 
@@ -99,9 +115,18 @@ ul {
 }
 
 
-header {
-	padding: 0 10%;
+header, footer {
+	padding: 0 8%;
 	margin-bottom: 16px;
+}
+
+header {
+	margin: 50px 0 16px -9px;
+}
+
+footer {
+	font-size: 0.8em;
+	clear: both;
 }
 
 
@@ -112,19 +137,18 @@ div.formColumn, div.infoColumn {
 div.infoColumn {
 	min-width: 400px;
 	width: 40%;
-	padding-left: 24px;
+	padding-left: 3%;
 }
 
 div.formColumn label { font-size: larger;}
 
 .formColumn {
 	width: 40%;
-	padding: 24px 10px 24px 10%;
+	padding: 24px 10px 16px 8%;
 	border-top-right-radius: 15px;
 	border-bottom-right-radius: 15px;
-	min-width: 400px;
+	min-width: 440px;
 	height: 80%;
-	margin-bottom: 24px;
 	background: #FFF;
 }
 
@@ -132,14 +156,21 @@ div.formColumn label { font-size: larger;}
 	margin: 10px 0 24px;
 }
 
+.newsletterFormSubmitMsg {
+	color: #AAA;
+}
+
+.formColumn p {
+	font-size: 0.9em;
+	margin: 20px 0;
+}
+
 .indicatorLights {
-	font-size: 20px;
 	letter-spacing: 4px;
-	font-size: 60px;
+	font-size: 65px;
 	line-height: 20%;
 	font-family: sans-serif;
 }
-
 .indicatorGreen {
 	color: #6c3;
 }
@@ -162,13 +193,9 @@ input.newsletterSignupField {
 }
 
 div.formColumn label.smallLabel {
-	font-size:0.8em;
-	font-family: sans-serif;
+	font-size:0.9em;
 }
 
-.newsletterSignup {
-	line-height: 0.8em;
-}
 
 .button {
    border: 1px solid #363;
@@ -182,24 +209,30 @@ div.formColumn label.smallLabel {
    -webkit-border-radius: 6px;
    -moz-border-radius: 6px;
    border-radius: 6px;
-   text-shadow: rgba(0,0,0,.7) 0 1px 0;
+ /*  text-shadow: rgba(0,0,0,.7) 0 1px 0; */
+ text-shadow: rgba(20,20,20,.5) 1px 2px 0;
    color: white;
    font-size: 20pt;
    font-weight: bold;
    margin: 24px 0 0;
+cursor: pointer;
 }
 .button:hover, .button:active {
    background: #690;
 }
 
 .formSubmittedMsg {
-	color: #967101;
+	color: #c17f00;
 }
 
 label.error {
 	font-size: 0.7em;
 	color: red;
 	display: block;
+}
+
+input.imgButton {
+	padding:0;
 }
 
 @media only screen and (min-height: 40em) {

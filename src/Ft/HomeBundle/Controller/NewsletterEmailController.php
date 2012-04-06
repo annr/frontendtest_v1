@@ -18,6 +18,7 @@ class NewsletterEmailController extends Controller
       $em->flush();
 
       //email support@ft with details.
+	  /*
       $message = \Swift_Message::newInstance()
         ->setSubject('Newsletter Signup Request')
         ->setFrom('support@frontendtest.com')
@@ -25,7 +26,8 @@ class NewsletterEmailController extends Controller
         ->setBody($this->renderView('FtHomeBundle:Default:newsletter_signup.html.twig', array('email' => $_POST['email'])));
 
       $this->get('mailer')->send($message);
-
+	  */
+	
       $response = $this->render('FtHomeBundle:Default:newsletter_signup.txt.twig');
       $response->headers->set('Content-Type', 'text/plain');
       return $response;

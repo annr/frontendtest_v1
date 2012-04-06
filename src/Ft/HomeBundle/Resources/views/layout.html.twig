@@ -6,7 +6,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Find out how to improve your web site - FrontendTest</title>
+  <title>Find out how to make your web site better, faster, and future-proof - FrontendTest</title>
   <meta name="description" content="">
 
   <meta name="viewport" content="width=device-width">
@@ -16,9 +16,13 @@
 
   <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
 
-
+<!--
   <header>
-	<h1>FrontendTest</h1><div class="indicatorLights"> <span class="indicatorGreen">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span><span class="indicatorOrange">&bull;</span><span class="indicatorRed">&bull;&bull;&bull;</span></div>
+	<h1>FrontendTest</h1><div class="indicatorLights"><span class="indicatorGreen">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span><span class="indicatorOrange">&bull;</span><span class="indicatorRed">&bull;&bull;&bull;</span></div>
+  </header>
+-->
+  <header>
+	<img src="{{ asset('img/logo.png') }}" width="338" height="70" alt="FrontendTest for improving web sites">
   </header>
 
   <div role="main" class="main">
@@ -29,97 +33,67 @@
 		<form id="signup">
 			<div class="formRow">
 		  	 <label for="url">Web site to test</label><br>
-				<input type="url" name="url" id="url" placeholder="http://www.yourwebsite.com" required="required" size="30"></div>
+				<input type="url" name="url" id="url" placeholder="www.yourwebsite.com" autofocus="autofocus" style="width: 380px"></div>
 <div class="formRow">
 		  	 <label for="email">Email to send report</label><br>
-				<input type="email" name="email" id="email" placeholder="email@yourwebsite.com" required="required" size="30"></div>
+				<input type="email" name="email" id="email" placeholder="email@yourwebsite.com" style="width: 380px"></div>
 
-				<input type="checkbox" name="wantsMoreHelp"> <label for="wantsMoreHelp" class="smallLabel">I’m interested in having a web developer review my site.</label>
-			<input type="submit" class="button" value="Get Report"><br>
+				<input type="checkbox" name="wantsMoreHelp" id="wantsMoreHelp">&nbsp; <label for="wantsMoreHelp" class="smallLabel">I’m interested in having a web engineer review my site</label><br>
+			<input type="submit" class="button" value="Get Report">
 			
 		</form>
-		<p id="confirmFtRequest" class="formSubmittedMsg" style="display:none;">Submission received. A report will be sent after your email is confirmed.</p>
-		<p>
-	  	<b>Questions?</b> &nbsp;Email <a href="mailto:support@frontendtest.com">support@frontendtest.com</a>
-	  	</p>
+				
+		<p id="confirmFtRequest">&nbsp;<br>&nbsp;</p>
 			
 	</div>
 	
-	<div class="infoColumn tk-scrivano">
+	<div class="infoColumn">
 		
 		<h2 class="marginBottom">Find out how to make your web site better, faster, and future-proof</h2>
 		
 		<h3>Discover</h3>
 		<ul>
-			<li>Errors</li>
 			<li>Poorly optimized resources</li>
+			<li>Errors and unused code</li>
 			<li>Out-of-date practices</li>
-			<li>Unused code</li>
+			<li>Improvements for mobile</li>
 	 	</ul>		
 	
 	<!--<p><span id="whyTest" class="whyTest fauxLink">Why test?</span></p>-->
 	
+	<p>
+  	<b>Questions?</b> &nbsp;Email <a href="mailto:support@frontendtest.com">support@frontendtest.com</a>
+  	</p>
 
 	<p>
   	<form id="newsletterSignup" class="newsletterSignup">
 
   	  	<label for="email" class="newsletterSignupLabel">FrontendTest news signup</label><br>
-		<input type="email" name="email" placeholder="email@example.com" size="20" class="newsletterSignupField" /> 
+		<input type="email" name="email" id="newsletterSignupField" placeholder="email@example.com" class="newsletterSignupField" style="width: 200px" /> 
 
-  	<input type="image" src="{{ asset('img/ready.png') }}" width="61" height="40" class="imgButton" alt="Paper airplane submit button" id="submitAirplane" style="vertical-align: middle"> 
-    <span id="newsletterFormSubmitMsg"></span>
+  	<input type="image" src="{{ asset('img/ready.png') }}" width="61" height="40" alt="Paper airplane submit button" id="submitAirplane" class="imgButton" style="vertical-align: middle"> 
+    <span class="newsletterFormSubmitMsg"></span>
   	</form>
 	</p>
 		
-	</div>
-	
-	
+	</div>	
 </div>
+<footer>
+	&copy;2012 FrontendTest.com
+</footer>
 
-	<!--	
-	
-	
-	<h2 class="tk-scrivano">Find out how to improve your web site</h2>
-
-		<ul class="tk-scrivano">
-			<li>front-end errors</li>
-			<li>out-of-date practices</li>
-			<li>unused code</li>
-			<li>poorly optimized resources</li>
-	 	</ul>
-
-  </div>
-  <footer class="tk-scrivano">
-  
-  <div class="contact">
-  	<b>Questions?</b> Email <a href="mailto:support@frontendtest.com">support@frontendtest.com</a>
-  </div>
-  
-  <div class="newsletterSignupArea">
-  	<form id="newsletterSignup">
-  	
-  	  	<label for="email" class="newsletterSignupLabel">Sign up for FrontendTest news</label><br>
-		<input type="email" name="email" placeholder="email@example.com" size="20" /> 
-  	
-  	<input type="image" src="/img/ready.png" width="61" height="40" class="imgButton" alt="Paper airplane submit button" id="submitAirplane" style="vertical-align: middle"> <span id="newsletterFormSubmitMsg" style="color: #dad5ca">whoosh.</span>
-  	</form>
-  </div>
-
-  </footer>
-
--->
 
   <!-- <script src="/js/libs/modernizr-2.5.3.min.js" defer="defer"></script> -->
   
   <!-- local -->
- <!--  
+   
 <script type="text/javascript" src="http://use.typekit.com/jif1lwz.js"></script>
 <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
--->
- 
+
+ <!--
 <script type="text/javascript" src="http://use.typekit.com/cfs0wvw.js"></script>
 <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-
+-->
 
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -155,7 +129,10 @@
 	 
     $(document).ready(function() {
 
-    
+		$('#newsletterSignupField').click(function () {
+			$(this).val('');
+		});
+
     	$('#submitAirplane').hover(
 		  function () {
 			$(this).attr('src','{{ asset('img/set.png') }}');
@@ -171,52 +148,21 @@
 				  required: true,
 				  email: true
 				}
-            }
+            },	
+			submitHandler: function() {
+				$('.newsletterFormSubmitMsg').html('sent. thank you');
+				$('#newsletterSignupField').css('color','gray');				
+				$.ajax({
+				  type: "POST",
+				  url: "{{ path('_newsletter_email') }}",
+				  data: "email=" + $('#newsletterSignupField').val(),
+				  success: function(data) {
+					//success msg optimistically shown
+				  }
+				});		
+				//form.submit();
+			}
         });
-			
-		$('#newsletterSignup').submit(function() {
-			
-			$.ajax({
-			  type: "POST",
-			  url: "{{ path('_newsletter_email') }}",
-			  data: $(this).serialize(),
-			  success: function(data) {
-			  	if(data=='true') $('#newsletterFormSubmitMsg').html('whoosh');
-			  }
-			});	
-		  		  
-		  	return false;
-		});
-
-        $('#signup').submit(function() {
-        	
-			if($('#url').val()==''){
-				$('#url').css('border','1px solid red');
-				$('#url').focus();
-				return false;
-			} else {
-				$('#url').css('border','1px solid black');
-			}
-
-			if($('#email').val()==''){
-				$('#email').css('border','1px solid red');
-				$('#email').focus();
-				return false;
-			} else {
-				$('#email').css('border','1px solid black');
-			}
-			
-			$.ajax({
-			  type: "POST",
-			  url: "{{ path('_ft_request') }}",
-			  data: $(this).serialize(),
-			  success: function(data) {
-			  	if(data=='true') $('#confirmFtRequest').show();
-			  }
-			});
-		  		  
-		  	return false;
-		});
 		
         $("#signup").validate({
             rules: {
@@ -228,7 +174,25 @@
 				  required: true,
 				  email: true
 				}
-            }
+            },	
+			submitHandler: function(form) {
+				console.log('passed validation.');
+/*
+				$.ajax({
+				  type: "POST",
+				  url: "{{ path('_ft_request') }}",
+				  data: $(this).serialize(),
+				  success: function(data) {
+				  	if(data=='true') {
+						$('#confirmFtRequest').html('<span class="formSubmittedMsg">Submission received and a report will be emailed soon</span><br>Please send questions to <a href="mailto:support@frontendtest.com">support@frontendtest.com</a>');
+						$('#confirmFtRequest').show();				
+					}
+
+				  }
+				});
+*/				
+				//form.submit();
+			}
         });
 
 
