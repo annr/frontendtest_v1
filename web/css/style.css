@@ -144,12 +144,13 @@ div.formColumn label { font-size: larger;}
 
 .formColumn {
 	width: 40%;
-	padding: 24px 10px 16px 8%;
+	padding: 24px 10px 0 8%;
 	border-top-right-radius: 15px;
 	border-bottom-right-radius: 15px;
 	min-width: 440px;
 	height: 80%;
 	background: #FFF;
+	margin-bottom: 16px;
 }
 
 .formRow {
@@ -159,6 +160,7 @@ div.formColumn label { font-size: larger;}
 .newsletterFormSubmitMsg {
 	color: #AAA;
 }
+
 
 .formColumn p {
 	font-size: 0.9em;
@@ -223,6 +225,11 @@ cursor: pointer;
 
 .formSubmittedMsg {
 	color: #c17f00;
+}
+
+
+.formSubmittedMsgAlert {
+	color: #F00;	
 }
 
 label.error {
