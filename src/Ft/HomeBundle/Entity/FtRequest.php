@@ -3,7 +3,7 @@
 namespace Ft\HomeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
+
 /**
  * Ft\HomeBundle\Entity\FtRequest
  *
@@ -71,11 +71,11 @@ class FtRequest
     private $moretests_req;
 
     /**
-     * @var boolean $email_confirmed
+     * @var string $type
      *
-     * @ORM\Column(name="email_confirmed", type="boolean", nullable=true)
+     * @ORM\Column(name="type", type="string", length=4)
      */
-    private $email_confirmed;
+    private $type;
 
     /**
      * @var datetime $created
@@ -90,6 +90,13 @@ class FtRequest
      * @ORM\Column(name="updated", type="datetime", nullable=true)
      */
     private $updated;
+
+    /**
+     * @var datetime $delivered
+     *
+     * @ORM\Column(name="delivered", type="datetime", nullable=true)
+     */
+    private $delivered;
 
 
     /**
@@ -243,23 +250,23 @@ class FtRequest
     }
 
     /**
-     * Set email_confirmed
+     * Set type
      *
-     * @param boolean $emailConfirmed
+     * @param string $type
      */
-    public function setEmailConfirmed($emailConfirmed)
+    public function setType($type)
     {
-        $this->email_confirmed = $emailConfirmed;
+        $this->type = $type;
     }
 
     /**
-     * Get email_confirmed
+     * Get type
      *
-     * @return boolean 
+     * @return string 
      */
-    public function getEmailConfirmed()
+    public function getType()
     {
-        return $this->email_confirmed;
+        return $this->type;
     }
 
     /**
@@ -303,33 +310,29 @@ class FtRequest
     }
 
     /**
-     * @ORM\OneToMany(targetEntity="FreeProduct", mappedBy="ft_request")
-     */
-    protected $free_products;
-
-    public function __construct()
-    {
-        $this->free_products = new ArrayCollection();
-    }
-
-
-    /**
-     * Add free_products
+     * Set delivered
      *
-     * @param Ft\HomeBundle\Entity\FreeProduct $freeProducts
+     * @param datetime $delivered
      */
-    public function addFreeProduct(\Ft\HomeBundle\Entity\FreeProduct $freeProducts)
+    public function setDelivered($delivered)
     {
-        $this->free_products[] = $freeProducts;
+        $this->delivered = $delivered;
     }
 
     /**
-     * Get free_products
+     * Get delivered
      *
-     * @return Doctrine\Common\Collections\Collection 
+     * @return datetime 
      */
-    public function getFreeProducts()
+    public function getDelivered()
     {
-        return $this->free_products;
+        return $this->delivered;
     }
+
+    public function __toString()
+    {
+        return $this->getEmail();
+    }
+
+
 }

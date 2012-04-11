@@ -1,0 +1,138 @@
+<html>
+<head>	
+	<title>FrontendTest.com Report</title>	
+	<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type" />	
+</head>
+<body marginheight="0" topmargin="0" marginwidth="0" leftmargin="0">
+
+<table cellspacing="0" border="0" style="background: #eae9e1;" cellpadding="0" width="100%">
+	
+	<tr>
+		<td>
+			<table cellspacing="0" bgcolor="#000000" width="100%" cellpadding="0">
+				<tr>
+					<td height="18" valign="top">
+						<!-- height above with following link should be 38
+						<table cellspacing="0" align="center" width="600" cellpadding="0">
+							<tr>
+								<td class="header-text" align="center" style="color: #FFF; font-family: Verdana; font-size: 10px; text-transform: uppercase; padding: 0 20px;">
+									<br />Email not looking beautiful? <a href="./" class="" style="color: #00ffff; text-decoration: none;">View it in your browser</a>
+								</td>
+							</tr>
+						</table>
+						-->
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	
+	<tr>
+		<td>
+			<table cellspacing="0" width="100%" cellpadding="0">
+				<tr>
+					<td valign="top">						
+						<table cellspacing="0" border="0" align="center" cellpadding="0" width="600">			
+							<tr>
+							<td>									
+								<table cellspacing="0" width="600">
+									<tr>
+										<td class="main-title" style="padding-top: 10px;">
+											<br />&nbsp; <img src="{{cid}}" height="47" width="220" alt="FrontendTest logo">
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td valign="top">
+								<table cellspacing="0" width="600" cellpadding="0">
+									<tr>
+										<td class="date" valign="top" style="color: #999; text-align: left; font-size: 11px; font-family: Verdana;padding-bottom:12px;">
+											<br />&nbsp; <span style="text-transform: uppercase;">Report prepared for</span> <a href="{{url}}">{{url}}</a> <span style="text-transform: uppercase;">on</span> {{date}}<br />
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>		
+		</td>
+	</tr>		
+	<tr>		
+		<td valign="top">
+			<table cellspacing="0" border="0" align="center" style="background: #fff;" cellpadding="0" width="600">			
+				<tr>
+					<td>
+						<!-- content -->
+						<table cellspacing="0" border="0" cellpadding="0" width="600">
+							{% for result in results %}
+								<tr>
+									<td class="article-title" height="45" valign="top" style="padding: 14px 20px; font-family: Georgia; font-size: 20px; font-weight: bold;" width="600" colspan="2">
+										<br />{{result.heading|replace({'%url%':url})}}<br />
+									</td>
+								</tr>
+								<tr>
+									<td class="content-copy" valign="top" style="padding: 0 20px; color: #000; font-size: 14px; font-family: Georgia; line-height: 20px;" colspan="2">
+										{{result.body|replace({'%url%':url})|markdown}}
+									</td>
+								</tr>								
+							{% else %}
+							<tr>
+								<td>
+							    No results were found.
+								</td>
+							</tr>
+							{% endfor %}
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+				</tr>
+			</table>
+			<table cellspacing="0" width="600" cellpadding="0" align="center" style="background: #fcfcde;" >
+				<tr>
+					<td valign="top">
+						<table cellspacing="0" width="100%" cellpadding="0">
+							<tr>
+								<td class="copyright" height="80" valign="top" style="border-top:1px solid #CCC;font-family: Verdana; font-size: 14px;line-height: 24px;padding:20px;">
+									If this report was useful to you, please recommend <a href="http://www.frontendtest.com/">FrontendTest</a> to others with web sites and/or give us 
+									<a href="mailto:support@frontendtest.com?subject=feedback">feedback</a>.
+									<br /><br />Also, since this is an growing and evolving product, we suggest you run the free test suite again in one month.
+									<br /><br />Thanks! 
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			
+		</td>
+	
+	</tr>
+	<tr>
+		<td valign="top">
+			<table cellspacing="0" width="100%" cellpadding="0">
+				<tr>
+					<td valign="top">
+						<table cellspacing="0" width="100%" cellpadding="0">
+							<tr>
+								<td class="copyright" align="center" height="80" valign="top" style="color: #000; font-family: Verdana; font-size: 12px;text-align: center; line-height: 20px;">
+									<br />
+									<a href="http://www.frontendtest.com/">FrontendTest.com</a> &nbsp; <b>Questions?</b> Email <a href="mailto:support@frontendtest.com?subject=report">support@frontendtest.com</a>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	
+</table>
+
+</body>
+</html>

@@ -13,3 +13,4 @@ _newsletter_email:
 _orig:
     pattern:  /homepage_v1/
     defaults: { _controller: FtHomeBundle:HomepageV1:index }
+     

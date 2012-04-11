@@ -1,0 +1,16 @@
+<h1>TestResult creation</h1>
+
+<form action="{{ path('test_result_create') }}" method="post" {{ form_enctype(form) }}>
+    {{ form_widget(form) }}
+    <p>
+        <button type="submit">Create</button>
+    </p>
+</form>
+
+<ul class="record_actions">
+    <li>
+        <a href="{{ path('test_result') }}">
+            Back to the list
+        </a>
+    </li>
+</ul>

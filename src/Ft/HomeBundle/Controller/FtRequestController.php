@@ -2,7 +2,6 @@
 namespace Ft\HomeBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Ft\HomeBundle\Entity\FtRequest;
-use Ft\HomeBundle\Entity\FreeProduct;
 use Symfony\Component\HttpFoundation\Request;
 
 class FtRequestController extends Controller
@@ -14,24 +13,26 @@ class FtRequestController extends Controller
       $ft_request->setEmail($_POST['email']);
       $ft_request->setUrl($_POST['url']);
       $ft_request->setCreated(new \DateTime('now'));
+      $ft_request->setType('FREE');
 
       $wantsMoreHelp_bool = null;
 	  if (isset($_POST['wantsMoreHelp']) && $_POST['wantsMoreHelp'] == 'on') { $wantsMoreHelp_bool = 1; }
       $ft_request->setMoretestsReq($wantsMoreHelp_bool);
 
-      $product = new FreeProduct();
-      $product->setEmail($_POST['email']);
-      $product->setUrl($_POST['url']);
+      //$product = new FreeProduct();
+      //$product->setEmail($_POST['email']);
+      //$product->setUrl($_POST['url']);
 	
-      $product->setCreated(new \DateTime('now'));
-      $product->setFtRequest($ft_request);
+      //$product->setCreated(new \DateTime('now'));
+      //$product->setFtRequest($ft_request);
 
       $em = $this->getDoctrine()->getEntityManager();
       $em->persist($ft_request);
-      $em->persist($product);
+      //$em->persist($product);
       $em->flush();
 
       //email support@ft with details.
+
       $message = \Swift_Message::newInstance()
         ->setSubject('FrontendTest Request')
         ->setFrom('support@frontendtest.com')

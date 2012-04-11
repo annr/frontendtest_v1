@@ -9,15 +9,14 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Find out how to make your web site better, faster, and future-proof - FrontendTest</title>
-  <meta name="description" content="">
-
+  <title>Find out how to make your web site better, faster, and future-proof &mdash; FrontendTest</title>
+  <!--<meta name="description" content="">-->
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body>
 
-  <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
 
 <!--
   <header>
@@ -31,7 +30,7 @@
   <div role="main" class="main">
 	
 	<div class="formColumn">				
-		<form id="signup"">
+		<form id="signup">
 			<div class="formRow">
 		  	 <label for="url">Web site to test<!-- (http://...)--></label><br>
 				<input type="url" name="url" id="url" placeholder="http://www.yourwebsite.com" autofocus="autofocus" style="width: 380px">
@@ -61,7 +60,7 @@
 	<!--<p><span id="whyTest" class="whyTest fauxLink">Why test?</span></p>-->
 	
 	<p>
-  	<b>Questions?</b> &nbsp;Email <a href="mailto:support@frontendtest.com">support@frontendtest.com</a>
+  	<b>Questions?</b> &nbsp;Email <a href="mailto:support@frontendtest.com?subject=questions">support@frontendtest.com</a>
   	</p>
 
 	<p>
@@ -81,28 +80,25 @@
 	&copy;2012 FrontendTest.com
 </footer>
 
-
-  <!-- <script src="{{ asset('js/libs/modernizr-2.5.3.min.js') }}" defer="defer"></script> -->
+<!-- <script src="{{ asset('js/libs/modernizr-2.5.3.min.js') }}" defer="defer"></script> -->
   
-  <!-- local -->
-   
-<!--
+<!-- local -->
 <script type="text/javascript" src="http://use.typekit.com/jif1lwz.js"></script>
 <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 
- -->
+<!-- prod -->
+<!--
 <script type="text/javascript" src="http://use.typekit.com/cfs0wvw.js"></script>
 <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+-->
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script>window.jQuery || document.write('<script src="{{ asset('js/libs/jquery-1.7.1.min.js') }}"><\/script>')</script>
   
-  <script src="{{ asset('js/jquery-ui-1.8.13.custom.min.js') }}"></script>
   <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
 
   <script src="{{ asset('js/plugins.js') }}"></script>
-  <script src="{{ asset('js/script.js') }}"></script>
-
+ 
   <script>
     var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
     (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
@@ -158,12 +154,12 @@
 				}
             },	
 			submitHandler: function() {				
-				var confirmFtRequestMsg = '<span class="formSubmittedMsg">Thanks! A detailed report will be sent to ' + $('#email').val()+ '.</span><br><a href="mailto:support@frontendtest.com">support@frontendtest.com</a> will answer any questions.';
+				var confirmFtRequestMsg = '<span class="formSubmittedMsg">Thanks! A detailed report will be sent to ' + $('#email').val()+ '.</span><br>Email any questions to <a href="mailto:support@frontendtest.com?subject=submit">support@frontendtest.com</a>.';
 				// if domains do not match, customize message
 				var domain =  '@'+$('#url').val().substr(2 + $('#url').val().indexOf('//')).replace('www.','');
 				console.log(domain);
 				if ($('#email').val().indexOf(domain) == -1) { 
-					var confirmFtRequestMsg = 'Your request was submitted. <span class="formSubmittedMsgAlert">However, for an automatic report, the email domain must match the web site.</span> To override, simply send a note to <a href="mailto:support@frontendtest.com">support@frontendtest.com</a>.';
+					var confirmFtRequestMsg = 'Your request was submitted. <span class="formSubmittedMsgAlert">However, for an automatic report, the email domain must match the web site.</span> To override, simply send a note to <a href="mailto:support@frontendtest.com?subject=override">support@frontendtest.com</a>.';
 				} 							
 				$.ajax({
 				  type: "POST",

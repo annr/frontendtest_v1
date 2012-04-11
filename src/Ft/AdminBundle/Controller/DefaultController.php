@@ -4,22 +4,41 @@ namespace Ft\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Ft\CoreBundle\CoreTest\Test;
-
+//use Ft\CoreBundle\CoreTest\HTML5\Html5Doctype;
 use Ft\CoreBundle\CoreTest\TestSuite;
 
 class DefaultController extends Controller
 {
     public function testAction()
     {
+
 	   $testSuite = new TestSuite();
-			
-	   $url = 'http://localhost/tests/test-h.html';
-	   $testSuite->runDomTests($testSuite->getDomDocument($url));
+/*	
+		//query the core test table to determine which tests to run?
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $entities = $em->getRepository('FtCoreBundle:CoreTest')->findById(1);
+
+		//run whichever tests it can find.
+		//depending on outcome, result will be saved for request, with custom data injected
+
+        foreach($entities as $entity) {
+			var_dump($entity);
+			//do we have the class?
+			new Html5Doctype();
+		}		
+
+	   $testSuite = new TestSuite();			
+	   $url = 'http://localhost/tests/test-h.html';	
+	   $data = $testSuite->getDocument($url);
+	   $testSuite->runDocumentTests($data);	
+	   $testSuite->runDomTests($testSuite->getDomDocument($data));	
 	   //echo $testSuite->getDetailsHtml($testSuite->getResultArray());
-	
+*/	
        return $this->render('FtAdminBundle:Default:test.html.twig');
 	}
-	
+
+
     public function indexAction()
     {		
 		

@@ -1,7 +1,11 @@
 FtCoreBundle_homepage:
-    pattern:  /
+    pattern:  /{id}
     defaults: { _controller: FtCoreBundle:Default:index }
 
+report:
+    pattern:  /report/{id}
+    defaults: { _controller: FtCoreBundle:Report:index }
+        
 core_test:
     pattern:  /core_test/
     defaults: { _controller: FtCoreBundle:CoreTest:index }
@@ -29,5 +33,33 @@ core_test_show:
 core_test_update:
     pattern:  /core_test_update/{id}
     defaults: { _controller: FtCoreBundle:CoreTest:update }
+       
+test_result:
+    pattern:  /test_result/
+    defaults: { _controller: FtCoreBundle:TestResult:index }
+
+test_result_edit:
+    pattern:  /test_result_edit/{id}
+    defaults: { _controller: FtCoreBundle:TestResult:edit }
+
+test_result_new:
+    pattern:  /test_result_new/
+    defaults: { _controller: FtCoreBundle:TestResult:new }
+
+test_result_create:
+    pattern:  /test_result_create/
+    defaults: { _controller: FtCoreBundle:TestResult:create }
+
+test_result_delete:
+    pattern:  /test_result_delete/{id}
+    defaults: { _controller: FtCoreBundle:TestResult:delete }
+
+test_result_show:
+    pattern:  /test_result_show/{id}
+    defaults: { _controller: FtCoreBundle:TestResult:show }
+
+test_result_update:
+    pattern:  /test_result_update/{id}
+    defaults: { _controller: FtCoreBundle:TestResult:update }
         
         

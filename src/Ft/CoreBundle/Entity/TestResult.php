@@ -24,22 +24,28 @@ class TestResult
     /**
      * @var bigint $ft_request_id
      *
-     * @ORM\ManyToOne(targetEntity="Ft\HomeBundle\Entity\FtRequest")
-     * @ORM\JoinColumn(name="ft_request_id", referencedColumnName="id")
+     * @ORM\Column(name="ft_request_id", type="integer")
      */
     private $ft_request_id;
 
     /**
-     * @var string $namespace
+     * @var FtRequest $ft_request
+     * @ORM\ManyToOne(targetEntity="Ft\HomeBundle\Entity\FtRequest", inversedBy="test_results")
+     * @ORM\JoinColumn(name="ft_request_id", referencedColumnName="id")
+    */
+    protected $ft_request;
+
+    /**
+     * @var string $kind
      *
-     * @ORM\Column(name="namespace", type="string", length=255, nullable=true)
+     * @ORM\Column(name="kind", type="string", length=255, nullable=true)
      */
-    private $namespace;
+    private $kind;
 
     /**
      * @var string $class_name
      *
-     * @ORM\Column(name="class_name", type="string", length=255)
+     * @ORM\Column(name="class_name", type="string", length=255, nullable=true)
      */
     private $class_name;
 
@@ -53,28 +59,28 @@ class TestResult
     /**
      * @var string $heading
      *
-     * @ORM\Column(name="heading", type="string", length=2000, nullable=true)
+     * @ORM\Column(name="heading", type="string", length=3000)
      */
     private $heading;
 
     /**
-     * @var text $detail_raw
+     * @var text $body
      *
-     * @ORM\Column(name="detail_raw", type="text", nullable=true)
+     * @ORM\Column(name="body", type="text", nullable=true)
      */
-    private $detail_raw;
+    private $body;
 
     /**
-     * @var text $detail_html
+     * @var text $notes
      *
-     * @ORM\Column(name="detail_html", type="text", nullable=true)
+     * @ORM\Column(name="notes", type="text", nullable=true)
      */
-    private $detail_html;
+    private $notes;
 
     /**
      * @var smallint $weight
      *
-     * @ORM\Column(name="weight", type="smallint")
+     * @ORM\Column(name="weight", type="smallint", nullable=true)
      */
     private $weight;
 
@@ -110,23 +116,23 @@ class TestResult
     }
 
     /**
-     * Set namespace
+     * Set kind
      *
-     * @param string $namespace
+     * @param string $kind
      */
-    public function setNamespace($namespace)
+    public function setKind($kind)
     {
-        $this->namespace = $namespace;
+        $this->kind = $kind;
     }
 
     /**
-     * Get namespace
+     * Get kind
      *
      * @return string 
      */
-    public function getNamespace()
+    public function getKind()
     {
-        return $this->namespace;
+        return $this->kind;
     }
 
     /**
@@ -190,43 +196,43 @@ class TestResult
     }
 
     /**
-     * Set detail_raw
+     * Set body
      *
-     * @param text $detailRaw
+     * @param text $body
      */
-    public function setDetailRaw($detailRaw)
+    public function setBody($body)
     {
-        $this->detail_raw = $detailRaw;
+        $this->body = $body;
     }
 
     /**
-     * Get detail_raw
+     * Get body
      *
      * @return text 
      */
-    public function getDetailRaw()
+    public function getBody()
     {
-        return $this->detail_raw;
+        return $this->body;
     }
 
     /**
-     * Set detail_html
+     * Set notes
      *
-     * @param text $detailHtml
+     * @param text $notes
      */
-    public function setDetailHtml($detailHtml)
+    public function setNotes($notes)
     {
-        $this->detail_html = $detailHtml;
+        $this->notes = $notes;
     }
 
     /**
-     * Get detail_html
+     * Get notes
      *
      * @return text 
      */
-    public function getDetailHtml()
+    public function getNotes()
     {
-        return $this->detail_html;
+        return $this->notes;
     }
 
     /**
@@ -247,5 +253,25 @@ class TestResult
     public function getWeight()
     {
         return $this->weight;
+    }
+
+    /**
+     * Set ft_request
+     *
+     * @param Ft\HomeBundle\Entity\FtRequest $ftRequest
+     */
+    public function setFtRequest(\Ft\HomeBundle\Entity\FtRequest $ftRequest)
+    {
+        $this->ft_request = $ftRequest;
+    }
+
+    /**
+     * Get ft_request
+     *
+     * @return Ft\HomeBundle\Entity\FtRequest 
+     */
+    public function getFtRequest()
+    {
+        return $this->ft_request;
     }
 }

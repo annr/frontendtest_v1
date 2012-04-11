@@ -21,6 +21,7 @@ class AppKernel extends Kernel
             new Ft\HomeBundle\FtHomeBundle(),
             new Ft\CoreBundle\FtCoreBundle(),
             new Ft\AdminBundle\FtAdminBundle(),
+	    new Knp\Bundle\MarkdownBundle\KnpMarkdownBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

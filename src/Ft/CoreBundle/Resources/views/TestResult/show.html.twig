@@ -1,0 +1,61 @@
+<h1>TestResult</h1>
+
+<table class="record_properties">
+    <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ entity.id }}</td>
+        </tr>
+        <tr>
+            <th>Ft_request_id</th>
+            <td>{{ entity.ftrequestid }}</td>
+        </tr>
+        <tr>
+            <th>Kind</th>
+            <td>{{ entity.kind }}</td>
+        </tr>
+        <tr>
+            <th>Class_name</th>
+            <td>{{ entity.classname }}</td>
+        </tr>
+        <tr>
+            <th>Version</th>
+            <td>{{ entity.version }}</td>
+        </tr>
+        <tr>
+            <th>Heading</th>
+            <td>{{ entity.heading }}</td>
+        </tr>
+        <tr>
+            <th>Body</th>
+            <td>{{ entity.body }}</td>
+        </tr>
+        <tr>
+            <th>Notes</th>
+            <td>{{ entity.notes }}</td>
+        </tr>
+        <tr>
+            <th>Weight</th>
+            <td>{{ entity.weight }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<ul class="record_actions">
+    <li>
+        <a href="{{ path('test_result') }}">
+            Back to the list
+        </a>
+    </li>
+    <li>
+        <a href="{{ path('test_result_edit', { 'id': entity.id }) }}">
+            Edit
+        </a>
+    </li>
+    <li>
+        <form action="{{ path('test_result_delete', { 'id': entity.id }) }}" method="post">
+            {{ form_widget(delete_form) }}
+            <button type="submit">Delete</button>
+        </form>
+    </li>
+</ul>
