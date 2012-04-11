@@ -23,7 +23,7 @@ class DefaultController extends Controller
          $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);
 
 		 //$ft_url = $ft_request->getUrl();
-		 $ft_url = 'http://localhost/tests/test-x.html';
+		 $ft_url = 'http://localhost/tests/test-h.html';
 		
 		 //get link with code from form action value:
 
@@ -38,6 +38,8 @@ class DefaultController extends Controller
 		 $ft_dom = new \DomDocument();
 
 		 @$ft_dom->loadHTML($ft_data);
+		
+		 //$ft_dom->validate();
 						
 		//if($ft_dom->doctype != null) {
 			//echo '<br>publicId: ' . $ft_dom->doctype->publicId;
@@ -80,7 +82,7 @@ class DefaultController extends Controller
 					//if a record already exists for that test name (class) continue to next coretest
 					$ex_result = $em->getRepository('FtCoreBundle:TestResult')->findOneBy(array('ft_request_id' => $id, 'class_name' => $entity->getClassName()));
 					if($ex_result) { continue; }				
-			
+/*			
 			        $result = new TestResult();
 			        $result->setHeading($entity->getHeading());					
 			        $result->setWeight($entity->getWeight());					
@@ -90,14 +92,14 @@ class DefaultController extends Controller
 			        $result->setFtRequest($ft_request);	
 			        $em->persist($result);	
 				
-					
+*/					
 				}
 			} else {
-				echo '<br>false.';
+				echo '<br>'.$entity->getClassName().' false.';
 			}
 		}	
 		
-		$em->flush();
+		//$em->flush();
 
 /*		echo '<br><br>done with tests. looping thru results.<br><br>';
 		
