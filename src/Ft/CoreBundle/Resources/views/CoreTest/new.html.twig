@@ -1,5 +1,12 @@
 <h1>CoreTest creation</h1>
-
+<style>
+input { width: 280px; }
+#ft_corebundle_coretesttype_heading {width: 1100px;  }
+textarea { width: 500px;  }
+#ft_corebundle_coretesttype_description {height: 120px; }
+#ft_corebundle_coretesttype_notes {width: 1100px;  }
+#ft_corebundle_coretesttype_weight {width: 50px;  }
+</style>
 <form action="{{ path('core_test_create') }}" method="post" {{ form_enctype(form) }}>
     {{ form_widget(form) }}
     <p>
@@ -11,6 +18,11 @@
     <li>
         <a href="{{ path('core_test') }}">
             Back to the list
+        </a>
+    </li>
+    <li>
+        <a href="{{ path('core_test_new') }}">
+            Create a new entry
         </a>
     </li>
 </ul>

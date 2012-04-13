@@ -1,5 +1,11 @@
 <h1>CoreTest list</h1>
-
+<ul>
+    <li>
+        <a href="{{ path('core_test_new') }}">
+            Create a new entry
+        </a>
+    </li>
+</ul>
 <table class="records_list">
     <thead>
         <tr>
@@ -8,17 +14,8 @@
             <th>Package_name</th>
             <th>Heading</th>
             <th>Description</th>
-            <th>Extended_description</th>
-            <th>More_details</th>
-            <th>Resources</th>
+          <!--  <th>Resources</th>-->
             <th>Weight</th>
-            <th>Notes</th>
-            <th>Run_by_default</th>
-            <th>Enabled</th>
-            <th>Print_line_numbers</th>
-            <th>Print_details</th>
-            <th>Created</th>
-            <th>Updated</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -30,17 +27,8 @@
             <td>{{ entity.packagename }}</td>
             <td>{{ entity.heading }}</td>
             <td>{{ entity.description }}</td>
-            <td>{{ entity.extendeddescription }}</td>
-            <td>{{ entity.moredetails }}</td>
-            <td>{{ entity.resources }}</td>
+        <!--    <td>{{ entity.resources }}</td> -->
             <td>{{ entity.weight }}</td>
-            <td>{{ entity.notes }}</td>
-            <td>{{ entity.runbydefault }}</td>
-            <td>{{ entity.enabled }}</td>
-            <td>{{ entity.printlinenumbers }}</td>
-            <td>{{ entity.printdetails }}</td>
-            <td>{% if entity.created %}{{ entity.created|date('Y-m-d H:i:s') }}{% endif%}</td>
-            <td>{% if entity.updated %}{{ entity.updated|date('Y-m-d H:i:s') }}{% endif%}</td>
             <td>
                 <ul>
                     <li>

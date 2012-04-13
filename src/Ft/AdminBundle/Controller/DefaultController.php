@@ -3,16 +3,34 @@
 namespace Ft\AdminBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Ft\CoreBundle\CoreTest\Test;
-//use Ft\CoreBundle\CoreTest\HTML5\Html5Doctype;
-use Ft\CoreBundle\CoreTest\TestSuite;
 
 class DefaultController extends Controller
 {
     public function testAction()
     {
 
-	   $testSuite = new TestSuite();
+	   	$url = 'http://localhost/tests/test-h.html';
+
+		$agent = "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.4) Gecko/20030624 Netscape/7.1 (ax)";
+
+		 //save http request in 
+		 //get link with code from form action value:
+		
+		 $ch = \curl_init();	
+		 \curl_setopt($ch, CURLOPT_URL,$url);
+		 \curl_setopt($ch, CURLOPT_USERAGENT, $agent);
+		 \curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+		 \curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		 \curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+		 \curl_setopt($ch, CURLOPT_MAXREDIRS, 10); //follow up to 10 redirections - avoids loops
+		 $data = \curl_exec($ch);
+				
+		 \curl_close($ch);
+   
+         echo $data;
+					
+
+		
 /*	
 		//query the core test table to determine which tests to run?
         $em = $this->getDoctrine()->getEntityManager();
@@ -42,29 +60,12 @@ class DefaultController extends Controller
     public function indexAction()
     {		
 		
-		// 1. query for tests (will use config file in future)			
-		$test1 = new Test('Is doctype HTML5?');
-		$test1->setResult(true);
-
-		$test2 = new Test('Is JavaScript deferred?');
-		$test2->setResult(true);
-
-		$test3 = new Test('Does each image have an alt tag?');
-		$test3->setResult(true);
-
-		$test4 = new Test('Does each image have width and height specified?');
-		$test4->setResult(true);
-		
-		$test5 = new Test('Are resources minified?');
-		$test5->setResult(true);
-		
-		$htmlUrlSet = isset($_POST['htmlUrl']);
-		
-		if ($htmlUrlSet) {
+		$url = 'http://localhost/tests/test-h.html';
+				
 		 //get link with code from form action value:
 		
 		 $ch = \curl_init();	
-		 \curl_setopt($ch, CURLOPT_URL,$_POST['htmlUrl']);
+		 \curl_setopt($ch, CURLOPT_URL,$url);
 		 \curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
 		 \curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		 \curl_setopt($ch, CURLOPT_MAXREDIRS, 10); //follow up to 10 redirections - avoids loops
@@ -73,8 +74,10 @@ class DefaultController extends Controller
 				
 		 $dom = new \DomDocument();
 
-		 @$dom->loadHTML($data);		
+		 @$dom->loadHTML($data);
 		
+				
+/*		
 		// TEST1	
 		if($dom->doctype != null) {
 			//echo '<br>publicId: ' . $dom->doctype->publicId;
@@ -113,8 +116,8 @@ class DefaultController extends Controller
 		//what is the DOCTYPE?
 		
 		//if HTML5 doctype, run thru HTML5 validator, save output.
-		
-		}
+*/		
+
 		
         //return $this->render('FtAdminBundle:Default:index.html.twig');
         return $this->render('FtAdminBundle:Default:index.html.twig', array('htmlUrlSet' => $htmlUrlSet, 'test1' => $test1, 'test2' => $test2, 'test3' => $test3, 'test4' => $test4, 'test5' => $test5));

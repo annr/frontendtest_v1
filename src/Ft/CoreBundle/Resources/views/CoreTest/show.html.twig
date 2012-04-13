@@ -22,10 +22,10 @@
             <th>Description</th>
             <td>{{ entity.description }}</td>
         </tr>
-        <tr>
+<!--        <tr>
             <th>Extended_description</th>
             <td>{{ entity.extendeddescription }}</td>
-        </tr>
+        </tr>-->
         <tr>
             <th>More_details</th>
             <td>{{ entity.moredetails }}</td>
@@ -42,7 +42,7 @@
             <th>Notes</th>
             <td>{{ entity.notes }}</td>
         </tr>
-        <tr>
+<!--        <tr>
             <th>Run_by_default</th>
             <td>{{ entity.runbydefault }}</td>
         </tr>
@@ -58,14 +58,15 @@
             <th>Print_details</th>
             <td>{{ entity.printdetails }}</td>
         </tr>
-        <tr>
+        <tr>-->
             <th>Created</th>
             <td>{{ entity.created|date('Y-m-d H:i:s') }}</td>
         </tr>
+<!--
         <tr>
             <th>Updated</th>
             <td>{{ entity.updated|date('Y-m-d H:i:s') }}</td>
-        </tr>
+        </tr>-->
     </tbody>
 </table>
 
@@ -85,5 +86,10 @@
             {{ form_widget(delete_form) }}
             <button type="submit">Delete</button>
         </form>
+    </li>
+    <li>
+        <a href="{{ path('core_test_new') }}">
+            Create a new entry
+        </a>
     </li>
 </ul>

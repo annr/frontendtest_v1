@@ -4,13 +4,13 @@
     <thead>
         <tr>
             <th>Id</th>
-            <th>Ft_request_id</th>
-            <th>Kind</th>
+            <th>Ft_id</th>
+          <!--  <th>Kind</th>
             <th>Class_name</th>
-            <th>Version</th>
+            <th>Version</th>-->
             <th>Heading</th>
             <th>Body</th>
-            <th>Notes</th>
+            <!--<th>Notes</th>-->
             <th>Weight</th>
             <th>Actions</th>
         </tr>
@@ -20,12 +20,12 @@
         <tr>
             <td><a href="{{ path('test_result_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
             <td>{{ entity.ftrequestid }}</td>
-            <td>{{ entity.kind }}</td>
+           <!-- <td>{{ entity.kind }}</td>
             <td>{{ entity.classname }}</td>
-            <td>{{ entity.version }}</td>
+            <td>{{ entity.version }}</td>-->
             <td>{{ entity.heading }}</td>
             <td>{{ entity.body }}</td>
-            <td>{{ entity.notes }}</td>
+            <!--<td>{{ entity.notes }}</td>-->
             <td>{{ entity.weight }}</td>
             <td>
                 <ul>
