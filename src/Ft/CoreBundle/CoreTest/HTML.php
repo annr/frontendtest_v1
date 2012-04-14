@@ -2,21 +2,39 @@
 
 namespace Ft\CoreBundle\CoreTest;
 
+use Ft\CoreBundle\CoreTest\Helper;
+
 class HTML
 {
 
-	    public function DuplicateElementsWhichShouldBeUnique()
-	    {
+		public function HasNestedTables()
+		{
 			global $ft_dom;
-			$unique_elements = array('head','title','body');
-			$elements = $ft_dom->getElementsByTagName('head');
+			$elements = $ft_dom->getElementsByTagName('table');
 	        foreach ($elements as $element) { 
-		        return false;
+				$nested_tables = $element->getElementsByTagName('table');				
+		        foreach ($nested_tables as $nested) { 
+					return true;
+		        }
 			}
-			return true;
-	    }
+			return false;			
+		}
 
+		public function HasDeeplyNestedTables()
+		{
+			return false;			
+		}
 
+		public function FaviconMissing()
+		{
+			global $ft_web_root;
+			$helper = new Helper();			
+			if($helper->getHttpResponseCode($ft_web_root . 'favicon.ico') == 404 || $helper->getResourceSizeBytes($ft_web_root . 'favicon.ico') == 0) {
+				return true;				
+			}			
+			return false;			
+		}
+						
 	    public function CssBeforeScript()
 	    {
 			return false;
@@ -50,49 +68,30 @@ class HTML
 	    public function BrokenLink()
 	    {
 			global $ft_dom;
-			global $ft_url;
-			global $ft_url_root;
-			global $ft_web_root;
 			
+			$helper = new Helper();
 			$elements = $ft_dom->getElementsByTagName('a');
+			$code = array('');
 	        foreach ($elements as $element) { 
 				//check link status
 				if ($element->hasAttribute('href')) {
 					//link to check:
 					$link = $element->getAttribute('href');
-					//if matches url, skip
-					if($link == $ft_url || $link == ($ft_url . '/')) { 
-						echo '<br><br>it matches, skip: ' .$link;
-						continue;					
-					} 
-					//if http, skip build path.	
-					elseif (substr($link, 0, 7) === 'http://' || substr($link, 0, 8) === 'https://') { 											
-						//link is fine, do not modify
-					}
-					//if forward slash, add url minus forward slash.
-					elseif (substr($link, 0, 1) === '/') { 
-						$link = $ft_web_root.substr($link, 1); 
-					}
-					//if relative, add url making sure forward slash exists
-					elseif (substr($link, 0, 1) !== '/') { 
-						$link = $ft_url_root.$link; 
-					}
 					
-					$handle = curl_init($link);
-					curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
-
-					/* Get the HTML or whatever is linked in $url. */
-					$response = curl_exec($handle);
-
-					/* Check for 404 (file not found). */
-					$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-
-					curl_close($handle);
-					if($httpCode == 404) {
-					    /* Handle 404 here. */
-						return true;
+					//if matches url, skip TODO
+					
+					//also if using javascript: protocol, skip.
+					if(strpos($element->getAttribute('href'),'javascript:') !== false){
+						continue;
 					}
 										
+					$link = $helper->getAbsoluteResourceLink($link);
+
+					if($helper->getHttpResponseCode($link) == 404) {
+					    /* Handle 404 here. */
+					    $code[0] .=  $helper->printCodeWithLineNumber($element);
+						return $code;
+					}										
 				}		        
 			}
 	        return false;
@@ -101,37 +100,106 @@ class HTML
 	    public function GifsUsed()
 	    {
 			global $ft_dom;
-
+			$results_array = array();
 			$imgs = $ft_dom->getElementsByTagName('img');
 			$gifs = 0;
+			$total_files_size = 0;
 	        foreach ($imgs as $img) { 
 				if ($img->hasAttribute('src')) {
-					if(strripos($img->getAttribute('src'),'.gif') == (strlen($img->getAttribute('src')) - 4)) $gifs++;
+					if(strripos($img->getAttribute('src'),'.gif') == (strlen($img->getAttribute('src')) - 4)) {
+						$gifs++;
+						$helper = new Helper();
+						$link = $helper->getAbsoluteResourceLink($img->getAttribute('src'));
+						$total_files_size += intval($helper->getResourceSizeBytes($link)); 
+					}
 				}
 			}
-			//echo 'total gifs...' . $gifs;			
+
 			if($gifs) {
+				$results_array[0] = $gifs;
+				//THERE IS AN ERROR HERE!!!!
+				//$results_array[1] = round(13.7548828125, 2, PHP_ROUND_HALF_UP) + 'KB'; //outputs: 13.75				
+				$results_array[1] = round($total_files_size/1024,2, PHP_ROUND_HALF_UP) + 'KB';
 				return true;
 			}						
 	        return false;
 	    }
 	
-	    public function ManyImages()
+	    public function ManyImagesFlag()
 	    {
+			global $ft_dom;
+			$imgs = $ft_dom->getElementsByTagName('img');
+			if($imgs->length > 10) return array($imgs->length);
 	        return false;
 	    }
 
+		//assume they only have one for now, and get the first one.
+	    public function DeprecatedElement()
+	    {		
+			global $ft_dom;
+			$helper = new Helper();
+		   $return_array = array();
+		   $code = array('');
+		   $deprecated_elements = array('applet',
+										'dir',
+										'isindex',
+										'menu',
+										'basefont',
+										'center',
+										'font',
+										's',
+										'strike',
+										'u'
+										);
+										
+			$deprecated_replacements = array();
+			$deprecated_replacements['applet'] = 'object';
+			$deprecated_replacements['dir'] = 'ul';
+			$deprecated_replacements['isindex'] = 'input';
+			$deprecated_replacements['menu'] = 'nav';
+			$deprecated_replacements['basefont'] = 'css';
+			$deprecated_replacements['center'] = 'css';
+			$deprecated_replacements['font'] = 'css';
+			$deprecated_replacements['s'] = 'css';
+			$deprecated_replacements['strike'] = 'css';
+			$deprecated_replacements['u'] = 'css';
+						
+			foreach($deprecated_elements as $deprecated_element) {
+				$code = $helper->testForElement($deprecated_element);		
+				if(!empty($code)) {
+					$return_array[0] = $deprecated_element;
+					$return_array[1] = $deprecated_replacements[$deprecated_element];
+					$return_array[2] = $code[0];
+					var_dump($return_array);	
+					return $return_array;				
+				}								
+			}
+			
+	        return false;
+	    }
 
-	    public function MissingAltAttribute()
+	    public function RequiredTagAttributePairMissing()
+	    {		
+			return false;
+		}
+			
+	    public function ImgAltAttributeMissing()
 	    {
 			global $ft_dom;
+			$code = array('');
 			
-			$imgs = $ft_dom->getElementsByTagName('img');
-	        foreach ($imgs as $img) { 
-				if (!$img->hasAttribute('alt')) {
-					return true;
+			$elements = $ft_dom->getElementsByTagName('img');
+			$helper = new Helper();
+
+	        foreach ($elements as $element) { 
+				if (!$element->hasAttribute('alt') || $element->getAttribute('alt') == '') {
+					$code[0] .=  $helper->printCodeWithLineNumber($element);					
 				}	
-			}
+			}		
+			if(!empty($code)) {
+				return $code;
+			}		
+			
 	        return false;
 	    }
 
@@ -139,16 +207,14 @@ class HTML
 	    {
 			global $ft_dom;
 			
-			$imgs = $ft_dom->getElementsByTagName('img');
-	        foreach ($imgs as $img) { 
-				if (!$img->hasAttribute('width') || !$img->hasAttribute('width')) {
+			$elements = $ft_dom->getElementsByTagName('img');
+	        foreach ($elements as $element) { 
+				if (!$element->hasAttribute('width') || !$element->hasAttribute('width')) {
 					return true;
 				}	
 			}
 	        return false;
 	    }
-
-
 	
 	    public function JavascriptInHref()
 	    {
@@ -166,8 +232,11 @@ class HTML
 	    public function BoldTags()
 	    {	
 			global $ft_dom;
-			$b = $ft_dom->getElementsByTagName('b');
-			if($b->length > 0) { return true;}
+			$helper = new Helper();
+			$code = $helper->testForElement('b');		
+			if(!empty($code)) {
+				return $code;
+			}		
 		    return false;
 	    }
 	
@@ -178,18 +247,11 @@ class HTML
 			$code = array('');
 			
 			$elements = $ft_dom->getElementsByTagName('meta');
-						
+			$helper = new Helper();
+			
 	        foreach ($elements as $element) { 
-				if ($element->hasAttribute('content') && $element->getAttribute('content') == '') {
-					$doc=new \DOMDocument();
-					$doc->appendChild($doc->importNode($element,true));
-					$meta = $doc->saveHTML();
-					
-					//get line breaks previous to $meta
-					$text = substr($ft_data, 0, stripos($ft_data, $meta));
-					$line = 1; //the first line is one.
-					$line += substr_count($text, "\n");
-					$code[0] .=  '`('. $line . ') '. trim($meta) . '`' . "  \n\r";					
+				if ($element->hasAttribute('content') && $element->getAttribute('content') == '') {					
+					$code[0] .=  $helper->printCodeWithLineNumber($element);					
 				}	
 			}		
 			if(!empty($code)) {

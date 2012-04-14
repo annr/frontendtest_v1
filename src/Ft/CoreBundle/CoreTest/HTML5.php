@@ -6,6 +6,12 @@ class HTML5
 {
 		public $class_val_test_return_val;
 		
+
+	    public function SemanticallyPoorSiteFlag()
+	    {
+	        return false;
+	    }
+	
 	    public function NotHtml5Doctype()
 	    {
 			global $ft_dom;
@@ -17,6 +23,12 @@ class HTML5
 
 	    public function Html5ElementsWOShim()
 	    {
+	        return false;
+	    }
+
+	    public function InvalidElementInHead()
+	    {
+			//$allowed_elements = array('title','base','link','style','meta','script','noscript','command');
 	        return false;
 	    }
 		

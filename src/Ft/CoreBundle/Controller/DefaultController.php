@@ -8,6 +8,7 @@ use Ft\CoreBundle\CoreTest\HTML5;
 use Ft\CoreBundle\CoreTest\HTML;
 use Ft\CoreBundle\CoreTest\Script;
 use Ft\CoreBundle\Entity\TestResult;
+use Ft\CoreBundle\CoreTest\Helper;
 
 class DefaultController extends Controller
 {	
@@ -24,40 +25,19 @@ class DefaultController extends Controller
 		 global $ft_dom;
 		 global $ft_dom_xml;
 		 global $ft_http_request;
+		 global $ft_request_id;
 
+		 $ft_url = 'http://localhost/tests/test-i.html';
+		 $ft_request_id = $id;
+		
          $em = $this->getDoctrine()->getEntityManager();
          $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);
 
-		 //$ft_url = $ft_request->getUrl();
-		 $ft_url = 'http://localhost/tests/test-x.html';
-		 //$ft_url = 'http://www.bhnc.com';
-
-		 $ft_url_root = substr($ft_url, 0, strrpos($ft_url, '/'));
-		 
-		//$ft_url_root = host from header plus get with the file removed. 
-		//therefore if get is
+		//data is returned, and ft_http_request is set with the following method
+		$helper = new Helper();
+		$ft_data = $helper->getDataAndSetRequest($ft_url);
 		
-		 //if resources starts with / add host. if none, add host+get with file removed.
-		
-		 //get link with code from form action value:
-
-		 $ch = \curl_init();	
-		 \curl_setopt($ch, CURLOPT_URL,$ft_url);
-		 \curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-		 \curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		 \curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-		 \curl_setopt($ch, CURLOPT_MAXREDIRS, 10); //follow up to 10 redirections - avoids loops
-		 $ft_data = \curl_exec($ch);
-
-		if(!\curl_errno($ch))
-		{
-		 	$ft_http_request = \curl_getinfo($ch);
-			//foreach($ft_http_request as $key => $value){
-			//  echo $key.":" . $value . "<br>\r\n";
-			//}			
-		} else {
-			error_log('CURL ERROR WITH URL: '.$url);
-		}
+		echo htmlspecialchars($ft_data);
 		
 		$http_request_split = explode("\n", $ft_http_request['request_header']);
 		$get_split = explode(" ", $http_request_split[0]);
@@ -70,8 +50,6 @@ class DefaultController extends Controller
 		
 		$ft_web_root = strtolower($protocol[0]) . '://' . $ft_host . '/';
 	
-		\curl_close($ch);
-
 		if(!($ft_http_request['http_code'] == '200')) {
 			echo 'HTTP RESPONSE CODE OTHER THAN 200 FOR: '.$url . "\n\rexiting....";
 			error_log('HTTP RESPONSE CODE OTHER THAN 200 FOR: '.$url);
@@ -134,23 +112,23 @@ class DefaultController extends Controller
 			if($result_instance) {
 				//merge what is returned with the coretest record. add to result array.
 				//persist test result
-				//echo '<br>'.$entity->getClassName().' true. insert into table.';
+				echo '<br>'.$entity->getClassName().' true. insert into table.';
 				//if a record already exists for that test name (class) continue to next coretest
 				$ex_result = $em->getRepository('FtCoreBundle:TestResult')->findOneBy(array('ft_request_id' => $id, 'class_name' => $entity->getClassName()));
 				if($ex_result) { continue; }
-				/*			
+			
 		        $result = new TestResult();
 		        $result->setWeight($entity->getWeight());					
 		        $result->setClassName($entity->getClassName());	
 		        $result->setKind($entity->getPackageName());	
 		        $result->setFtRequest($ft_request);	
 		        $em->persist($result);	
-				*/								
+											
 				if(is_bool($result_instance)) {
-					/*
+				
 			        $result->setBody($entity->getDescription());										
 			        $result->setHeading($entity->getHeading());					
-					*/				
+							
 				} elseif(is_array($result_instance)) {
 					//in this case, we need to take every array value that is returned and substitute %X% in the template.
 					$coretestDesc = $entity->getDescription();
@@ -162,16 +140,16 @@ class DefaultController extends Controller
 						$coretestHead = str_replace($str_to_substitue, $str_to_insert, $coretestHead);
 						$index++;
 					}
-					//$result->setBody($coretestDesc);
-					//$result->setHeading($coretestHead);
+					$result->setBody($coretestDesc);
+					$result->setHeading($coretestHead);
 					 
 				}
 			}  else {
-				//echo '<br>'.$entity->getClassName().' false.';
+				echo '<br>'.$entity->getClassName().' false.';
 			}
 		}	
 		
-		//$em->flush();
+		$em->flush();
 
 /*		echo '<br><br>done with tests. looping thru results.<br><br>';
 		
