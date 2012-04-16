@@ -1,10 +1,6 @@
 FtHomeBundle_homepage:
     pattern:  /
     defaults: { _controller: FtHomeBundle:Default:index }
-
-_ft_request:
-    pattern:  /ft_request
-    defaults: { _controller: FtHomeBundle:FtRequest:index }
     
 _newsletter_email:
     pattern:  /newsletter_email
@@ -13,4 +9,41 @@ _newsletter_email:
 _orig:
     pattern:  /homepage_v1/
     defaults: { _controller: FtHomeBundle:HomepageV1:index }
+
+_ft_request_go:
+    pattern:  /ft_request_go
+    defaults: { _controller: FtHomeBundle:FtRequest:go }
+    
+_ft_request_go:
+    pattern:  /ft_request_run/{id}
+    defaults: { _controller: FtHomeBundle:FtRequest:run }
+            
+ft_request:
+    pattern:  /ft_request/
+    defaults: { _controller: FtHomeBundle:FtRequest:index }
+
+ft_request_edit:
+    pattern:  /ft_request_edit/{id}
+    defaults: { _controller: FtHomeBundle:FtRequest:edit }
+
+ft_request_new:
+    pattern:  /ft_request_new/
+    defaults: { _controller: FtHomeBundle:FtRequest:new }
+
+ft_request_create:
+    pattern:  /ft_request_create/
+    defaults: { _controller: FtHomeBundle:FtRequest:create }
+
+ft_request_delete:
+    pattern:  /ft_request_delete/{id}
+    defaults: { _controller: FtHomeBundle:FtRequest:delete }
+
+ft_request_show:
+    pattern:  /ft_request_show/{id}
+    defaults: { _controller: FtHomeBundle:FtRequest:show }
+
+ft_request_update:
+    pattern:  /ft_request_update/{id}
+    defaults: { _controller: FtHomeBundle:FtRequest:update }
+
      

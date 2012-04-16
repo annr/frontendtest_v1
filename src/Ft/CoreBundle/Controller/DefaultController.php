@@ -3,16 +3,19 @@
 namespace Ft\CoreBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-//use Ft\CoreBundle\CoreTest\HTML5\Html5Doctype;
 use Ft\CoreBundle\CoreTest\HTML5;
 use Ft\CoreBundle\CoreTest\HTML;
 use Ft\CoreBundle\CoreTest\Script;
 use Ft\CoreBundle\Entity\TestResult;
 use Ft\CoreBundle\CoreTest\Helper;
 
+
 class DefaultController extends Controller
 {	
 	//index takes an ft_request id, queries for URL, and runs the suite of tests.
+
+	
+	//this is for running in the browser during dev.
     public function indexAction($id)
     {
 		 //made the URL, the raw data and the dom document global
@@ -36,9 +39,7 @@ class DefaultController extends Controller
 		//data is returned, and ft_http_request is set with the following method
 		$helper = new Helper();
 		$ft_data = $helper->getDataAndSetRequest($ft_url);
-		
-		echo htmlspecialchars($ft_data);
-		
+				
 		$http_request_split = explode("\n", $ft_http_request['request_header']);
 		$get_split = explode(" ", $http_request_split[0]);
 		$host_split = explode(" ", $http_request_split[1]);
@@ -56,11 +57,11 @@ class DefaultController extends Controller
 			exit;			
 		}
 
-		//if(intval($ft_http_request['download_content_length']) < 1000 ) {
-		//	echo "HTTP RESPONSE HAS VERY LITTLE CODE. NOT MUCH TO TEST? (".$url . ")\n\rexiting....";
-		//	error_log('HTTP RESPONSE HAS VERY LITTLE CODE. NOT MUCH TO TEST? ('.$url . ')');
-		//	exit;			
-		//}
+		if(intval($ft_http_request['download_content_length']) < 1000 ) {
+			echo "HTTP RESPONSE HAS VERY LITTLE CODE. NOT MUCH TO TEST? (".$url . ")\n\rexiting....";
+			error_log('HTTP RESPONSE HAS VERY LITTLE CODE. NOT MUCH TO TEST? ('.$url . ')');
+			exit;			
+		}
 
 		if($ft_http_request['content_type'] != 'text/html' && $ft_http_request['content_type'] != 'application/xhtml+xml') {
 			echo 'NOT A SUPPORTED CONTENT TYPE ('.$ft_http_request['content_type'].'): '.$url . "\n\rexiting....";
@@ -80,9 +81,16 @@ class DefaultController extends Controller
 			//echo '<br>systemId: ' . $dom->doctype->systemId;
 			//echo '<br>name: ' . $dom->doctype->name;
 		//}
-			
-		//query the core test table to determine which tests to run?
+		
+		$runSuite = $this->suiteAction($id);
+	
+        return $this->render('FtCoreBundle:Default:index.html.twig');
+    }
 
+	public function suiteAction($id)
+    {
+		//query the core test table to determine which tests to run?
+        $em = $this->getDoctrine()->getEntityManager();
         $entities = $em->getRepository('FtCoreBundle:CoreTest')->findAll();
 
 		//run whichever tests it can find.
@@ -97,6 +105,10 @@ class DefaultController extends Controller
 			//do we have the class?
 			$packageName = $entity->getPackageName();			
 			$className = $entity->getClassName();
+
+			//if a record already exists for that test name (class) don't run that test.
+			$ex_result = $em->getRepository('FtCoreBundle:TestResult')->findOneBy(array('ft_request_id' => $id, 'class_name' => $entity->getClassName()));
+			if($ex_result) { continue; }
 			
 			//THIS IS A POOR WAY TO CHECK IF THE TESTS EXIST. WHAT IF THE SAME TEST NAME EXISTS IN TWO "PACKAGES"?
 			if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className)){ 
@@ -113,9 +125,6 @@ class DefaultController extends Controller
 				//merge what is returned with the coretest record. add to result array.
 				//persist test result
 				echo '<br>'.$entity->getClassName().' true. insert into table.';
-				//if a record already exists for that test name (class) continue to next coretest
-				$ex_result = $em->getRepository('FtCoreBundle:TestResult')->findOneBy(array('ft_request_id' => $id, 'class_name' => $entity->getClassName()));
-				if($ex_result) { continue; }
 			
 		        $result = new TestResult();
 		        $result->setWeight($entity->getWeight());					
@@ -145,28 +154,11 @@ class DefaultController extends Controller
 					 
 				}
 			}  else {
-				echo '<br>'.$entity->getClassName().' false.';
+				//echo '<br>'.$entity->getClassName().' false.';
 			}
 		}	
 		
 		$em->flush();
-
-/*		echo '<br><br>done with tests. looping thru results.<br><br>';
-		
-		foreach($result_array as $result) {
-			var_dump($result);
-			echo '<br><br>';
-		}
-        	
-
-	   $testSuite = new TestSuite();			
-	   $url = 'http://localhost/tests/test-h.html';	
-	   $data = $testSuite->getDocument($url);
-	   $testSuite->runDocumentTests($data);	
-	   $testSuite->runDomTests($testSuite->getDomDocument($data));	
-	   //echo $testSuite->getDetailsHtml($testSuite->getResultArray());
-*/	
 	
-        return $this->render('FtCoreBundle:Default:index.html.twig');
-    }
+	}
 }

@@ -157,13 +157,14 @@
 				var confirmFtRequestMsg = '<span class="formSubmittedMsg">Thanks! A detailed report will be sent to ' + $('#email').val()+ '.</span><br>Email any questions to <a href="mailto:support@frontendtest.com?subject=submit">support@frontendtest.com</a>.';
 				// if domains do not match, customize message
 				var domain =  '@'+$('#url').val().substr(2 + $('#url').val().indexOf('//')).replace('www.','');
+				domain = domain.substr(0, domain.indexOf('/'));
 				console.log(domain);
 				if ($('#email').val().indexOf(domain) == -1) { 
 					var confirmFtRequestMsg = 'Your request was submitted. <span class="formSubmittedMsgAlert">However, for an automatic report, the email domain must match the web site.</span> To override, simply send a note to <a href="mailto:support@frontendtest.com?subject=override">support@frontendtest.com</a>.';
 				} 							
 				$.ajax({
 				  type: "POST",
-				  url: "{{ path('_ft_request') }}",
+				  url: "{{ path('_ft_request_go') }}",
 				  data: $("#signup").serialize(),
 				  success: function(data) {
 				  	if(data=='true') {

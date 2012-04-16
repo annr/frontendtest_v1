@@ -331,7 +331,7 @@ class FtRequest
 
     public function __toString()
     {
-        return $this->getEmail();
+        return $this->getUrl() . ': ' . $this->getEmail();
     }
 
 
