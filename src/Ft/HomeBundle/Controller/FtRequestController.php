@@ -23,12 +23,59 @@ use Ft\CoreBundle\CoreTest\Helper;
  */
 class FtRequestController extends Controller
 {
-    /**
-     * Lists all FtRequest entities.
-     *
-     * @Route("/", name="ft_request_go")
-     * @Template()
-     */
+
+	public function previewAction($id)
+	{	
+		$em = $this->getDoctrine()->getEntityManager();
+        $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);
+
+		$results = $em->getRepository('FtCoreBundle:TestResult')->findBy(
+		    array('ft_request_id' => $id)
+		);
+		
+	    //if (!$results) {
+	        //throw $this->xxxXXX('There are no results.');
+	    //}
+		$cid =  '../../../web/img/logo_sm.png';
+		
+        $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'results' => $results));
+        $response->headers->set('Content-Type', 'text/html');
+        return $response;
+	    
+	}
+
+
+	public function deliverAction($id)
+	{	
+		$em = $this->getDoctrine()->getEntityManager();
+        $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);
+
+		$results = $em->getRepository('FtCoreBundle:TestResult')->findBy(
+		    array('ft_request_id' => $id)
+		);
+		
+	    //if (!$results) {
+	        //throw $this->xxxXXX('There are no results.');
+	    //}
+		
+	    //email report
+	    $message = \Swift_Message::newInstance();
+
+		$cid = $message->embed(\Swift_Image::fromPath('../../../web/img/logo_sm.png'));
+
+	    $message->setSubject('FrontendTest Report')
+	       ->setFrom('support@frontendtest.com')
+	       ->setTo($ft_request->getEmail())
+	  	   ->setContentType('text/html')
+	       ->setBody($this->renderView('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'results' => $results)));
+
+	    $this->get('mailer')->send($message);
+	
+	    $ft_request->setDelivered(new \DateTime('now'));
+	    $em->persist($ft_request);
+	    $em->flush();
+	    
+	}
 
 	public function runAction($id)
 	{
@@ -51,7 +98,12 @@ class FtRequestController extends Controller
 		//FtHelper::testMinContentLength($ft_http_request);	
 		FtHelper::setFtDom($ft_url);
 		
-		$suiteAction = $this->suiteAction($ft_request);		
+		$suiteAction = $this->suiteAction($ft_request);	
+
+        $response = $this->render('FtHomeBundle:FtRequest:go.txt.twig');
+        $response->headers->set('Content-Type', 'text/plain');
+        return $response;
+	
 	}
 	
     public function goAction()
@@ -128,7 +180,7 @@ class FtRequestController extends Controller
 			if($result_instance) {
 				//merge what is returned with the coretest record. add to result array.
 				//persist test result
-			
+			    echo '<br>'.$entity->getClassName().' true.';
 		        $result = new TestResult();
 		        $result->setWeight($entity->getWeight());					
 		        $result->setClassName($entity->getClassName());	
@@ -136,7 +188,7 @@ class FtRequestController extends Controller
 		        $result->setFtRequest($ft_request);	
 		        $em->persist($result);	
 											
-				if(is_bool($result_instance)) {
+				if(is_bool($result_instance)) {					
 				
 			        $result->setBody($entity->getDescription());										
 			        $result->setHeading($entity->getHeading());					
@@ -146,6 +198,7 @@ class FtRequestController extends Controller
 					$coretestDesc = $entity->getDescription();
 					$coretestHead = $entity->getHeading();
 					$index = 1;
+
 					foreach($result_instance as $str_to_insert) {
 						$str_to_substitue = '%'.$index.'%';
 						$coretestDesc = str_replace($str_to_substitue, $str_to_insert, $coretestDesc);

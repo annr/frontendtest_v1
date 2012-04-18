@@ -1,19 +1,28 @@
 <h1>FtRequest list</h1>
 
+<style>
+
+ul.horizNav li{
+	display: inline;
+	padding-right: 20px;
+}
+</style>
 <table class="records_list">
     <thead>
         <tr>
             <th>Id</th>
             <th>Email</th>
             <th>Url</th>
-            <th>Ip</th>
+    <!--        <th>Ip</th>
             <th>Environment</th>
             <th>Notes</th>
             <th>Updates_req</th>
             <th>Moretests_req</th>
-            <th>Type</th>
+            <th>Type</th>-->
+            <th># Results</th>
+            <th>Avg Weight</th>
             <th>Created</th>
-            <th>Updated</th>
+          <!--  <th>Updated</th> -->
             <th>Delivered</th>
             <th>Actions</th>
         </tr>
@@ -24,22 +33,33 @@
             <td><a href="{{ path('ft_request_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
             <td>{{ entity.email }}</td>
             <td>{{ entity.url }}</td>
-            <td>{{ entity.ip }}</td>
+<!--            <td>{{ entity.ip }}</td>
             <td>{{ entity.environment }}</td>
             <td>{{ entity.notes }}</td>
             <td>{{ entity.updatesreq }}</td>
             <td>{{ entity.moretestsreq }}</td>
-            <td>{{ entity.type }}</td>
+            <td>{{ entity.type }}</td>-->
+			<td>{% render "FtCoreBundle:TestResult:count" with {'id': entity.id} %}</td>
+			<td>{% render "FtCoreBundle:TestResult:averageWeight" with {'id': entity.id} %}</td>
             <td>{% if entity.created %}{{ entity.created|date('Y-m-d H:i:s') }}{% endif%}</td>
-            <td>{% if entity.updated %}{{ entity.updated|date('Y-m-d H:i:s') }}{% endif%}</td>
-            <td>{% if entity.delivered %}{{ entity.delivered|date('Y-m-d H:i:s') }}{% endif%}</td>
+           <!-- <td>{% if entity.updated %}{{ entity.updated|date('Y-m-d H:i:s') }}{% endif%}</td> -->
+            <td style="color: DarkGreen">{% if entity.delivered %}{{ entity.delivered|date('Y-m-d H:i:s') }}{% endif%}</td>
             <td>
-                <ul>
-                    <li>
-                        <a href="{{ path('ft_request_show', { 'id': entity.id }) }}">show</a>
-                    </li>
+                <ul class="horizNav">
+                    <!--<li>
+                        <a href="{{ url('report', { 'id': entity.id }) }}">show</a>
+                    </li>-->
                     <li>
                         <a href="{{ path('ft_request_edit', { 'id': entity.id }) }}">edit</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('ft_request_run', { 'id': entity.id }) }}">run suite</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('ft_request_preview', { 'id': entity.id }) }}">preview</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('ft_request_deliver', { 'id': entity.id }) }}">deliver</a>
                     </li>
                 </ul>
             </td>

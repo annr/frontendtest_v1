@@ -52,6 +52,7 @@ class Helper
 		}
 		//if relative, add url making sure forward slash exists
 		elseif (substr($link, 0, 1) !== '/') { 
+			echo 'adding ft_url_root? ' . $ft_url_root;
 			$link = $ft_url_root.$link; 
 		}
 				
@@ -68,7 +69,7 @@ class Helper
 
 		/* Check for 404 (file not found). */
 		$info = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-
+        var_dump($info);
 		curl_close($handle);			
 		return $info;
 	}
@@ -101,20 +102,30 @@ class Helper
 		$doc->preserveWhiteSpace = true; 
 		$doc->appendChild($doc->importNode($element,true));
 		$code_str = $doc->saveHTML();
-	    //echo '<br><br>code str: ' .htmlspecialchars($code_str);
-		//echo '<br><br>';
 
 		//get line breaks previous to $meta
+		$code_str = trim($code_str);
+		$element_pos = stripos($ft_data, $code_str);
 		$text = substr($ft_data, 0, stripos($ft_data, $code_str));
-		
+
+		if(strpos($code_str,"\n") > 0)
+		{
+			$code_str = substr($code_str, 0, strpos($code_str,"\n"));
+		}
+		if($text == null)
+		{
+			//try to get it again with chopped string:
+			$text = substr($ft_data, 0, stripos($ft_data, $code_str));
+		}
+
 		if($text) {
 			$line = 1; //the first line is one.
 			$line += substr_count($text, "\n");
 			//echo '<br>finding line no: ' . $line;
-			$code =  '`('. $line . ') '. trim($code_str) . '`' . "  \n\r";
+			$code =  '`('. $line . ') '. $code_str . '`' . "  \n\r";
 		} else {
 			//line number not found, so don't print it.
-			$code =  '`'.trim($code_str) . '`' . "  \n\r";	
+			$code =  '`'.$code_str . '`' . "  \n\r";	
 			error_log('FT ERROR with request id ' . $ft_request_id . ': DOM ELEMENT NOT FOUND IN RAW SOURCE '.$code_str);		
 		}
 		return $code;
@@ -123,7 +134,6 @@ class Helper
 	public static function testForElement($element_str)
 	{	
 		global $ft_dom;
-		$helper = new Helper();
 			
 		$code = array('');
 	
@@ -133,12 +143,64 @@ class Helper
 			return false;
 		} else {
 		    foreach ($elements as $element) { 
-				$code[0] .=  $helper->printCodeWithLineNumber($element);						
+				$code[0] .=  Helper::printCodeWithLineNumber($element);						
 			}	
 		}
 		
-		return $code;
+		if($code[0] != '') {
+			return $code;
+		}		
+		
+        return false;
 	}
-	
+
+/*	
+	public function recursiveSearch( $node ) {			
+	   if ($node->hasAttribute($attribute_name) !== false)
+	   if ( $node->hasChildNodes() ) {
+	     $children = $node->childNodes;
+	     foreach( $children as $kid ) {
+	       if ( $kid->nodeType == XML_ELEMENT_NODE ) {
+	         $this->getHtml5ClassElement( $kid,$html5_elements );
+	       }
+	     }
+	   }
+	}
+	*/
+	public static function recursivelySearchAttribute( $node, $attribute_name ) {
+	   global $poorly_designed_catchall;
+	   global $poorly_designed_catchall_element_array;
+				
+	   if ($node->hasAttribute($attribute_name) !== false) { 
+			$poorly_designed_catchall++; 
+			$poorly_designed_catchall_element_array[] = $node;
+	   }
+	   if ( $node->hasChildNodes() ) {
+	     $children = $node->childNodes;
+	     foreach( $children as $kid ) {
+	       if ( $kid->nodeType == XML_ELEMENT_NODE ) {
+	         Helper::recursivelySearchAttribute( $kid,$attribute_name );
+	       }
+	     }
+	   }
+	}	
+
+	public static function recursivelySearchAttributeValue( $node, $attribute_name, $attribute_value ) {
+	   global $poorly_designed_catchall;
+	   global $poorly_designed_catchall_element_array;
+				
+	   if ($node->hasAttribute($attribute_name) !== false && $node->getAttribute($attribute_name) == $attribute_value) { 
+			$poorly_designed_catchall++; 
+			$poorly_designed_catchall_element_array[] = $node;
+	   }
+	   if ( $node->hasChildNodes() ) {
+	     $children = $node->childNodes;
+	     foreach( $children as $kid ) {
+	       if ( $kid->nodeType == XML_ELEMENT_NODE ) {
+	         Helper::recursivelySearchAttributeValue( $kid,$attribute_name, $attribute_value  );
+	       }
+	     }
+	   }
+	}	
 		
 }

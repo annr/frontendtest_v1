@@ -12,10 +12,36 @@ use Ft\CoreBundle\Form\TestResultType;
 /**
  * TestResult controller.
  *
- * @Route("/test_result")
+ * @Route("/test_result_count/{ft_request_id}")
  */
 class TestResultController extends Controller
 {
+
+
+    public function averageWeightAction($id)
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+
+		$query = $em->createQuery('select avg(c.weight) from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id);
+		
+		$num = $query->getResult();
+
+        return $this->render('FtCoreBundle:TestResult:averageWeight.txt.twig', array('number_results' => round($num[0][1],2)));
+
+    }
+
+    public function countAction($id)
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+
+		$query = $em->createQuery('select count(c.id) from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id);
+		
+		$num = $query->getResult();
+
+        return $this->render('FtCoreBundle:TestResult:count.txt.twig', array('number_results' => $num[0][1]));
+
+    }
+
     /**
      * Lists all TestResult entities.
      *

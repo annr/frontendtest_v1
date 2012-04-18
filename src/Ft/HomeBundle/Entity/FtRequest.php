@@ -329,6 +329,11 @@ class FtRequest
         return $this->delivered;
     }
 
+    public function getResults()
+    {
+        return '10';
+    }
+
     public function __toString()
     {
         return $this->getUrl() . ': ' . $this->getEmail();

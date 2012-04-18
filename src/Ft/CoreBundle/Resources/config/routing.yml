@@ -10,6 +10,10 @@ core_test:
     pattern:  /core_test/
     defaults: { _controller: FtCoreBundle:CoreTest:index }
     
+core_test_test:
+    pattern:  /core_test_test/{id}
+    defaults: { _controller: FtCoreBundle:Default:test }
+   
 core_test_edit:
     pattern:  /core_test_edit/{id}
     defaults: { _controller: FtCoreBundle:CoreTest:edit }
@@ -37,7 +41,11 @@ core_test_update:
 test_result:
     pattern:  /test_result/
     defaults: { _controller: FtCoreBundle:TestResult:index }
-
+    
+test_result_count:
+    pattern:  /test_result_count/{id}
+    defaults: { _controller: FtCoreBundle:TestResult:count }
+        
 test_result_edit:
     pattern:  /test_result_edit/{id}
     defaults: { _controller: FtCoreBundle:TestResult:edit }

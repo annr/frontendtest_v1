@@ -13,8 +13,16 @@ _orig:
 _ft_request_go:
     pattern:  /ft_request_go
     defaults: { _controller: FtHomeBundle:FtRequest:go }
-    
-_ft_request_go:
+
+ft_request_preview:
+    pattern:  /ft_request_preview/{id}
+    defaults: { _controller: FtHomeBundle:FtRequest:preview }
+        
+ft_request_deliver:
+    pattern:  /ft_request_deliver/{id}
+    defaults: { _controller: FtHomeBundle:FtRequest:deliver }
+            
+ft_request_run:
     pattern:  /ft_request_run/{id}
     defaults: { _controller: FtHomeBundle:FtRequest:run }
             

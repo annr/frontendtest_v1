@@ -40,12 +40,14 @@ class FtHelper
 	
     public static function setFtData($url)
 	{
-		return FtHelper::getDataAndSetRequest($url,1);		
+		return FtHelper::getDataAndSetRequest($url);		
 	}
 	
     public static function setFtDom($url)
 	{
+		global $ft_data;
 		global $ft_dom;
+		
 		$ft_dom = new \DomDocument();
 		$ft_dom->preserveWhiteSpace = true;
 
