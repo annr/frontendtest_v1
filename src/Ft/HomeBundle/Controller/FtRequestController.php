@@ -166,6 +166,8 @@ class FtRequestController extends Controller
 				continue; 
 			}
 			
+			echo '<br>TESTING...'.$entity->getPackageName().':'.$entity->getClassName();
+			
 			//THIS IS A POOR WAY TO CHECK IF THE TESTS EXIST. WHAT IF THE SAME TEST NAME EXISTS IN TWO "PACKAGES"?
 			if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className)){ 
 			//try {
@@ -210,7 +212,7 @@ class FtRequestController extends Controller
 					 
 				}
 			}  else {
-				//echo '<br>'.$entity->getClassName().' false.';
+				echo '<br>'.$entity->getClassName().' false.';
 			}
 	
 			

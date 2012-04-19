@@ -52,7 +52,6 @@ class Helper
 		}
 		//if relative, add url making sure forward slash exists
 		elseif (substr($link, 0, 1) !== '/') { 
-			echo 'adding ft_url_root? ' . $ft_url_root;
 			$link = $ft_url_root.$link; 
 		}
 				
@@ -117,6 +116,12 @@ class Helper
 			//try to get it again with chopped string:
 			$text = substr($ft_data, 0, stripos($ft_data, $code_str));
 		}
+		
+		//if code_str has no spaces, and is greater than x chars, add a space to break the line every x chars.
+		//try 60
+		if(strpbrk(substr($code_str, 0,60),"\n\t\r ") {
+			
+		}
 
 		if($text) {
 			$line = 1; //the first line is one.
@@ -129,6 +134,22 @@ class Helper
 			error_log('FT ERROR with request id ' . $ft_request_id . ': DOM ELEMENT NOT FOUND IN RAW SOURCE '.$code_str);		
 		}
 		return $code;
+	}
+
+	public static function removeCommentsFromString($code_str)
+	{	
+		//what is a comment? it's <!-- then anything including -- then -->
+		//also it's <!>
+		
+		//how many comments are there?
+		$num_comments = substr_count($code_str,'<!--');
+		for($i=0; $i<$num_comments; $i++)
+		{
+			$code_str = str_replace(substr($code_str,strpos($code_str, '<!--'), (strpos($code_str, '-->')+3)),'',$code_str);
+		}
+		
+		return $code_str;
+
 	}
 	
 	public static function testForElement($element_str)
@@ -152,6 +173,41 @@ class Helper
 		}		
 		
         return false;
+	}
+	
+	public static function getAllDomLinks()
+	{	
+		global $ft_dom;
+		$links_array = array();
+		
+		//for efficiency, just test the elements you expect to have src: script, img
+		//to-do: there is also src in input type=image
+		$tags_array = array('script','img');
+		$attr = 'src';
+        foreach ($tags_array as $tag) { 			
+			$elements = $ft_dom->getElementsByTagName($tag);
+	        foreach ($elements as $element) { 
+				//check link status
+				if ($element->hasAttribute($attr)) {
+					$links_array[] = $element->getAttribute($attr);
+				}
+			}
+		}
+		
+		//for efficiency, just test the elements you expect to have href: link, a
+		$tags_array = array('a','link');	
+		$attr = 'href';
+	    foreach ($tags_array as $tag) { 			
+			$elements = $ft_dom->getElementsByTagName($tag);
+	        foreach ($elements as $element) { 
+				//check link status
+				if ($element->hasAttribute($attr)) {
+					$links_array[] = $element->getAttribute($attr);
+				}
+			}
+		}		
+		return $links_array;
+		
 	}
 
 /*	

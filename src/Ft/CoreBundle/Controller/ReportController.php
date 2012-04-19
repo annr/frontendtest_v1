@@ -21,7 +21,8 @@ class ReportController extends Controller
 		$url = $ft_request->getUrl();
 		
 		$results = $em->getRepository('FtCoreBundle:TestResult')->findBy(
-		    array('ft_request_id' => $id)
+		    array('ft_request_id' => $id),
+		    array('weight' => 'DESC')
 		);
 		
 /*	

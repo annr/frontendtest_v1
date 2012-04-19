@@ -125,7 +125,16 @@ class HTML
     {
 		global $ft_data;
 		
-		if(strpos(trim(strtolower(substr($ft_data, 0, (strpos($ft_data,'>') + 1)))),'<!doctype') === false) {
+		//it's possible, and legal, to add a comment before the doctype. 
+		//there are issues with it, in old versions of IE -- the page will be rendered in quirks mode. 
+		//however, that would be a subtest of this one.
+		
+		//use a smaller string for efficiency, and for now, remove comments for the test. 
+		$sub_str = substr($ft_data, 0, 2000);		
+		$data_without_comments = Helper::removeCommentsFromString($sub_str);
+		
+		//if(strpos(trim(strtolower(substr($data_without_comments, 0, (strpos($data_without_comments,'>') + 1)))),'<!doctype') === false) {			
+		if(strpos(trim(strtolower($data_without_comments)), '<!doctype') != 0) {
 			return true;
 		}
         return false;
@@ -146,7 +155,7 @@ class HTML
 				//if matches url, skip TODO
 				
 				//also if using javascript: protocol, skip.
-				if(strpos($element->getAttribute('href'),'javascript:') !== false){
+				if(strpos($element->getAttribute('href'),'javascript:') !== false || strpos($element->getAttribute('href'),'mailto:') !== false){
 					continue;
 				}
 									
@@ -191,6 +200,7 @@ class HTML
 		$results_array = array();
 		$imgs = $ft_dom->getElementsByTagName('img');
 		$gifs = 0;
+		$min_gifs_trigger = 3;
 		$total_files_size = 0;
         foreach ($imgs as $img) { 
 			if ($img->hasAttribute('src')) {
@@ -203,10 +213,10 @@ class HTML
 			}
 		}
 
-		if($gifs) {
+		if($gifs >= $min_gifs_trigger) {
 			$results_array[0] = $gifs;
 			//THERE IS AN ERROR HERE!!!!
-			//$results_array[1] = round(13.7548828125, 2, PHP_ROUND_HALF_UP) + 'KB'; //outputs: 13.75				
+			//$results_array[1] = round(13.7548828125, 2, PHP_ROUND_HALF_UP) + 'KB'; //outputs: 13.75 and should be 13.76				
 			$results_array[1] = round($total_files_size/1024,2, PHP_ROUND_HALF_UP) . 'KB';
 			return $results_array;
 		}						
@@ -221,6 +231,29 @@ class HTML
         return false;
     }
 
+
+    public function AmpersandUnescapedInLink()
+    {
+		$links_array = Helper::getAllDomLinks();
+	    $code = array('');
+		foreach($links_array as $link)
+		{	
+			if(strpos($link,'&') !== false)
+			{
+				//the next four chars must be amp; (five chars total)
+				if(substr_compare($link,'&amp;',strpos($link,'&'),5) !== false)
+				{
+					$code[0] .= '`'.$link.'`';
+				}
+			}
+			
+		}
+ 		if($code[0] != '') {
+			return $code;
+		}
+       return false;
+	}
+	
 	//assume they only have one for now, and get the first one.
     public function DeprecatedElement()
     {		
@@ -308,12 +341,16 @@ class HTML
     public function MissingImgHeightOrWidth()
     {
 		global $ft_dom;
-		
+		$code = array('');		
 		$elements = $ft_dom->getElementsByTagName('img');
         foreach ($elements as $element) { 
 			if (!$element->hasAttribute('width') || !$element->hasAttribute('width')) {
-				return true;
+				$code[0] .=  Helper::printCodeWithLineNumber($element);
 			}	
+		}
+
+		if($code[0] != '') {
+			return $code;
 		}
         return false;
     }
