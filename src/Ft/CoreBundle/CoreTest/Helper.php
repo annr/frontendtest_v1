@@ -8,6 +8,7 @@ class Helper
     public static function getDataAndSetRequest($url,$print_request_headers = 0)
 	{	
 		global $ft_http_request;
+		global $ft_curl_getinfo;
 		
 		 $ch = \curl_init();	
 		 \curl_setopt($ch, CURLOPT_URL,$url);
@@ -62,13 +63,10 @@ class Helper
     {
 		$handle = curl_init($link);
 		curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
-
 		/* Get the HTML or whatever is linked in $url. */
 		$response = curl_exec($handle);
-
 		/* Check for 404 (file not found). */
 		$info = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-        var_dump($info);
 		curl_close($handle);			
 		return $info;
 	}
@@ -76,18 +74,44 @@ class Helper
 	public static function getResourceSizeBytes($link)
     {
 		$handle = curl_init($link);
-		curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
-
+		\curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 		/* Get the HTML or whatever is linked in $url. */
-		$response = curl_exec($handle);
-
+		$response = \curl_exec($handle);
 		/* Check for 404 (file not found). */
-		$info = curl_getinfo($handle, CURLINFO_SIZE_DOWNLOAD);
-
-		curl_close($handle);
-		
+		$info = \curl_getinfo($handle, CURLINFO_SIZE_DOWNLOAD);
+		\curl_close($handle);
 		return $info;
 	}
+	
+	public static function isMinified($url)
+    {	
+		 $ch = \curl_init();	
+		 \curl_setopt($ch, CURLOPT_URL,$url);
+		 \curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+		 \curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		 \curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+		 \curl_setopt($ch, CURLOPT_MAXREDIRS, 10); //follow up to 10 redirections - avoids loops
+		 $data = \curl_exec($ch);
+		\curl_close($ch);
+		
+		//how big is data? If we just get a bit of it, we should be able to tell if it's minified or not. 
+		//sometime the top is minified and the bottom is not. 
+		$sample_chunk_data = substr($data,0,2000);
+		
+		error_log('in minify...');
+		//find linebreaks, whitespace and tabs in data:
+		if(substr_count($sample_chunk_data, "\n") > 10 || substr_count($sample_chunk_data, "\r") > 10)
+		{
+			return false;
+		}
+		
+		//the threshold is very easy: it's either minified or not. 
+		//however, the percent that can be saved should be shown to the user as well. 
+		//this is an important to-do.		
+	
+		return true;
+	}
+	
 
 	public static function printCodeWithLineNumber($element)
     {	
@@ -99,56 +123,75 @@ class Helper
 		global $ft_request_id;
 		$doc=new \DOMDocument();
 		$doc->preserveWhiteSpace = true; 
+		$doc->formatOutput = false; 
 		$doc->appendChild($doc->importNode($element,true));
-		$code_str = $doc->saveHTML();
+		$code_str = trim($doc->saveHTML());
 
-		//get line breaks previous to $meta
-		$code_str = trim($code_str);
+		//echo "\n\ncode: \n".$code_str;
+
+		//if we can find the code in the string, great we're in business.
 		$element_pos = stripos($ft_data, $code_str);
-		$text = substr($ft_data, 0, stripos($ft_data, $code_str));
-
-		if(strpos($code_str,"\n") > 0)
+		if($element_pos !== false) {
+			$text = substr($ft_data, 0, stripos($ft_data, $code_str));
+	    } else {
+			//the first guess is that the code has XHTML end tags not matching the re-saved HTML element.
+			//replace first occurance of '>' in $code_str with ' />'
+			$test_code_str = str_replace('>',' />',$code_str);
+			//echo "\nnew test:\n".$test_code_str;
+			
+			//success?
+			if(stripos($ft_data, $test_code_str) !== false) {
+				//replace overridden code str, because that's what's in their code. 
+				$code_str = $test_code_str;
+				$text = substr($ft_data, 0, stripos($ft_data, $code_str));			
+			}			
+			//if text still is not set....
+			//it might be that there is a linebreak in the orig html doc or some other difference from the original.
+			//this is too expensive of a test to do, but the way we might do it is:			
+			if(!isset($text))
+			{	
+				error_log('FT ERROR with request id ' . $ft_request_id . ': HELLUVA TIME MATCHING DOM ELEMENT WITH RAW SOURCE '.$code_str);	
+				//there is a line break or some other char in the middle of a tag!
+				//remove all whitespace from both strings and see if you can find it.
+			}		
+	    }
+		
+		if(!isset($text))
 		{
-			$code_str = substr($code_str, 0, strpos($code_str,"\n"));
-		}
-		if($text == null)
-		{
+			error_log('text still not set.');
+			if(strpos($code_str,"\n") > 0)
+			{
+				$code_str = substr($code_str, 0, strpos($code_str,"\n"));
+			}
 			//try to get it again with chopped string:
 			$text = substr($ft_data, 0, stripos($ft_data, $code_str));
 		}
 		
-		//if code_str has no spaces, and is greater than x chars, add a space to break the line every x chars.
-		//try 60
-		if(strpbrk(substr($code_str, 0,60),"\n\t\r ") {
-			
+		//if code_str has no spaces, and is greater than x chars, add a space to break the line every x chars.		
+		//determine if the test is necessary, and pass in range. this is a dangerous recursive thing!
+		$unbrokencharspans = explode(' ',$code_str);
+		foreach($unbrokencharspans as $unbrokencharspan) {
+			if(strlen($unbrokencharspan) > 65) { 
+				$start = strpos($code_str,$unbrokencharspan); 
+				//echo "\nstart: " . $start;
+				$end = $start + strlen($unbrokencharspan); 
+				//echo "\end: " . $end;
+				//echo "\n breaking...".$code_str ."\n\n";
+				$code_str = Helper::addWhitespaceForReportFormatting($code_str,$start,$end);			
+			}
 		}
 
-		if($text) {
+		if(isset($text)) {
 			$line = 1; //the first line is one.
 			$line += substr_count($text, "\n");
-			//echo '<br>finding line no: ' . $line;
 			$code =  '`('. $line . ') '. $code_str . '`' . "  \n\r";
 		} else {
 			//line number not found, so don't print it.
 			$code =  '`'.$code_str . '`' . "  \n\r";	
 			error_log('FT ERROR with request id ' . $ft_request_id . ': DOM ELEMENT NOT FOUND IN RAW SOURCE '.$code_str);		
 		}
+		
 		return $code;
-	}
-
-	public static function removeCommentsFromString($code_str)
-	{	
-		//what is a comment? it's <!-- then anything including -- then -->
-		//also it's <!>
-		
-		//how many comments are there?
-		$num_comments = substr_count($code_str,'<!--');
-		for($i=0; $i<$num_comments; $i++)
-		{
-			$code_str = str_replace(substr($code_str,strpos($code_str, '<!--'), (strpos($code_str, '-->')+3)),'',$code_str);
-		}
-		
-		return $code_str;
 
 	}
 	
@@ -210,19 +253,6 @@ class Helper
 		
 	}
 
-/*	
-	public function recursiveSearch( $node ) {			
-	   if ($node->hasAttribute($attribute_name) !== false)
-	   if ( $node->hasChildNodes() ) {
-	     $children = $node->childNodes;
-	     foreach( $children as $kid ) {
-	       if ( $kid->nodeType == XML_ELEMENT_NODE ) {
-	         $this->getHtml5ClassElement( $kid,$html5_elements );
-	       }
-	     }
-	   }
-	}
-	*/
 	public static function recursivelySearchAttribute( $node, $attribute_name ) {
 	   global $poorly_designed_catchall;
 	   global $poorly_designed_catchall_element_array;
@@ -257,6 +287,88 @@ class Helper
 	       }
 	     }
 	   }
-	}	
+	}
+		
+	public static function str_insert($insertstring, $intostring, $offset) {
+	   $part1 = substr($intostring, 0, $offset);
+	   $part2 = substr($intostring, $offset);
+
+	   $part1 = $part1 . $insertstring;
+	   $whole = $part1 . $part2;
+	   return $whole;
+	}
+
+
+	public static function addWhitespaceForReportFormatting($str,$index_start=0,$index_end=null) {
+		$index = $index_start;
+		//maxchars would be changed if the width of the email is.
+		$maxchars = 65;
+		if(!isset($index_end)) {
+			$index_end = strlen($str);
+		}
+
+		while($index < $index_end) 
+		{
+			//echo "\nindex " . $index;
+			//echo "\nindex_end " . $index_end;
+			$str = Helper::str_insert(' ', $str, $index + $maxchars);
+			$index = $index + $maxchars;
+		}		
+		//echo "\nbroken str: " . $str;
+		return $str;
+	}
+
+	public static function DoctypeFirstElementCheck() 
+	{
+		global $ft_data;
+
+		$data_without_comments = Helper::removeCommentsFromString($ft_data);
+
+		if(strpos(trim(strtolower($data_without_comments)), '<!doctype') === false || strpos(trim(strtolower($data_without_comments)), '<!doctype') != 0) 
+		{	
+			return false;
+		}
+		return true;
+
+	}
+	
+	public static function removeCommentsFromString($code_str)
+	{	
+		//what is a comment? it's <!-- then anything including -- then -->
+		//also it's <!> but let's ignore that for now.
+		//importantly a comment is <!-- until it gets to a close comment. this is one comment <!--<!--<!--<!-->
+		
+		//this seems to work
+		return preg_replace('/<!--.*-->/','',$code_str);
+	}
+	
+	public static function stringFound($str)
+	{
+		global $ft_data;
+		return(strpos($ft_data,$str));
+	}
+	
+	public static function countElements($element_str,$exists_optional_attr='')
+	{
+		global $ft_dom;
+		$elements = $ft_dom->getElementsByTagName($element_str);
+		$count = 0;
+		if($exists_optional_attr != '') {
+
+	       foreach ($elements as $element) { 
+				if($element->hasAttribute($exists_optional_attr)) { $count++; }
+			}
+	
+		} else {
+			$count = $elements->length;
+		}
+		return($count);
+	}
+
+	
+	
+	
+	
+		
 		
 }

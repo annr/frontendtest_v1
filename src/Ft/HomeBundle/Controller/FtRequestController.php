@@ -30,7 +30,8 @@ class FtRequestController extends Controller
         $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);
 
 		$results = $em->getRepository('FtCoreBundle:TestResult')->findBy(
-		    array('ft_request_id' => $id)
+		    array('ft_request_id' => $id),
+		    array('weight' => 'DESC')
 		);
 		
 	    //if (!$results) {
@@ -51,7 +52,8 @@ class FtRequestController extends Controller
         $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);
 
 		$results = $em->getRepository('FtCoreBundle:TestResult')->findBy(
-		    array('ft_request_id' => $id)
+		    array('ft_request_id' => $id),
+		    array('weight' => 'DESC')
 		);
 		
 	    //if (!$results) {
@@ -61,7 +63,7 @@ class FtRequestController extends Controller
 	    //email report
 	    $message = \Swift_Message::newInstance();
 
-		$cid = $message->embed(\Swift_Image::fromPath('../../../web/img/logo_sm.png'));
+		$cid = $message->embed(\Swift_Image::fromPath('http://localhost/frontendtest/web/img/logo_sm.png'));
 
 	    $message->setSubject('FrontendTest Report')
 	       ->setFrom('support@frontendtest.com')
@@ -74,6 +76,12 @@ class FtRequestController extends Controller
 	    $ft_request->setDelivered(new \DateTime('now'));
 	    $em->persist($ft_request);
 	    $em->flush();
+	
+		$cid_local =  '../../../web/img/logo_sm.png';
+		
+        $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid_local, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'results' => $results));
+        $response->headers->set('Content-Type', 'text/html');
+        return $response;
 	    
 	}
 
@@ -145,7 +153,9 @@ class FtRequestController extends Controller
     {
 		//query the core test table to determine which tests to run?
         $em = $this->getDoctrine()->getEntityManager();
-        $entities = $em->getRepository('FtCoreBundle:CoreTest')->findAll();
+        $entities = $em->getRepository('FtCoreBundle:CoreTest')->findBy(
+		    array('run_by_default' => 1)
+		);
 
 		//run whichever tests it can find.
 		//depending on outcome, result will be saved for request, with custom data injected
@@ -166,8 +176,6 @@ class FtRequestController extends Controller
 				continue; 
 			}
 			
-			echo '<br>TESTING...'.$entity->getPackageName().':'.$entity->getClassName();
-			
 			//THIS IS A POOR WAY TO CHECK IF THE TESTS EXIST. WHAT IF THE SAME TEST NAME EXISTS IN TWO "PACKAGES"?
 			if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className)){ 
 			//try {
@@ -182,7 +190,7 @@ class FtRequestController extends Controller
 			if($result_instance) {
 				//merge what is returned with the coretest record. add to result array.
 				//persist test result
-			    echo '<br>'.$entity->getClassName().' true.';
+			    error_log($entity->getClassName().' true.');
 		        $result = new TestResult();
 		        $result->setWeight($entity->getWeight());					
 		        $result->setClassName($entity->getClassName());	
@@ -212,7 +220,7 @@ class FtRequestController extends Controller
 					 
 				}
 			}  else {
-				echo '<br>'.$entity->getClassName().' false.';
+				error_log($entity->getClassName().' false.');
 			}
 	
 			

@@ -69,5 +69,9 @@ test_result_show:
 test_result_update:
     pattern:  /test_result_update/{id}
     defaults: { _controller: FtCoreBundle:TestResult:update }
+    
+test_result_filter:
+    pattern:  /test_result_filter/{id}
+    defaults: { _controller: FtCoreBundle:TestResult:filter }
         
         

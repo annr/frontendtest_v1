@@ -15,6 +15,8 @@ class HTML
 		//1) the link tag is used with an external css file outside of head (a rare mistake which may work in some browsers) and
 		//2) style tags are found in the body, that aren't inline
 		
+		//for now, we'll just
+		
 		global $ft_dom;
 
 		$code = array('');
@@ -40,6 +42,7 @@ class HTML
 			//2)
 			$style_tags = $body_test->getElementsByTagName('style'); 
 	        if($style_tags->length != 0) {
+				//only kick off this result if there is quite a bit of css inline
 				$code[0] .=  Helper::printCodeWithLineNumber($style_tags->item(0));
 				return $code;		
 			}			
@@ -85,6 +88,7 @@ class HTML
 
     public function ManyInlineStylesFlag()
     {
+	/*
 		global $poorly_designed_catchall;
 		$poorly_designed_catchall = 0;		
 		global $ft_dom;
@@ -102,6 +106,7 @@ class HTML
 			$result_array[1] = $too_many_threshold;
 			return $result_array;
 		}
+		*/
 				
 		return false;
     }
@@ -122,19 +127,8 @@ class HTML
     }
 
     public function DoctypeNotFirstElement()
-    {
-		global $ft_data;
-		
-		//it's possible, and legal, to add a comment before the doctype. 
-		//there are issues with it, in old versions of IE -- the page will be rendered in quirks mode. 
-		//however, that would be a subtest of this one.
-		
-		//use a smaller string for efficiency, and for now, remove comments for the test. 
-		$sub_str = substr($ft_data, 0, 2000);		
-		$data_without_comments = Helper::removeCommentsFromString($sub_str);
-		
-		//if(strpos(trim(strtolower(substr($data_without_comments, 0, (strpos($data_without_comments,'>') + 1)))),'<!doctype') === false) {			
-		if(strpos(trim(strtolower($data_without_comments)), '<!doctype') != 0) {
+    {		
+		if(!Helper::DoctypeFirstElementCheck()) {
 			return true;
 		}
         return false;
@@ -243,6 +237,7 @@ class HTML
 				//the next four chars must be amp; (five chars total)
 				if(substr_compare($link,'&amp;',strpos($link,'&'),5) !== false)
 				{
+					$link = Helper::addWhitespaceForReportFormatting($link);
 					$code[0] .= '`'.$link.'`';
 				}
 			}
@@ -313,6 +308,104 @@ class HTML
         return false;
     }
 
+	/* 	this cannot be run -- it is far too slow.
+    public function DeprecatedAttributeNotAlign()
+    {		
+		global $ft_dom;
+		$code = array('');
+
+		$deprecated_attributes['img'] = array('vspace','border','hspace');
+		$deprecated_attributes['object'] = array('vspace','border','hspace');
+		$deprecated_attributes['body'] = array('alink','background','bgcolor','link','text','vlink');
+		$deprecated_attributes['table'] = array('bgcolor');
+		$deprecated_attributes['td'] = array('bgcolor','nowrap','width');
+		$deprecated_attributes['tr'] = array('bgcolor');
+		$deprecated_attributes['th'] = array('bgcolor','nowrap','width');
+		$deprecated_attributes['hr'] = array('noshade','size','width');
+		$deprecated_attributes['ol'] = array('start');
+		$deprecated_attributes['li'] = array('type','value');
+		$deprecated_attributes['pre'] = array('width');
+		
+		foreach($deprecated_attributes as $key => $values)
+		{
+			$elements = $ft_dom->getElementsByTagName($key);
+	        foreach ($elements as $element) { 
+				foreach($values as $value)
+				{
+					if ($element->hasAttribute($value)) {
+						echo "<br>found deprecated attribute: " . $key . ":" . $value;
+						$code[0] = $value;
+						$code[1] = $key;
+						$code[2] = Helper::printCodeWithLineNumber($element);					
+ 						return $code;					
+					}
+				}
+			}		
+			
+		}
+
+		return false;
+	}
+	*/
+
+    //this is the not perfect but optimized version. 
+    public function DeprecatedAttributeOptimized()
+    {
+		global $ft_data;
+		$code = array('');
+		$deprecated_attributes = array('nowrap',
+										'align',
+										'start',
+										'vspace',
+										'border',
+										'hspace',
+										'alink',
+										'background',
+										'bgcolor',
+										'link',
+										'text',
+										'vlink',
+										'noshade',
+										//'size',
+										//'type',
+										//'value',
+										'width');
+		/*								
+		$deprecated_in_tag['img'] = array('vspace','border','hspace');
+		$deprecated_in_tag['object'] = array('vspace','border','hspace');
+		$deprecated_in_tag['body'] = array('alink','background','bgcolor','link','text','vlink');
+		$deprecated_in_tag['table'] = array('bgcolor');
+		$deprecated_in_tag['td'] = array('bgcolor','nowrap','width');
+		$deprecated_in_tag['tr'] = array('bgcolor');
+		$deprecated_in_tag['th'] = array('bgcolor','nowrap','width');
+		$deprecated_in_tag['hr'] = array('noshade','size','width');
+		$deprecated_in_tag['ol'] = array('start');
+		$deprecated_in_tag['li'] = array('type','value');
+		$deprecated_in_tag['pre'] = array('width');
+		*/						
+		foreach($deprecated_attributes as $deprecated_attribute) 
+		{
+			$strpos = strpos($ft_data,' '.$deprecated_attribute.'=');
+			if($strpos !== false)
+			{
+				$code[0] = $deprecated_attribute;		
+				$pattern = '/<.*\s'.$deprecated_attribute.'='.'.*>/';		
+				preg_match($pattern,$ft_data,$match1);				
+				$code[1] = substr($match1[0],1,strpos($match1[0],' ')-1);	
+				//width is still a fine attribute for img:
+				if(strtolower($code[1]) == 'img') { continue; }		
+				$code[2] = '`'.$match1[0].'`';				
+				return $code;
+			}
+		}	
+		return false;				
+	}
+		
+    public function DeprecatedAlignAttribute()
+    {		
+		return false;
+	}
+		
     public function RequiredTagAttributePairMissing()
     {		
 		return false;
@@ -330,7 +423,8 @@ class HTML
 			if (!$element->hasAttribute('alt') || $element->getAttribute('alt') == '') {
 				$code[0] .=  Helper::printCodeWithLineNumber($element);					
 			}	
-		}		
+		}	
+		$elements = '';	
 		if($code[0] != '') {
 			return $code;
 		}		
@@ -338,13 +432,18 @@ class HTML
         return false;
     }
 
+
     public function MissingImgHeightOrWidth()
     {
 		global $ft_dom;
-		$code = array('');		
+		$code = array('');	
+			
 		$elements = $ft_dom->getElementsByTagName('img');
+		error_log('in MissingImgHeightOrWidth, found '.  $elements->length . ' images.');
+
         foreach ($elements as $element) { 
-			if (!$element->hasAttribute('width') || !$element->hasAttribute('width')) {
+			if (!($element->hasAttribute('width')) || !($element->hasAttribute('height'))) {
+				error_log('found image missing height or width.');
 				$code[0] .=  Helper::printCodeWithLineNumber($element);
 			}	
 		}
@@ -355,6 +454,28 @@ class HTML
         return false;
     }
 
+/*
+	public function MissingImgHeightOrWidthAlt()
+	{
+		global $ft_data;
+
+		$pattern = '/<img\s.*>/';		
+		preg_match($pattern,$ft_data,$elements);
+		
+		var_dump($elements);
+	    foreach ($elements as $element) { 
+			if (!($element->hasAttribute('width')) || !($element->hasAttribute('height'))) {
+				error_log('found image missing height or width: ' . );
+				//$code[0] .=  Helper::printCodeWithLineNumber($element);
+			}	
+		}
+
+		if($code[0] != '') {
+			return $code;
+		}
+	    return false;
+	}
+*/
     public function JavascriptInHref()
     {
 		global $ft_dom;
@@ -387,11 +508,9 @@ class HTML
     public function MetadataContentEmpty()
 	{
 		global $ft_dom;
-		global $ft_data;
 		$code = array('');
 		
 		$elements = $ft_dom->getElementsByTagName('meta');
-
 		
         foreach ($elements as $element) { 
 			if ($element->hasAttribute('content') && $element->getAttribute('content') == '') {					
@@ -404,6 +523,74 @@ class HTML
 		
         return false;
 	}
+		
+    public function HasDocumentWrite()
+    {	
+		if(Helper::stringFound('document.write(')) {
+			return true;
+		}		
+	    return false;
+    }
+	
+	public function LargeScriptNotMinified()
+    {	
+
+		//this only get the first large script and exits. All of them could be collected,
+		//the savings in filesize can be shared..etc. there's some work to-do.
+		global $ft_dom;
+		$code = array();
+		$elements = $ft_dom->getElementsByTagName('script');
+		
+        foreach ($elements as $element) { 
+			if ($element->hasAttribute('src') && strpos($element->getAttribute('src'),'.min.') ===false) {
+				//if ".min." is in the name, don't bother :)				
+				$link = Helper::getAbsoluteResourceLink($element->getAttribute('src'));					
+				$bytes_size = floatval(Helper::getResourceSizeBytes($link));
+				if($bytes_size > 5000)
+				{
+					//see if the script is not minified.
+					if(!Helper::isMinified($link))
+					{
+						$code[0] = round($bytes_size/1024,2, PHP_ROUND_HALF_UP);
+						$code[1] = Helper::printCodeWithLineNumber($element);
+						return $code;
+					} 
+				}	
+			}	
+		}			
+	    return false;
+    }
+
+	public function LargeStylesheetNotMinified()
+    {	
+		//this only gets the first large script, then exits. All of them could be collected,
+		//the savings in total filesize can be shared..etc. there's some work to-do.
+		global $ft_dom;
+		$code = array();
+		$elements = $ft_dom->getElementsByTagName('link');
+		
+        foreach ($elements as $element) { 
+			if ($element->hasAttribute('href') && strpos($element->getAttribute('href'),'.min.') ===false) {
+				//if ".min." is in the name, don't bother :)
+				if(strpos($element->getAttribute('href'),'.min.') !==false) { continue; }
+				$link = Helper::getAbsoluteResourceLink($element->getAttribute('href'));					
+				$bytes_size = floatval(Helper::getResourceSizeBytes($link));
+				if($bytes_size > 5000)
+				{
+					//see if the script is not minified.
+					if(!Helper::isMinified($link))
+					{
+						$code[0] = round($bytes_size/1024,2, PHP_ROUND_HALF_UP);
+						$code[1] = Helper::printCodeWithLineNumber($element);
+						return $code;
+					} 
+				}	
+			}	
+		}			
+	    return false;
+    }
+
+
 	
 	
 }

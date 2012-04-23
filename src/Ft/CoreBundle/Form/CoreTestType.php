@@ -19,7 +19,7 @@ class CoreTestType extends AbstractType
             ->add('more_details')
             ->add('resources')
             ->add('notes')
-           // ->add('run_by_default')
+            ->add('run_by_default')
            // ->add('enabled')
            // ->add('print_line_numbers')
            // ->add('print_details')

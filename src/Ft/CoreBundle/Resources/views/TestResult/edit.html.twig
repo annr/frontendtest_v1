@@ -1,5 +1,11 @@
 <h1>TestResult edit</h1>
-
+<style>
+input { width: 280px; }
+#ft_corebundle_testresulttype_heading {width: 1100px;  }
+textarea { width: 500px;  }
+#ft_corebundle_testresulttype_body {height: 120px; }
+#ft_corebundle_testresulttype_weight {width: 50px;  }
+</style>
 <form action="{{ path('test_result_update', { 'id': entity.id }) }}" method="post" {{ form_enctype(edit_form) }}>
     {{ form_widget(edit_form) }}
     <p>
@@ -8,11 +14,13 @@
 </form>
 
 <ul class="record_actions">
+<!--
     <li>
         <a href="{{ path('test_result') }}">
             Back to the list
         </a>
     </li>
+-->
     <li>
         <form action="{{ path('test_result_delete', { 'id': entity.id }) }}" method="post">
             {{ form_widget(delete_form) }}
@@ -22,6 +30,12 @@
     <li>
         <a href="{{ path('test_result_new') }}">
             Create a new entry
+        </a>
+    </li>
+
+    <li>
+    <a href="{{ path('test_result_filter', { 'id': entity.ftrequestid }) }}">
+            Show result list for ft request
         </a>
     </li>
 </ul>

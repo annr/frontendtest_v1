@@ -15,14 +15,20 @@ class HTML5
 	    {
 			global $ft_dom;
 			global $ft_data;
-			
-			// DoctypeNotFirstElement takes priority. if that is positive, we do not trigger the suggestion to upgrade to HTML5
-			if(strpos(trim(strtolower(substr($ft_data, 0, (strpos($ft_data,'>') + 1)))),'<!doctype') === false) {
+			$code = array('');
+			if(!Helper::DoctypeFirstElementCheck()) {
 				return false;
 			}
+						
+			//now what kind of document is it? put document type in %1%
+			//if it's an HTML5 document, return false
+			$start_str_assumption = '-//W3C//DTD ';			
 			if($ft_dom->doctype != null && $ft_dom->doctype->publicId != '') {			
-				return true;
+				$code[0] = substr($ft_dom->doctype->publicId,strlen($start_str_assumption),strrpos($ft_dom->doctype->publicId,'//') - strlen($start_str_assumption));
 			}
+			if($code[0] != '') {
+				return $code;
+			}			
 	        return false;
 	    }
 
@@ -44,6 +50,7 @@ class HTML5
 		
 	    public function ClassNameSameAsHtml5Element()
 	    {	
+		/*
 			global $poorly_designed_catchall;
 			global $poorly_designed_catchall_element_array;
 			
@@ -75,32 +82,17 @@ class HTML5
 										
 			if($code[0] != '') {
 				return $code;
-			}		
+			}
+			*/		
 
 	        return false;
 	    }
 		
-		public function getHtml5ClassElement( $node, $html5_elements) {			
-		   if ($node->hasAttribute('class') && stripos($html5_elements,' '.$node->getAttribute('class').' ') !== false) 
-		   { 
-				$this->class_val_test_return_val = true; 
-				return $node;
-		   }
-		   if ( $node->hasChildNodes() ) {
-		     $children = $node->childNodes;
-		     foreach( $children as $kid ) {
-		       if ( $kid->nodeType == XML_ELEMENT_NODE ) {
-		         $this->getHtml5ClassElement( $kid,$html5_elements );
-		       }
-		     }
-		   }
-		}
-
-		public function print_node( $node ) {
-		  if ( $node->nodeType == XML_ELEMENT_NODE ) {
-		    print $node->tagName."<br />\n";
-		  }
-		}
+		
+	    public function HasXhtmlCloseTags()
+	    {
+			return false;
+		}		
 		
 		
 }

@@ -32,8 +32,11 @@ class DefaultController extends Controller
 		$ft_url = 'http://localhost/tests/test-x.html';
 		
 		$ft_data = Helper::getDataAndSetRequest($ft_url);
-		
-		if(!isset($ft_data)) { exit; }
+		if(!isset($ft_data)) 
+		{ 
+			error_log('PROBLEM SETTING ft_data VAR');
+			exit; 
+		}
 						
 		$http_request_split = explode("\n", $ft_http_request['request_header']);
 		$get_split = explode(" ", $http_request_split[0]);
@@ -162,7 +165,7 @@ class DefaultController extends Controller
 			exit;			
 		}
 
-		if($ft_http_request['content_type'] != 'text/html' && $ft_http_request['content_type'] != 'application/xhtml+xml') {
+		if((strpos($ft_http_request['content_type'],'text/html') != 0) && $ft_http_request['content_type'] != 'application/xhtml+xml') {
 			echo 'NOT A SUPPORTED CONTENT TYPE ('.$ft_http_request['content_type'].'): '.$url . "\n\rexiting....";
 			error_log('NOT A SUPPORTED CONTENT TYPE ('.$ft_http_request['content_type'].'): '.$url);
 			exit;			

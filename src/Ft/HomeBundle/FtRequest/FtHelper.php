@@ -20,7 +20,7 @@ class FtHelper
 	{
 		global $ft_url;
 		$url = $ft_url;
-		if($ft_http_request['content_type'] != 'text/html' && $ft_http_request['content_type'] != 'application/xhtml+xml') {
+		if((strpos($ft_http_request['content_type'],'text/html') != 0) && $ft_http_request['content_type'] != 'application/xhtml+xml') {
 			echo 'NOT A SUPPORTED CONTENT TYPE ('.$ft_http_request['content_type'].'): '.$url . "\n\rexiting....";
 			error_log('NOT A SUPPORTED CONTENT TYPE ('.$ft_http_request['content_type'].'): '.$url);
 			exit;			

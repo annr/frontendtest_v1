@@ -17,6 +17,17 @@ use Ft\CoreBundle\Form\TestResultType;
 class TestResultController extends Controller
 {
 
+    public function filterAction($id)
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+
+		$entities = $em->getRepository('FtCoreBundle:TestResult')->findBy(
+		    array('ft_request_id' => $id),
+		    array('weight' => 'DESC')
+		);
+		
+        return $this->render('FtCoreBundle:TestResult:filter.html.twig', array('entities' => $entities));
+    }
 
     public function averageWeightAction($id)
     {
