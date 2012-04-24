@@ -1,8 +1,0 @@
-FtAdminBundle_homepage:
-    pattern:  /
-    defaults: { _controller: FtAdminBundle:Default:index }
-    
-admin_test:
-    pattern:  /test/
-    defaults: { _controller: FtAdminBundle:Default:test }
-

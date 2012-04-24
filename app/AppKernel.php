@@ -20,7 +20,6 @@ class AppKernel extends Kernel
             new Acme\HelloBundle\AcmeHelloBundle(),
             new Ft\HomeBundle\FtHomeBundle(),
             new Ft\CoreBundle\FtCoreBundle(),
-            new Ft\AdminBundle\FtAdminBundle(),
 	    	new Knp\Bundle\MarkdownBundle\KnpMarkdownBundle(),
         );
 
