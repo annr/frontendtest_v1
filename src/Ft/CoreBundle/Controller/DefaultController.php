@@ -31,7 +31,7 @@ class DefaultController extends Controller
         $entity = $em->getRepository('FtCoreBundle:CoreTest')->find($id);
 
 		$ft_url = 'http://localhost/tests/test-x.html';
-		$ft_url = 'http://www.goldstar.com';
+		$ft_url = 'http://www.htmlhive.com';
 		
 		$ft_data = Helper::getDataAndSetRequest($ft_url);
 		if(!isset($ft_data)) 

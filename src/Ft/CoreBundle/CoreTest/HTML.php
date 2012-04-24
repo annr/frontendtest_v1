@@ -450,15 +450,20 @@ class HTML
 			$strpos = strpos($ft_data,' '.$deprecated_attribute.'=');
 			if($strpos !== false)
 			{
-				$code[0] = $deprecated_attribute;		
 				$pattern = '/<.*\s'.$deprecated_attribute.'='.'.*>/';		
-				preg_match($pattern,$ft_data,$match1);				
-				$code[1] = substr($match1[0],1,strpos($match1[0],' ')-1);	
-				//width is still a fine attribute for img:
-				
-				if($deprecated_attribute == 'width' && strtolower($code[1]) == 'img') { continue; }		
-				$code[2] = '`'.$match1[0].'`';				
-				return $code;
+				preg_match($pattern,$ft_data,$match1);
+				//the strpos search is not very good. if it wasn't really found, don't return it. 
+				//the is an issue with content seeming like code to FET.
+				if(isset($match1[0])) {
+					$code[0] = $deprecated_attribute;							
+					$code[1] = substr($match1[0],1,strpos($match1[0],' ')-1);						
+					if($deprecated_attribute == 'width' && strtolower($code[1]) == 'img') { continue; }		
+					$code[2] = '`'.$match1[0].'`';				
+					return $code;
+				} else {
+					//the previous search was simply not very good.
+					continue;
+				}				
 			}
 		}	
 		return false;				
