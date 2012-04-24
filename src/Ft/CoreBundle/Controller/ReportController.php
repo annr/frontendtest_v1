@@ -19,6 +19,7 @@ class ReportController extends Controller
         }
 
 		$url = $ft_request->getUrl();
+		$summary = $ft_request->getReportSummary();
 		
 		$results = $em->getRepository('FtCoreBundle:TestResult')->findBy(
 		    array('ft_request_id' => $id),
@@ -55,7 +56,7 @@ class ReportController extends Controller
 
       $this->get('mailer')->send($message);
 */
-      $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => 'cid:1334090611.4f849b738d290@localhost', 'date' => date("D M j G:i:s T Y"), 'url' => $url, 'results' => $results));
+      $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => 'cid:1334090611.4f849b738d290@localhost', 'date' => date("D M j G:i:s T Y"), 'url' => $url, 'results' => $results, 'summary' => $summary));
       $response->headers->set('Content-Type', 'text/html');
       return $response;
     }

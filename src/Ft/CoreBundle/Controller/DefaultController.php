@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Ft\CoreBundle\CoreTest\HTML5;
 use Ft\CoreBundle\CoreTest\HTML;
 use Ft\CoreBundle\CoreTest\Script;
+use Ft\CoreBundle\CoreTest\Filedata;
 use Ft\CoreBundle\Entity\TestResult;
 use Ft\CoreBundle\CoreTest\Helper;
 
@@ -30,6 +31,7 @@ class DefaultController extends Controller
         $entity = $em->getRepository('FtCoreBundle:CoreTest')->find($id);
 
 		$ft_url = 'http://localhost/tests/test-x.html';
+		$ft_url = 'http://www.goldstar.com';
 		
 		$ft_data = Helper::getDataAndSetRequest($ft_url);
 		if(!isset($ft_data)) 
@@ -57,6 +59,7 @@ class DefaultController extends Controller
 		$HTML5 = new HTML5();
 		$HTML = new HTML();
 		$Script = new Script();
+		$Filedata = new Filedata();
 		
 		$packageName = $entity->getPackageName();			
 		$className = $entity->getClassName();
@@ -66,7 +69,7 @@ class DefaultController extends Controller
 		if($ex_result) { continue; }
 		
 		//THIS IS A POOR WAY TO CHECK IF THE TESTS EXIST. WHAT IF THE SAME TEST NAME EXISTS IN TWO "PACKAGES"?
-		if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className)){ 
+		if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className) || method_exists($Filedata,$className)){ 
 		//try {
 			$result_instance = ${$packageName}->$className();
 		//} catch (Exception $e) {	

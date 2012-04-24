@@ -44,20 +44,29 @@ class Helper
     	
     	$link = $page_link;
     	
-		if (substr($link, 0, 7) === 'http://' || substr($link, 0, 8) === 'https://') { 											
-			//link is fine, do not modify
-		}
-		//if forward slash, add url minus forward slash.
-		elseif (substr($link, 0, 1) === '/') { 
+		if(substr($link, 0, 2) === '//') {
+			//add the http protocol. this might not be perfect.
+			$link = 'http:'.$link;
+		} elseif (substr($link, 0, 2) === '//' || substr($link, 0, 7) === 'http://' || substr($link, 0, 8) === 'https://') { 											
+			//link is fine, do not modify			
+		} elseif (substr($link, 0, 1) === '/') { 
+			//if forward slash, add url minus forward slash.
 			$link = $ft_web_root.substr($link, 1); 
-		}
-		//if relative, add url making sure forward slash exists
-		elseif (substr($link, 0, 1) !== '/') { 
+		} elseif (substr($link, 0, 1) !== '/') { 
+			//if relative, add url making sure forward slash exists
 			$link = $ft_url_root.$link; 
 		}
 				
 		return $link;
     }
+
+	public static function isLocalFile($page_link) {
+		//FUNCTION NOT DONE!!!		
+		if (substr($page_link, 0, 2) === '//' || substr($page_link, 0, 7) === 'http://' || substr($page_link, 0, 8) === 'https://' ) { 
+			return false;
+		}	
+		return true;
+	}
 
     public static function getHttpResponseCode($link)
     {
@@ -65,7 +74,6 @@ class Helper
 		curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 		/* Get the HTML or whatever is linked in $url. */
 		$response = curl_exec($handle);
-		/* Check for 404 (file not found). */
 		$info = curl_getinfo($handle, CURLINFO_HTTP_CODE);
 		curl_close($handle);			
 		return $info;
@@ -77,7 +85,6 @@ class Helper
 		\curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 		/* Get the HTML or whatever is linked in $url. */
 		$response = \curl_exec($handle);
-		/* Check for 404 (file not found). */
 		$info = \curl_getinfo($handle, CURLINFO_SIZE_DOWNLOAD);
 		\curl_close($handle);
 		return $info;
@@ -98,7 +105,6 @@ class Helper
 		//sometime the top is minified and the bottom is not. 
 		$sample_chunk_data = substr($data,0,2000);
 		
-		error_log('in minify...');
 		//find linebreaks, whitespace and tabs in data:
 		if(substr_count($sample_chunk_data, "\n") > 10 || substr_count($sample_chunk_data, "\r") > 10)
 		{
@@ -128,11 +134,11 @@ class Helper
 		$code_str = trim($doc->saveHTML());
 
 		//echo "\n\ncode: \n".$code_str;
-
 		//if we can find the code in the string, great we're in business.
-		$element_pos = stripos($ft_data, $code_str);
+		// if strtolower() is too slow, we can take it off $code_str 
+		$element_pos = stripos(strtolower($ft_data), strtolower($code_str));
 		if($element_pos !== false) {
-			$text = substr($ft_data, 0, stripos($ft_data, $code_str));
+			$text = substr($ft_data, 0, stripos(strtolower($ft_data), strtolower($code_str)));
 	    } else {
 			//the first guess is that the code has XHTML end tags not matching the re-saved HTML element.
 			//replace first occurance of '>' in $code_str with ' />'
@@ -143,7 +149,7 @@ class Helper
 			if(stripos($ft_data, $test_code_str) !== false) {
 				//replace overridden code str, because that's what's in their code. 
 				$code_str = $test_code_str;
-				$text = substr($ft_data, 0, stripos($ft_data, $code_str));			
+				$text = substr($ft_data, 0, stripos(strtolower($ft_data), $code_str));			
 			}			
 			//if text still is not set....
 			//it might be that there is a linebreak in the orig html doc or some other difference from the original.
@@ -156,15 +162,10 @@ class Helper
 			}		
 	    }
 		
-		if(!isset($text))
+		if(!isset($text) && strpos($code_str,"\n") > 0)
 		{
-			error_log('text still not set.');
-			if(strpos($code_str,"\n") > 0)
-			{
-				$code_str = substr($code_str, 0, strpos($code_str,"\n"));
-			}
-			//try to get it again with chopped string:
-			$text = substr($ft_data, 0, stripos($ft_data, $code_str));
+			$code_str = substr($code_str, 0, strpos($code_str,"\n"));
+			$text = substr($ft_data, 0, stripos(strtolower($ft_data), $code_str));
 		}
 		
 		//if code_str has no spaces, and is greater than x chars, add a space to break the line every x chars.		
@@ -181,14 +182,19 @@ class Helper
 			}
 		}
 
-		if(isset($text)) {
+		if(isset($text) && $text != '') {
 			$line = 1; //the first line is one.
 			$line += substr_count($text, "\n");
-			$code =  '`('. $line . ') '. $code_str . '`' . "  \n\r";
+			//when the line number is 1, it's not valuable.
+			if($line != 1){
+				$code =  '`('. $line . ') '. $code_str . '`' . "  \n\r";				
+			} else {
+				$code =  '`'.$code_str . '`' . "  \n\r";					
+			}
 		} else {
 			//line number not found, so don't print it.
 			$code =  '`'.$code_str . '`' . "  \n\r";	
-			error_log('FT ERROR with request id ' . $ft_request_id . ': DOM ELEMENT NOT FOUND IN RAW SOURCE '.$code_str);		
+			//error_log('FT ERROR with request id ' . $ft_request_id . ': DOM ELEMENT NOT FOUND IN RAW SOURCE '.$code_str);		
 		}
 		
 		return $code;
@@ -269,6 +275,27 @@ class Helper
 	       }
 	     }
 	   }
+	}
+	
+	public static function recursivelyGetDuplicateAttributeValue( $node, $attribute_name ) {
+	   global $poorly_designed_catchall;
+	   global $poorly_designed_catchall_element_array;
+				
+	   if ($node->hasAttribute($attribute_name) !== false) { 
+			if(in_array($node->getAttribute($attribute_name),$poorly_designed_catchall)) {
+				$poorly_designed_catchall_element_array[] = $node->getAttribute($attribute_name);
+			} else {
+				$poorly_designed_catchall[] = $node->getAttribute($attribute_name);				
+			}
+	   }
+	   if ( $node->hasChildNodes() ) {
+	     $children = $node->childNodes;
+	     foreach( $children as $kid ) {
+	       if ( $kid->nodeType == XML_ELEMENT_NODE ) {
+	         Helper::recursivelyGetDuplicateAttributeValue( $kid,$attribute_name );
+	       }
+	     }
+	   }
 	}	
 
 	public static function recursivelySearchAttributeValue( $node, $attribute_name, $attribute_value ) {
@@ -318,6 +345,13 @@ class Helper
 		return $str;
 	}
 
+	public static function HasHtml5Doctype() 
+	{
+		global $ft_dom;
+		if($ft_dom->doctype != null && $ft_dom->doctype->publicId == '') { return true; }
+		return false;		
+	}
+	
 	public static function DoctypeFirstElementCheck() 
 	{
 		global $ft_data;
@@ -362,6 +396,19 @@ class Helper
 		} else {
 			$count = $elements->length;
 		}
+		return($count);
+	}
+	
+	public static function getBlockingScriptsInHead($head)
+	{
+		//exclude these scripts, for now.
+		//ajax.googleapis, optimizely
+		$elements = $head->getElementsByTagName('script');
+		$count = 0;
+		
+		foreach ($elements as $element) { 
+			if($element->hasAttribute('src') && strpos($element->getAttribute('src'),'ajax.googleapis') === false && strpos($element->getAttribute('src'),'optimizely') === false) { $count++; }
+		} 		
 		return($count);
 	}
 

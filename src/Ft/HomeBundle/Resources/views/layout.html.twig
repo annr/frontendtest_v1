@@ -36,11 +36,12 @@
 				<input type="url" name="url" id="url" placeholder="http://www.yourwebsite.com" autofocus="autofocus" style="width: 380px">
 			</div>
 			<div class="formRow">
-		  	 <label for="email">Email to send report</label><br>
+		  	 <label for="email">Email to send report</label> (same domain)<br>
 				<input type="email" name="email" id="email" placeholder="email@yourwebsite.com" style="width: 380px">
 			</div>
-				<input type="checkbox" name="wantsMoreHelp" id="wantsMoreHelp">&nbsp; <label for="wantsMoreHelp" class="smallLabel">I’m interested in having a web engineer review my site</label><br>
-			<input type="submit" class="button" value="Get Report">			
+				<input type="checkbox" name="wantsMoreHelp" id="wantsMoreHelp">&nbsp; <label for="wantsMoreHelp" class="smallLabel">I’m interested in having a web expert review my site</label><br>
+			<input type="submit" class="button" value="Get Report">	<img src="{{ asset('img/loading.gif') }}" width="40" height="40" alt="loading" class="loading" style="margin-bottom:10px;margin-left:10px; display:none;">
+					
 		</form>				
 		<p id="confirmFtRequest">&nbsp;<br>&nbsp;</p>			
 	</div>
@@ -153,28 +154,28 @@
 				  email: true
 				}
             },	
-			submitHandler: function() {				
+			submitHandler: function() {	
+				$('.loading').show();
 				var confirmFtRequestMsg = '<span class="formSubmittedMsg">Thanks! A detailed report will be sent to ' + $('#email').val()+ '.</span><br>Email any questions to <a href="mailto:support@frontendtest.com?subject=submit">support@frontendtest.com</a>.';
 				// if domains do not match, customize message
 				var domain =  '@'+$('#url').val().substr(2 + $('#url').val().indexOf('//')).replace('www.','');
 				domain = domain.substr(0, domain.indexOf('/'));
-				console.log(domain);
+
 				if ($('#email').val().indexOf(domain) == -1) { 
-					var confirmFtRequestMsg = 'Your request was submitted. <span class="formSubmittedMsgAlert">However, for an automatic report, the email domain must match the web site.</span> To override, simply send a note to <a href="mailto:support@frontendtest.com?subject=override">support@frontendtest.com</a>.';
+					var confirmFtRequestMsg = 'Request submitted. <span class="formSubmittedMsgAlert">Note: for an automatic report, the email address and site domains must match.</span> To override, please email <a href="mailto:support@frontendtest.com?subject=override">support@frontendtest.com</a>.';
 				} 							
 				$.ajax({
 				  type: "POST",
 				  url: "{{ path('_ft_request_go') }}",
 				  data: $("#signup").serialize(),
 				  success: function(data) {
-				  	if(data=='true') {
+				  	//if(data=='true') {
 						$('#confirmFtRequest').html(confirmFtRequestMsg);
 						$('#confirmFtRequest').show();				
-					}
-
-				  }
-	
-				});			
+						$('.loading').hide();			
+					//}
+				  }	
+				});							
 				//form.submit();
 			}
         });

@@ -13,6 +13,7 @@ use Ft\HomeBundle\FtRequest\FtHelper;
 use Ft\CoreBundle\CoreTest\HTML5;
 use Ft\CoreBundle\CoreTest\HTML;
 use Ft\CoreBundle\CoreTest\Script;
+use Ft\CoreBundle\CoreTest\Filedata;
 use Ft\CoreBundle\Entity\TestResult;
 use Ft\CoreBundle\CoreTest\Helper;
 
@@ -33,13 +34,15 @@ class FtRequestController extends Controller
 		    array('ft_request_id' => $id),
 		    array('weight' => 'DESC')
 		);
+
+		$summary = $ft_request->getReportSummary();
 		
 	    //if (!$results) {
 	        //throw $this->xxxXXX('There are no results.');
 	    //}
 		$cid =  '../../../web/img/logo_sm.png';
 		
-        $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'results' => $results));
+        $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'email' => $ft_request->getEmail(),'results' => $results, 'summary' => $summary));
         $response->headers->set('Content-Type', 'text/html');
         return $response;
 	    
@@ -55,6 +58,8 @@ class FtRequestController extends Controller
 		    array('ft_request_id' => $id),
 		    array('weight' => 'DESC')
 		);
+
+		$summary = $ft_request->getReportSummary();
 		
 	    //if (!$results) {
 	        //throw $this->xxxXXX('There are no results.');
@@ -69,7 +74,7 @@ class FtRequestController extends Controller
 	       ->setFrom('support@frontendtest.com')
 	       ->setTo($ft_request->getEmail())
 	  	   ->setContentType('text/html')
-	       ->setBody($this->renderView('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'results' => $results)));
+	       ->setBody($this->renderView('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'results' => $results, 'summary' => $summary)));
 
 	    $this->get('mailer')->send($message);
 	
@@ -79,7 +84,7 @@ class FtRequestController extends Controller
 	
 		$cid_local =  '../../../web/img/logo_sm.png';
 		
-        $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid_local, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'results' => $results));
+        $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid_local, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'results' => $results, 'summary' => $summary));
         $response->headers->set('Content-Type', 'text/html');
         return $response;
 	    
@@ -107,6 +112,58 @@ class FtRequestController extends Controller
 		FtHelper::setFtDom($ft_url);
 		
 		$suiteAction = $this->suiteAction($ft_request);	
+		
+		$top_weight_sample = 7;
+		$top_weight_sum = 0;		
+		//use top weighted results to get auto score
+		$query = $em->createQuery('select c.weight from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id . ' ORDER BY c.weight desc ')->setMaxResults($top_weight_sample);;
+		$results = $query->getResult();
+		foreach($results as $result) {
+			$top_weight_sum = $top_weight_sum + $result['weight'];
+		}
+		
+		$score = $top_weight_sum/$top_weight_sample;
+		
+		$ft_request->setFtScoreA($score);
+		
+		$format1 = ' %s However, you may want to consider ';
+		$format2 = ' %s Nonetheless, we suggest ';
+		$format3 = ' %s We strongly suggest ';
+        
+		$adjective_str ="";
+		//just hard-code report summary adjective here FOR NOW. 
+		switch ($score) {
+		    case ($score < 10):
+		        $adjective_str = sprintf($format1, 'is nearly perfect!!');
+		        break;
+		    case ($score < 15):
+		        $adjective_str = sprintf($format1, 'is excellent!');
+		        break;
+		    case ($score < 20):
+		        $adjective_str = sprintf($format1, 'is good.');
+		        break;
+		    case ($score < 25):
+		        $adjective_str = sprintf($format2, 'is decent.');
+		        break;
+		    case ($score < 30):
+		        $adjective_str = sprintf($format3, 'could use some love.');
+		        break;
+		    case ($score < 35):
+		        $adjective_str = sprintf($format3, 'can be improved.');
+		        break;
+		    default:
+		        $adjective_str = sprintf($format3, 'can be much improved.');
+		        break;		
+		}
+				
+		if($adjective_str != '') {			
+			$report_summary = sprintf('Thank you for using FrontendTest. We have reviewed the site you submitted and we have discovered that the front-end code' . $adjective_str . 'making the following improvements, listed in order of priority.' );
+			$ft_request->setReportSummary($report_summary);
+			echo $report_summary;
+		}
+				
+	    $em->persist($ft_request);
+	    $em->flush();		
 
         $response = $this->render('FtHomeBundle:FtRequest:go.txt.twig');
         $response->headers->set('Content-Type', 'text/plain');
@@ -131,10 +188,12 @@ class FtRequestController extends Controller
       $em->persist($ft_request);
       $em->flush();
 
-      $runAction = $this->runAction($ft_request->getId());
+	  //run this manually for now!!!!!
+	
+      //$runAction = $this->runAction($ft_request->getId());
 
       //email support@ft with details.
-/*
+
       $message = \Swift_Message::newInstance()
         ->setSubject('FrontendTest Request')
         ->setFrom('support@frontendtest.com')
@@ -142,7 +201,7 @@ class FtRequestController extends Controller
         ->setBody($this->renderView('FtHomeBundle:FtRequest:email.html.twig', array('email' => $_POST['email'], 'url' => $_POST['url'])));
 
       $this->get('mailer')->send($message);
-*/
+
       $response = $this->render('FtHomeBundle:FtRequest:go.txt.twig');
       $response->headers->set('Content-Type', 'text/plain');
       return $response;
@@ -162,6 +221,7 @@ class FtRequestController extends Controller
 		$HTML5 = new HTML5();
 		$HTML = new HTML();
 		$Script = new Script();
+		$Filedata = new Filedata();
 		
         foreach($entities as $entity) {
 			$result_instance = null;
@@ -172,12 +232,11 @@ class FtRequestController extends Controller
 
 			//if a record already exists for that test name (class) don't run that test.
 			$ex_result = $em->getRepository('FtCoreBundle:TestResult')->findOneBy(array('ft_request_id' => $ft_request->getId(), 'class_name' => $entity->getClassName()));
-			if($ex_result) { 
-				continue; 
-			}
+			if($ex_result) { continue; }
+			//error_log('$ex_result ' . var_dump($ex_result));
 			
 			//THIS IS A POOR WAY TO CHECK IF THE TESTS EXIST. WHAT IF THE SAME TEST NAME EXISTS IN TWO "PACKAGES"?
-			if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className)){ 
+			if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className) || method_exists($Filedata,$className)){ 
 			//try {
 				$result_instance = ${$packageName}->$className();
 			//} catch (Exception $e) {	
@@ -225,7 +284,7 @@ class FtRequestController extends Controller
 	
 			
 		}	
-		
+				
 		$em->flush();
 		
 	

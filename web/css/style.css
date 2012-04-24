@@ -227,11 +227,6 @@ cursor: pointer;
 	color: #c17f00;
 }
 
-
-.formSubmittedMsgAlert {
-	color: #F00;	
-}
-
 label.error {
 	font-size: 0.7em;
 	color: red;

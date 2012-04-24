@@ -98,6 +98,26 @@ class FtRequest
      */
     private $delivered;
 
+    /**
+     * @var string $report_summary
+     *
+     * @ORM\Column(name="report_summary", type="string", length=1000, nullable=true)
+     */
+    private $report_summary;
+
+    /**
+     * @var smallint $ft_score_a
+     *
+     * @ORM\Column(name="ft_score_a", type="smallint", nullable=true)
+     */
+    private $ft_score_a;
+
+    /**
+     * @var smallint $ft_score_b
+     *
+     * @ORM\Column(name="ft_score_b", type="smallint", nullable=true)
+     */
+    private $ft_score_b;
 
     /**
      * Get id
@@ -329,11 +349,79 @@ class FtRequest
         return $this->delivered;
     }
 
+    /**
+     * Set ft_score_a
+     *
+     * @param smallint $ft_score_a
+     */
+    public function setFtScoreA($ft_score_a)
+    {
+        $this->ft_score_a = $ft_score_a;
+    }
+
+    /**
+     * Get ft_score_a
+     *
+     * @return smallint 
+     */
+    public function getFtScoreA()
+    {
+        return $this->ft_score_a;
+    }
+
+    /**
+     * Set ft_score_b
+     *
+     * @param smallint $ft_score_b
+     */
+    public function setFtScoreB($ft_score_b)
+    {
+        $this->ft_score_b = $ft_score_b;
+    }
+
+    /**
+     * Get ft_score_b
+     *
+     * @return smallint 
+     */
+    public function getFtScoreB()
+    {
+        return $this->ft_score_b;
+    }
+
+
+    /**
+     * Set report_summary
+     *
+     * @param string $report_summary
+     */
+    public function setReportSummary($report_summary)
+    {
+        $this->report_summary = $report_summary;
+    }
+
+    /**
+     * Get report_summary
+     *
+     * @return string 
+     */
+    public function getReportSummary()
+    {
+        return $this->report_summary;
+    }
+
+
     public function getResults()
     {
         return '10';
     }
 
+	public function setScoreFromWeightAction()
+	{
+		$this->ft_score_a = 50;
+	}
+	
+	
     public function __toString()
     {
         return $this->getUrl() . ': ' . $this->getEmail();

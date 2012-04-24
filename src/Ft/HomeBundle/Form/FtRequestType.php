@@ -12,15 +12,17 @@ class FtRequestType extends AbstractType
         $builder
             ->add('email')
             ->add('url')
-            ->add('ip')
-            ->add('environment')
+            //->add('ip')
+            //->add('environment')
             ->add('notes')
-            ->add('updates_req')
-            ->add('moretests_req')
+            //->add('updates_req')
+            //->add('moretests_req')
             ->add('type')
             ->add('created')
-            ->add('updated')
-            ->add('delivered')
+            //->add('updated')
+            //->add('delivered')
+            ->add('report_summary')
+            ->add('ft_score_a')
         ;
     }
 

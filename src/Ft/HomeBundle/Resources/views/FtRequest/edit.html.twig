@@ -1,5 +1,9 @@
 <h1>FtRequest edit</h1>
-
+<style>
+input { width: 280px; }
+#ft_homebundle_ftrequesttype_report_summary {width: 1100px;  }
+#ft_homebundle_ftrequesttype_notes {width: 1100px;  }
+</style>
 <form action="{{ path('ft_request_update', { 'id': entity.id }) }}" method="post" {{ form_enctype(edit_form) }}>
     {{ form_widget(edit_form) }}
     <p>

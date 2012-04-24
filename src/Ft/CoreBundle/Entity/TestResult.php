@@ -71,13 +71,6 @@ class TestResult
     private $body;
 
     /**
-     * @var text $notes
-     *
-     * @ORM\Column(name="notes", type="text", nullable=true)
-     */
-    private $notes;
-
-    /**
      * @var smallint $weight
      *
      * @ORM\Column(name="weight", type="smallint", nullable=true)
@@ -213,26 +206,6 @@ class TestResult
     public function getBody()
     {
         return $this->body;
-    }
-
-    /**
-     * Set notes
-     *
-     * @param text $notes
-     */
-    public function setNotes($notes)
-    {
-        $this->notes = $notes;
-    }
-
-    /**
-     * Get notes
-     *
-     * @return text 
-     */
-    public function getNotes()
-    {
-        return $this->notes;
     }
 
     /**

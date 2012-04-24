@@ -16,7 +16,6 @@ class TestResultType extends AbstractType
             ->add('version')
             ->add('heading')
             ->add('body')
-            ->add('notes')
             ->add('weight')
             ->add('ft_request')
         ;

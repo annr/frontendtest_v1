@@ -9,6 +9,33 @@ class HTML
 
 	public $poorly_designed_recursive_search_output = array('');
 
+	public function DuplicateId() {
+		global $poorly_designed_catchall;	   
+		global $poorly_designed_catchall_element_array;
+		$code = array('');
+		$poorly_designed_catchall = array();		
+		$poorly_designed_catchall_element_array = array();	
+			
+		global $ft_dom;		
+		$elements = $ft_dom->getElementsByTagName('html');
+		
+		foreach($elements as $element) {
+			Helper::recursivelyGetDuplicateAttributeValue($element,'id');
+		}
+				
+		if(!empty($poorly_designed_catchall_element_array)) { 
+			foreach($poorly_designed_catchall_element_array as $element) {
+				$code[0] .= $element;
+			}
+			$code[1] = '';
+			if(count($poorly_designed_catchall_element_array) > 1) { $code[1] = 's'; }
+			return $code;
+		}
+				
+		return false;		
+	}
+	
+	
 	public function CssOutsideOfHead()
 	{
 		//there are two ways this can be true. 
@@ -40,16 +67,17 @@ class HTML
 			}
 			
 			//2)
+			/*
 			$style_tags = $body_test->getElementsByTagName('style'); 
 	        if($style_tags->length != 0) {
 				//only kick off this result if there is quite a bit of css inline
 				$code[0] .=  Helper::printCodeWithLineNumber($style_tags->item(0));
 				return $code;		
-			}			
+			}	
+			*/		
 		}		
 			 
 		//$code = Helper::testForElement('style');		
-		
 		
 		return false;
 	}
@@ -81,14 +109,49 @@ class HTML
 		return false;			
 	}
 					
-    public function CssBeforeScript()
+    public function ScriptBeforeCss()
     {
+		global $ft_dom;
+		$elements = $ft_dom->getElementsByTagName('head');
+		$code = array('');
+		$prev_script = null;
+		$print_once = false;
+    	if ( $elements->item(0)->hasChildNodes() ) {
+		    $children = $elements->item(0)->childNodes;
+		    foreach( $children as $kid ) {
+		    	if ( $kid->nodeType == XML_ELEMENT_NODE ) {
+			        if($kid->tagName == 'script' && $kid->hasAttribute('src')) {
+						$prev_script = $kid;
+						$print_once = false;	
+					} elseif ($kid->tagName == 'link') {
+						if($kid->hasAttribute('href') && (strpos(strtolower($kid->getAttribute('href')),'.css') !== false)) {
+							if(isset($prev_script)) {
+								if(!$print_once) {
+									$code[0] .= Helper::printCodeWithLineNumber($prev_script);
+									$code[0] .= "\nappears before\n\n";
+									$code[0] .= Helper::printCodeWithLineNumber($kid);
+								} else {
+									$code[0] .= "\nand\n\n";
+									$code[0] .= Helper::printCodeWithLineNumber($kid);
+								}								
+								$print_once = true;
+							}
+						}
+					}
+					if($print_once) { $code[0] .= "\n"; }						
+					
+			    }
+		    }
+	    }
+ 		if($code[0] != '') {
+			return $code;
+		}	
+
 		return false;
     }
 
     public function ManyInlineStylesFlag()
     {
-	/*
 		global $poorly_designed_catchall;
 		$poorly_designed_catchall = 0;		
 		global $ft_dom;
@@ -106,7 +169,6 @@ class HTML
 			$result_array[1] = $too_many_threshold;
 			return $result_array;
 		}
-		*/
 				
 		return false;
     }
@@ -194,7 +256,7 @@ class HTML
 		$results_array = array();
 		$imgs = $ft_dom->getElementsByTagName('img');
 		$gifs = 0;
-		$min_gifs_trigger = 3;
+		$min_gifs_trigger = 7;
 		$total_files_size = 0;
         foreach ($imgs as $img) { 
 			if ($img->hasAttribute('src')) {
@@ -393,17 +455,13 @@ class HTML
 				preg_match($pattern,$ft_data,$match1);				
 				$code[1] = substr($match1[0],1,strpos($match1[0],' ')-1);	
 				//width is still a fine attribute for img:
-				if(strtolower($code[1]) == 'img') { continue; }		
+				
+				if($deprecated_attribute == 'width' && strtolower($code[1]) == 'img') { continue; }		
 				$code[2] = '`'.$match1[0].'`';				
 				return $code;
 			}
 		}	
 		return false;				
-	}
-		
-    public function DeprecatedAlignAttribute()
-    {		
-		return false;
 	}
 		
     public function RequiredTagAttributePairMissing()
@@ -418,13 +476,12 @@ class HTML
 		
 		$elements = $ft_dom->getElementsByTagName('img');
 
-
         foreach ($elements as $element) { 
 			if (!$element->hasAttribute('alt') || $element->getAttribute('alt') == '') {
 				$code[0] .=  Helper::printCodeWithLineNumber($element);					
 			}	
 		}	
-		$elements = '';	
+
 		if($code[0] != '') {
 			return $code;
 		}		
@@ -439,11 +496,8 @@ class HTML
 		$code = array('');	
 			
 		$elements = $ft_dom->getElementsByTagName('img');
-		error_log('in MissingImgHeightOrWidth, found '.  $elements->length . ' images.');
-
         foreach ($elements as $element) { 
 			if (!($element->hasAttribute('width')) || !($element->hasAttribute('height'))) {
-				error_log('found image missing height or width.');
 				$code[0] .=  Helper::printCodeWithLineNumber($element);
 			}	
 		}
@@ -454,28 +508,6 @@ class HTML
         return false;
     }
 
-/*
-	public function MissingImgHeightOrWidthAlt()
-	{
-		global $ft_data;
-
-		$pattern = '/<img\s.*>/';		
-		preg_match($pattern,$ft_data,$elements);
-		
-		var_dump($elements);
-	    foreach ($elements as $element) { 
-			if (!($element->hasAttribute('width')) || !($element->hasAttribute('height'))) {
-				error_log('found image missing height or width: ' . );
-				//$code[0] .=  Helper::printCodeWithLineNumber($element);
-			}	
-		}
-
-		if($code[0] != '') {
-			return $code;
-		}
-	    return false;
-	}
-*/
     public function JavascriptInHref()
     {
 		global $ft_dom;
@@ -531,65 +563,6 @@ class HTML
 		}		
 	    return false;
     }
-	
-	public function LargeScriptNotMinified()
-    {	
-
-		//this only get the first large script and exits. All of them could be collected,
-		//the savings in filesize can be shared..etc. there's some work to-do.
-		global $ft_dom;
-		$code = array();
-		$elements = $ft_dom->getElementsByTagName('script');
-		
-        foreach ($elements as $element) { 
-			if ($element->hasAttribute('src') && strpos($element->getAttribute('src'),'.min.') ===false) {
-				//if ".min." is in the name, don't bother :)				
-				$link = Helper::getAbsoluteResourceLink($element->getAttribute('src'));					
-				$bytes_size = floatval(Helper::getResourceSizeBytes($link));
-				if($bytes_size > 5000)
-				{
-					//see if the script is not minified.
-					if(!Helper::isMinified($link))
-					{
-						$code[0] = round($bytes_size/1024,2, PHP_ROUND_HALF_UP);
-						$code[1] = Helper::printCodeWithLineNumber($element);
-						return $code;
-					} 
-				}	
-			}	
-		}			
-	    return false;
-    }
-
-	public function LargeStylesheetNotMinified()
-    {	
-		//this only gets the first large script, then exits. All of them could be collected,
-		//the savings in total filesize can be shared..etc. there's some work to-do.
-		global $ft_dom;
-		$code = array();
-		$elements = $ft_dom->getElementsByTagName('link');
-		
-        foreach ($elements as $element) { 
-			if ($element->hasAttribute('href') && strpos($element->getAttribute('href'),'.min.') ===false) {
-				//if ".min." is in the name, don't bother :)
-				if(strpos($element->getAttribute('href'),'.min.') !==false) { continue; }
-				$link = Helper::getAbsoluteResourceLink($element->getAttribute('href'));					
-				$bytes_size = floatval(Helper::getResourceSizeBytes($link));
-				if($bytes_size > 5000)
-				{
-					//see if the script is not minified.
-					if(!Helper::isMinified($link))
-					{
-						$code[0] = round($bytes_size/1024,2, PHP_ROUND_HALF_UP);
-						$code[1] = Helper::printCodeWithLineNumber($element);
-						return $code;
-					} 
-				}	
-			}	
-		}			
-	    return false;
-    }
-
 
 	
 	

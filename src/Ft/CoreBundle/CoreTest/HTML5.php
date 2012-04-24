@@ -89,8 +89,14 @@ class HTML5
 	    }
 		
 		
-	    public function HasXhtmlCloseTags()
+	    public function IsHtml5HasXhtmlCloseTags()
 	    {
+			global $ft_data;			
+		
+			if(Helper::HasHtml5Doctype()) {				
+				$test = substr_count($ft_data,' />');			
+				if($test > 0) { return array($test); }
+			}
 			return false;
 		}		
 		
