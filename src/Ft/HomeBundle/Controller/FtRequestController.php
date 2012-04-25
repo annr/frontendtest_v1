@@ -70,7 +70,8 @@ class FtRequestController extends Controller
 	    //email report
 	    $message = \Swift_Message::newInstance();
 
-		$cid = $message->embed(\Swift_Image::fromPath('http://localhost/frontendtest/web/img/logo_sm.png'));
+		$cid = $message->embed(\Swift_Image::fromPath('http://www.frontendtest.com/img/logo_sm.png'));
+		//$cid = $message->embed(\Swift_Image::fromPath('http://localhost/frontendtest/web/img/logo_sm.png'));
 
 	    $message->setSubject('FrontendTest Report')
 	       ->setFrom('support@frontendtest.com')

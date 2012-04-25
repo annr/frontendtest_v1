@@ -201,10 +201,11 @@ class Helper
 
 	}
 
-	public static function getDomainFromUrl($url)
-	{
-		
-	}	
+	//public static function getDomainFromUrl($url)
+	//{
+		//preg_match('/[a-z].\.[a-z].\.[a-z]/',$url,$match);
+	//}	
+	
 	public static function testForElement($element_str)
 	{	
 		global $ft_dom;
