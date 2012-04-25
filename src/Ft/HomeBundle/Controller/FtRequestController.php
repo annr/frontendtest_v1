@@ -171,6 +171,11 @@ class FtRequestController extends Controller
     public function goAction()
     {
 
+	  //insert a new request only if there is no existing undelivered request for that domain, or by that email.
+	  //if there is, return "pending_request_for_email", "pending_request_for_domain"
+	
+	  //also, collect IP and environment.
+	
       $ft_request = new FtRequest();
       $ft_request->setEmail($_POST['email']);
       $ft_request->setUrl($_POST['url']);

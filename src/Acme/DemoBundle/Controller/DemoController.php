@@ -23,7 +23,7 @@ class DemoController extends Controller
 		//$key = $request->query->get('key');
 		//var_dump(array('key' => $key));
 		//echo $container->getParameter('acme_hello.foo');
-		echo $this->container->getParameter('acme_demo.email.from');
+		//echo $this->container->getParameter('acme_demo.email.from');
         return array();
     }
 
