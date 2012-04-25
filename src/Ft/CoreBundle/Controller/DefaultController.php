@@ -40,8 +40,6 @@ class DefaultController extends Controller
 			exit; 
 		}
 		
-		echo $this->container->getParameter('ft_core.secret');
-						
 		$http_request_split = explode("\n", $ft_http_request['request_header']);
 		$get_split = explode(" ", $http_request_split[0]);
 		$host_split = explode(" ", $http_request_split[1]);
