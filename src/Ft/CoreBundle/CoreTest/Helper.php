@@ -200,7 +200,11 @@ class Helper
 		return $code;
 
 	}
-	
+
+	public static function getDomainFromUrl($url)
+	{
+		
+	}	
 	public static function testForElement($element_str)
 	{	
 		global $ft_dom;

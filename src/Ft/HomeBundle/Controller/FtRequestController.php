@@ -40,6 +40,8 @@ class FtRequestController extends Controller
 	    //if (!$results) {
 	        //throw $this->xxxXXX('There are no results.');
 	    //}
+		//$cid =  'http://www.frontendtest.com/img/logo_sm.png';
+
 		$cid =  'http://www.frontendtest.com/img/logo_sm.png';
 		
         $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'email' => $ft_request->getEmail(),'results' => $results, 'summary' => $summary));
@@ -68,13 +70,13 @@ class FtRequestController extends Controller
 	    //email report
 	    $message = \Swift_Message::newInstance();
 
-		$cid = $message->embed(\Swift_Image::fromPath('http://www.frontendtest.com/img/logo_sm.png'));
+		$cid = $message->embed(\Swift_Image::fromPath('http://localhost/frontendtest/web/img/logo_sm.png'));
 
 	    $message->setSubject('FrontendTest Report')
 	       ->setFrom('support@frontendtest.com')
 	       ->setTo($ft_request->getEmail())
 	  	   ->setContentType('text/html')
-	       ->setBody($this->renderView('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'results' => $results, 'summary' => $summary)));
+	       ->setBody($this->renderView('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'email' => $ft_request->getEmail(), 'results' => $results, 'summary' => $summary)));
 
 	    $this->get('mailer')->send($message);
 	
@@ -84,7 +86,7 @@ class FtRequestController extends Controller
 	
 		$cid_local =  '../../../web/img/logo_sm.png';
 		
-        $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid_local, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'results' => $results, 'summary' => $summary));
+        $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid_local, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'email' => $ft_request->getEmail(), 'results' => $results, 'summary' => $summary));
         $response->headers->set('Content-Type', 'text/html');
         return $response;
 	    
@@ -170,11 +172,6 @@ class FtRequestController extends Controller
 	
     public function goAction()
     {
-
-	  //insert a new request only if there is no existing undelivered request for that domain, or by that email.
-	  //if there is, return "pending_request_for_email", "pending_request_for_domain"
-	
-	  //also, collect IP and environment.
 	
       $ft_request = new FtRequest();
       $ft_request->setEmail($_POST['email']);

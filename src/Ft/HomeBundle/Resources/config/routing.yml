@@ -11,7 +11,7 @@ _orig:
     defaults: { _controller: FtHomeBundle:HomepageV1:index }
 
 _ft_request_go:
-    pattern:  /ft_request_go
+    pattern:  /report_request
     defaults: { _controller: FtHomeBundle:FtRequest:go }
 
 ft_request_preview:
