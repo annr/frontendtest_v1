@@ -70,7 +70,4 @@ jms_security_extra:
     secure_controllers:  true
     secure_all_services: false
     
-ft_core:
-    secret: yes 
-#    bar: barValue
     

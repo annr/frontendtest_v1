@@ -24,6 +24,12 @@ class Configuration implements ConfigurationInterface
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
 
+        $rootNode
+            ->children()
+                ->scalarNode('typekit_js')->defaultValue('cfs0wvw.js')->end()
+           ->end()
+        ;
+
         return $treeBuilder;
     }
 }

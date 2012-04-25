@@ -17,3 +17,7 @@ monolog:
             type:  stream
             path:  %kernel.logs_dir%/%kernel.environment%.log
             level: debug
+
+parameters:
+    typekit_js: cfs0wvw.js
+                

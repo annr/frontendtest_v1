@@ -31,7 +31,7 @@ class DefaultController extends Controller
         $entity = $em->getRepository('FtCoreBundle:CoreTest')->find($id);
 
 		$ft_url = 'http://localhost/tests/test-x.html';
-		$ft_url = 'http://www.htmlhive.com';
+		//$ft_url = 'http://www.htmlhive.com';
 		
 		$ft_data = Helper::getDataAndSetRequest($ft_url);
 		if(!isset($ft_data)) 
@@ -39,6 +39,8 @@ class DefaultController extends Controller
 			error_log('PROBLEM SETTING ft_data VAR');
 			exit; 
 		}
+		
+		echo $this->container->getParameter('ft_core.secret');
 						
 		$http_request_split = explode("\n", $ft_http_request['request_header']);
 		$get_split = explode(" ", $http_request_split[0]);

@@ -1,19 +1,1 @@
 {% extends "FtHomeBundle::layout.html.twig" %}
-
-{% block content %}
-
-<form name="fromPaste" method="post">
-
-<!--<textarea name="htmlCode" rows="30" cols="100"></textarea>-->
-
-<label for="htmlUrl">Web site</label>
-<input type="text" size="40" name="htmlUrl" id="htmlUrl" value="">
-
-<label for="reportEmail">Email address to send report</label>
-<input type="text" size="40" name="reportEmail" id="reportEmail" value="">
-
-<input type=submit value="Run Tests" style="clear: left;">
-(Ex. http://localhost/tests/test-h.html)
-</form>
-
-{% endblock %}

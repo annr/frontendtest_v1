@@ -21,3 +21,6 @@ monolog:
 
 assetic:
     use_controller: true
+    
+parameters:
+    typekit_js: jif1lwz.js
