@@ -9,7 +9,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Discover how to make your web site better &mdash; FrontendTest</title>
+  <title>Find out how to make your web site better, faster and future-proof &mdash; FrontendTest</title>
   <meta name="description" content="This free tool runs a suite of tests and returns a detailed, prioritized list of what you can do to make your site better. Optimize for an evolving web.">
   <meta name="keywords" content="html5, css3, JavaScript, semantic html, minification, cross-browser compatibility, deprecated elements, broken links, css specificity, correctly sized images, favicon, javascript pseudo-protocol, duplicate IDs, optimized graphics, pngs vs gifs, blocking scripts, html5 doctype, font-size, font-face, too many inline styles, unused code">
   <meta name="viewport" content="width=device-width">
@@ -47,9 +47,10 @@
 		<p id="confirmFtRequest">&nbsp;<br>&nbsp;</p>			
 	</div>
 	
-	<div class="infoColumn">
+	<div class="infoColumn" style="position:relative;">
 		
-		<h2 class="marginBottom">Find out how to make your web site better, faster, and future-proof</h2>	
+		<h2 class="marginBottom">Find out how to make your web site better, faster, and future-proof</h2>
+			
 		<h3>Discover</h3>
 		<ul>
 			<li>Poorly optimized resources</li>
@@ -58,12 +59,17 @@
 			<li>Improvements for mobile</li>
 	 	</ul>		
 	
-	<!--<p><span id="whyTest" class="whyTest fauxLink">Why test?</span></p>-->
-	
+<div style="float: right;"><img src="{{ asset('img/view_sample_report.png') }}" width="153" height="187" alt="View Sample Report" class="sampleReportIcon"></div>
+
+		
+	</div>	
+</div>
+
+<footer>
 	<p>
   	<b>Questions?</b> &nbsp;Email <a href="mailto:support@frontendtest.com?subject=questions">support@frontendtest.com</a>
   	</p>
-
+<!--
 	<p>
   	<form id="newsletterSignup" class="newsletterSignup">
 
@@ -74,12 +80,214 @@
     <span class="newsletterFormSubmitMsg"></span>
   	</form>
 	</p>
-		
-	</div>	
-</div>
-<footer>
+	-->
 	&copy;2012 FrontendTest.com
 </footer>
+
+
+<div class="popup sampleReport" style="display:none;overflow:auto">
+<div style="position: absolute; top: 14px; right: -4px;">
+<img src="/img/closePopup.png" height="32" width="32" alt="close popup" class="closePopup"> 
+</div>
+<table cellspacing="0" border="0" style="background: #eae9e1;" cellpadding="0" width="100%">
+
+	<tr>
+		<td>
+			<table cellspacing="0" width="100%" cellpadding="0">
+				<tr>
+					<td valign="top">						
+						<table cellspacing="0" border="0" align="center" cellpadding="0" width="600">			
+							<tr>
+							<td>									
+								<table cellspacing="0" width="600">
+									<tr>
+										<td class="main-title" style="padding-top: 20px;padding-left:20px;">
+											<img src="http://www.frontendtest.com/img/logo_sm.png" height="47" width="220" alt="FrontendTest logo">
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td valign="top">
+								<table cellspacing="0" width="600" cellpadding="0">
+									<tr>
+										<td class="date" valign="top" style="color: #999; text-align: left; font-size: 11px; font-family: Verdana;padding-bottom:12px;padding-left:20px">
+											<span style="text-transform: uppercase;">Report prepared for</span> <span style="color: #000">support@frontendtest.com</span> <span style="text-transform: uppercase;">ON</span> Wed Apr 25 15:00:25 PDT 2012<br />
+											Test URL: http://www.example.com<br />
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>		
+		</td>
+	</tr>		
+	<tr>		
+		<td valign="top">
+			<table cellspacing="0" border="0" align="center" style="background: #fff;" cellpadding="0" width="600">			
+				<tr>
+					<td>
+						<!-- content -->
+						<table cellspacing="0" border="0" cellpadding="0" width="600">
+														<tr>
+								<td class="content-copy" valign="top" style="padding: 20px 20px 0; color: #000; font-size: 16px; font-family: Georgia; line-height: 24px;" colspan="2">
+									<p>Thank you for using FrontendTest. We have reviewed the site you submitted and we have discovered that the front-end code <strong>can be improved</strong>. We strongly suggest making the following improvements, listed in order of priority.</p>
+
+								</td>
+							</tr>
+							<tr>
+								<td class="article-title" height="45" valign="top" style="padding: 14px 20px 0; font-family: Georgia; font-size: 20px; font-weight: bold;" width="600" colspan="2">
+									Stylesheet included after script in head<br />
+								</td>
+							</tr>
+							<tr>
+								<td class="content-copy" valign="top" style="padding: 0 20px; color: #000; font-size: 14px; font-family: Georgia; line-height: 20px;" colspan="2">
+									<p>To make your site render faster, move CSS links to the top of the document head, before any scripts. Ideally, scripts would be moved to the bottom of the page.</p>
+
+									<p><code>(20) &lt;script type="text/javascript" src="/sfCombine/js/709843126566da217d773f60222faeeb/script.js"&gt;&lt;/ script&gt;</code></p>
+
+									<p>appears before</p>
+
+									<p><code>(21) &lt;link rel="stylesheet" type="text/css" media="screen" href="/sfCombine/css/f98e4735bfad2d24accf32b4f685853f/style.css" /&gt;</code></p>
+								</td>
+							</tr>
+																														<tr>
+																	<td class="article-title" height="45" valign="top" style="padding: 14px 20px 0; font-family: Georgia; font-size: 20px; font-weight: bold;" width="600" colspan="2">
+																		Duplicate ID found<br />
+																	</td>
+																</tr>
+																<tr>
+																	<td class="content-copy" valign="top" style="padding: 0 20px; color: #000; font-size: 14px; font-family: Georgia; line-height: 20px;" colspan="2">
+																		<p>IDs must be unique to an HTML document. Please correct the following duplicate ID:</p>
+
+								<p>new_contact_info</p>
+
+																	</td>
+																</tr>
+			
+																<tr>
+																									<td class="article-title" height="45" valign="top" style="padding: 14px 20px 0; font-family: Georgia; font-size: 20px; font-weight: bold;" width="600" colspan="2">
+																										Height and/or width set incorrectly for images<br />
+																									</td>
+																								</tr>
+																								<tr>
+																									<td class="content-copy" valign="top" style="padding: 0 20px; color: #000; font-size: 14px; font-family: Georgia; line-height: 20px;" colspan="2">
+																										<p>The height and width attributes of the <code>&lt;img&gt;</code> element should match the pixel dimensions of the graphic, or the graphic should be resized to match the height and width set in the HTML.</p>
+
+																<p>If a graphic is bigger than the assigned image attributes, you're showing the user less than they are downloading. If the graphic is smaller than what is assigned, then the image will scale up and look pixelated. In any case, when web browsers resize images, it does not look ideal.</p>
+
+																<p><code>(184) &lt;img alt="Logo_techcrunch" id="media_logo1" src="/assets/new_look/logo_techcrunch-e03a94b06dc576d9c451edfa5bf 58771.png" width="210" /&gt;</code></p>
+
+																<p>should be width="431"</p>
+
+																<p><code>(191) &lt;img alt="Logo_fastcompany" id="media_logo2" src="/assets/new_look/logo_fastcompany-84bd7f43991ede0f5d63dd12a4 370d88.png" width="215" /&gt;</code></p>
+
+																<p>should be width="394"</p>
+
+																<p>An additional 10 incorrectly sized images have been found at http://www.example.com</p>
+
+																									</td>
+																								</tr>
+																								
+															
+								<tr>
+									<td class="article-title" height="45" valign="top" style="padding: 14px 20px 0; font-family: Georgia; font-size: 20px; font-weight: bold;" width="600" colspan="2">
+										Internet Explorer version of web font not included<br />
+									</td>
+								</tr>
+								<tr>
+									<td class="content-copy" valign="top" style="padding: 0 20px; color: #000; font-size: 14px; font-family: Georgia; line-height: 20px;" colspan="2">
+										<p>To support web fonts in Internet Explorer all you need to do is 1) include an .eot font and 2) add an additional CSS declaration. Here's <a href="http://paulirish.com/2009/bulletproof-font-face-implementation-syntax/">Paul Irish's bulletproof syntax</a>.</p>
+
+									</td>
+								</tr>								
+															<tr>
+									<td class="article-title" height="45" valign="top" style="padding: 14px 20px 0; font-family: Georgia; font-size: 20px; font-weight: bold;" width="600" colspan="2">
+										Body copy is difficult to read at current font size<br />
+									</td>
+								</tr>
+								<tr>
+									<td class="content-copy" valign="top" style="padding: 0 20px; color: #000; font-size: 14px; font-family: Georgia; line-height: 20px;" colspan="2">
+										<p>Suggestion: increase the body copy font size or consider using a font that is more legible at smaller point sizes.</p>
+
+									</td>
+								</tr>																
+								<tr>
+									<td class="article-title" height="45" valign="top" style="padding: 14px 20px 0; font-family: Georgia; font-size: 20px; font-weight: bold;" width="600" colspan="2">
+										Links cannot be accurately selected in mobile view<br />
+									</td>
+								</tr>
+								<tr>
+									<td class="content-copy" valign="top" style="padding: 0 20px; color: #000; font-size: 14px; font-family: Georgia; line-height: 20px;" colspan="2">
+										<p>We suggest using media queries to make links larger and wider-spaced for mobile. The fingertap guideline is 44px.</p>
+
+									</td>
+								</tr>
+																							<tr>
+																	<td class="article-title" height="45" valign="top" style="padding: 14px 20px 0; font-family: Georgia; font-size: 20px; font-weight: bold;" width="600" colspan="2">
+																		No favicon included<br />
+																	</td>
+																</tr>
+																<tr>
+																	<td class="content-copy" valign="top" style="padding: 0 20px; color: #000; font-size: 14px; font-family: Georgia; line-height: 20px;" colspan="2">
+																		<p>Favicons are 16x16 pixel images that appear in browsers next to location bars, bookmarks and tabs. They improve the user experience and they are easy to make. To create a favicon you can use an <a href="http://www.favicon.cc/">online tool</a> or install a <a href="http://www.telegraphics.com.au/sw/">Photoshop plugin</a>. Name the file favicon.ico, put it in your root web directory, and add the following to the <code>&lt;head&gt;</code> element of your HTML:</p>
+
+								<p><code>&lt;link rel="icon" type="image/x-icon" href="/favicon.ico"&gt;</code></p>
+
+																	</td>
+																</tr>
+																
+																																																								
+															<tr>
+									<td class="article-title" height="45" valign="top" style="padding: 14px 20px 0; font-family: Georgia; font-size: 20px; font-weight: bold;" width="600" colspan="2">
+										HTTP requests unnecessary<br />
+									</td>
+								</tr>
+								<tr>
+									<td class="content-copy" valign="top" style="padding: 0 20px; color: #000; font-size: 14px; font-family: Georgia; line-height: 20px;" colspan="2">
+										<p>Since http://www.example.com is a single-page web site, the benefit of external CSS and scripts is lost. The HTTP requests may not be worth the performance hit in this case.</p>
+
+									</td>
+								</tr>
+								
+																								
+							</table>
+					</td>
+				</tr>
+								<tr>
+									<td>&nbsp;</td>
+								</tr>
+							</table>
+
+						</td>
+
+					</tr>
+					<tr>
+						<td valign="top">
+							<table cellspacing="0" width="100%" cellpadding="0">
+								<tr>
+									<td valign="top">
+										<table cellspacing="0" width="100%" cellpadding="0">
+											<tr>
+												<td class="copyright" align="center" height="80" valign="top" style="color: #000; font-family: Verdana; font-size: 12px;text-align: center; line-height: 20px;">
+													<br />
+													<a href="http://www.frontendtest.com/">FrontendTest.com</a> &nbsp; <b>Questions?</b> Email <a href="mailto:support@frontendtest.com?subject=report">support@frontendtest.com</a>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+				</table>
+</div>
+
 
 <!-- <script src="{{ asset('js/libs/modernizr-2.5.3.min.js') }}" defer="defer"></script> -->
 
@@ -91,6 +299,7 @@
   <script>window.jQuery || document.write('<script src="{{ asset('js/libs/jquery-1.7.1.min.js') }}"><\/script>')</script>
   
   <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
+  <script src="{{ asset('js/jquery-ui-1.8.13.custom.min.js') }}"></script>
 
   <script src="{{ asset('js/plugins.js') }}"></script>
  
@@ -174,6 +383,29 @@
 			}
         });
 
+		$('.sampleReportIcon').click(function(){
+			$('.popup').dialog('open');
+		});
+		
+		$('.popup').dialog({
+            autoOpen: false,
+            modal: true,
+            closeText: '',
+            width: 620,
+			height: $(document).height(),
+			open: function(){
+	            jQuery('.ui-widget-overlay').bind('click',function(){
+	            	console.log('hey');
+	                jQuery('.popup').dialog('close');
+	            })
+			}
+        });
+
+        $('.closePopup').click(function () {
+            $('.popup').dialog('close');
+            // prevent the default action, e.g., following a link
+            return false;
+        });
 
     });    
  

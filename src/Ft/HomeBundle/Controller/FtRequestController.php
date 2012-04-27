@@ -136,11 +136,14 @@ class FtRequestController extends Controller
 		$adjective_str ="";
 		//just hard-code report summary adjective here FOR NOW. 
 		switch ($score) {
-		    case ($score < 10):
+		    case ($score < 8):
 		        $adjective_str = sprintf($format1, 'is **nearly perfect**!!');
 		        break;
-		    case ($score < 15):
+		    case ($score < 12):
 		        $adjective_str = sprintf($format1, 'is **excellent**!');
+		        break;
+		    case ($score < 16):
+		        $adjective_str = sprintf($format1, 'is **very good**.');
 		        break;
 		    case ($score < 20):
 		        $adjective_str = sprintf($format1, 'is **good**.');
