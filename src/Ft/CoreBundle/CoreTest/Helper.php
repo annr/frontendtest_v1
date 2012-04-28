@@ -4,6 +4,7 @@ namespace Ft\CoreBundle\CoreTest;
 
 class Helper
 {
+	public static $max_disp_threshold = 4;	
 
     public static function getDataAndSetRequest($url,$print_request_headers = 0)
 	{	
@@ -41,8 +42,10 @@ class Helper
     {
     	global $ft_url_root;
     	global $ft_web_root;
-    	
-    	$link = $page_link;
+    			
+		//replace spaces with %20.
+		//what other ways do we need to encode the URL so that we can test the link?
+		$link = str_replace(' ','%20',$page_link);
     	
 		if(substr($link, 0, 2) === '//') {
 			//add the http protocol. this might not be perfect.
@@ -52,6 +55,20 @@ class Helper
 		} elseif (substr($link, 0, 1) === '/') { 
 			//if forward slash, add url minus forward slash.
 			$link = $ft_web_root.substr($link, 1); 
+		} elseif (substr($link, 0, 2) === './') { 
+			//if dot forward slash, add url minus dot forward slash.
+			$link = $ft_web_root.substr($link, 2);
+		} elseif (substr($link, 0, 3) === '../') { 
+			$new_root = $ft_url_root;
+			for($i = 0; $i < substr_count($link,'../'); $i++) {
+				///use root.
+				//trim url from last or second to last forward slash to end.
+				//remove folders from url root, and shift relative
+				$new_root = substr($new_root, 0, strrpos($new_root,'/',-2) + 1);
+				//trim first:
+				$link = substr($link, 3);				
+			}		
+			$link = $new_root.$link; 
 		} elseif (substr($link, 0, 1) !== '/') { 
 			//if relative, add url making sure forward slash exists
 			$link = $ft_url_root.$link; 
@@ -60,13 +77,98 @@ class Helper
 		return $link;
     }
 
+
+    public static function checkLinkArray($link_array)
+    {
+	/*
+		$handles = array();
+		foreach($link_array as $link) {
+			$handles[] = curl_init($link);
+		}
+
+        //for testing....
+		//curl_setopt($handle, CURLOPT_FRESH_CONNECT);
+
+		curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+
+		$response = curl_exec($handle);
+		$info = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+		curl_close($handle);			
+		return $info;	
+
+		// set URL and other appropriate options
+		curl_setopt($ch1, CURLOPT_URL, "http://www.example.com/");
+		curl_setopt($ch1, CURLOPT_HEADER, 0);
+		curl_setopt($ch2, CURLOPT_URL, "http://www.php.net/");
+		curl_setopt($ch2, CURLOPT_HEADER, 0);
+
+		//create the multiple cURL handle
+		$mh = curl_multi_init();
+
+		//add the two handles
+		curl_multi_add_handle($mh,$ch1);
+		curl_multi_add_handle($mh,$ch2);
+
+		$running=null;
+		//execute the handles
+		do {
+		    curl_multi_exec($mh,$running);
+		} while($running > 0);
+
+		//close all the handles
+		curl_multi_remove_handle($mh, $ch1);
+		curl_multi_remove_handle($mh, $ch2);
+		curl_multi_close($mh);
+	*/
+	return false;	
+		
+
+	}
+	
+    public static function checkElementHref($element)
+    {
+		//check link status
+		if ($element->hasAttribute('href')) {
+			//link to check:
+			$link = $element->getAttribute('href');
+		
+			//if matches url, skip TODO
+			if($link == './' || $link == '#') {
+				return false;					
+			}
+		
+			//also if using javascript: protocol or the mailto:, skip.}
+			if(strpos($element->getAttribute('href'),'javascript:') !== false || strpos($element->getAttribute('href'),'mailto:') !== false){
+				return false;
+			}
+							
+			$link = Helper::getAbsoluteResourceLink($link);
+
+			if(Helper::getHttpResponseCode($link) == 404) {
+			    /* Handle 404 here. */
+				return true;
+			    //$code[0] .=  Helper::printCodeWithLineNumber($element);
+			}
+			return false;										
+		}
+	}
+	
 	public static function isLocalFile($page_link) {
 		//FUNCTION NOT DONE!!!		
+		
+		//a local file starts with a single slash, a word, a period.
 		if (substr($page_link, 0, 2) === '//' || substr($page_link, 0, 7) === 'http://' || substr($page_link, 0, 8) === 'https://' ) { 
 			return false;
 		}	
 		return true;
 	}
+	
+	public static function microtime_float()
+	{
+	    list($usec, $sec) = explode(" ", microtime());
+	    return ((float)$usec + (float)$sec);
+	}
+	
 
     public static function getHttpResponseCode($link)
     {
@@ -89,7 +191,8 @@ class Helper
 		\curl_close($handle);
 		return $info;
 	}
-	
+
+		
 	public static function isMinified($url)
     {	
 		 $ch = \curl_init();	
@@ -119,7 +222,7 @@ class Helper
 	}
 	
 
-	public static function printCodeWithLineNumber($element)
+	public static function printCodeWithLineNumber($element,$add_tics=true)
     {	
 		//there is an issue with this code. because an element may have had linebreaks removed, it might not be matched. 
 		//therefore we must try to match the substring before any line breaks. this means that an element may not be accurately matched to it's line. 
@@ -132,6 +235,9 @@ class Helper
 		$doc->formatOutput = false; 
 		$doc->appendChild($doc->importNode($element,true));
 		$code_str = trim($doc->saveHTML());
+		
+		$tic = '`';
+		if($add_tics === false) {$tic = '';}
 
 		//echo "\n\ncode: \n".$code_str;
 		//if we can find the code in the string, great we're in business.
@@ -187,13 +293,13 @@ class Helper
 			$line += substr_count($text, "\n");
 			//when the line number is 1, it's not valuable.
 			if($line != 1){
-				$code =  '`('. $line . ') '. $code_str . '`' . "  \n\r";				
+				$code =  $tic.'('. $line . ') '. $code_str . $tic . "  \n\r";				
 			} else {
-				$code =  '`'.$code_str . '`' . "  \n\r";					
+				$code =  $tic.$code_str . $tic . "  \n\r";					
 			}
 		} else {
 			//line number not found, so don't print it.
-			$code =  '`'.$code_str . '`' . "  \n\r";	
+			$code =  $tic.$code_str . $tic . "  \n\r";	
 			//error_log('FT ERROR with request id ' . $ft_request_id . ': DOM ELEMENT NOT FOUND IN RAW SOURCE '.$code_str);		
 		}
 		

@@ -44,12 +44,54 @@ class TestResultController extends Controller
     public function countAction($id)
     {
         $em = $this->getDoctrine()->getEntityManager();
-
-		$query = $em->createQuery('select count(c.id) from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id);
-		
+		$query = $em->createQuery('select count(c.id) from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id);		
 		$num = $query->getResult();
 
-        return $this->render('FtCoreBundle:TestResult:count.txt.twig', array('number_results' => $num[0][1]));
+		$query = $em->createQuery('select count(c.id) from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id .' and c.weight >= ' . $this->container->getParameter('minor_issue_threshold'));		
+		$num_major = $query->getResult();
+
+		$query = $em->createQuery('select count(c.id) from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id .' and c.weight < ' . $this->container->getParameter('minor_issue_threshold'));		
+		$num_minor = $query->getResult();
+		
+        return $this->render('FtCoreBundle:TestResult:count.txt.twig', array('number_results' => $num[0][1], 'number_major' => $num_major[0][1], 'number_minor' => $num_minor[0][1]));
+
+    }
+
+	//allow minor issue to reach report threshold
+    public function promoteAction($id,$ft_request_id)
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $entity = $em->getRepository('FtCoreBundle:TestResult')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find TestResult entity.');
+        }
+
+		$entity->setWeight($entity->getWeight() + 5);
+        $em->persist($entity);
+        $em->flush();
+
+        return $this->redirect($this->generateUrl('test_result_filter', array('id' => $ft_request_id)));
+
+    }
+
+	//allow minor issue to reach report threshold
+    public function demoteAction($id,$ft_request_id)
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $entity = $em->getRepository('FtCoreBundle:TestResult')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find TestResult entity.');
+        }
+
+		$entity->setWeight(0);
+        $em->persist($entity);
+        $em->flush();
+
+        return $this->redirect($this->generateUrl('test_result_filter', array('id' => $ft_request_id)));
 
     }
 

@@ -7,6 +7,7 @@ use Ft\CoreBundle\CoreTest\HTML5;
 use Ft\CoreBundle\CoreTest\HTML;
 use Ft\CoreBundle\CoreTest\Script;
 use Ft\CoreBundle\CoreTest\Filedata;
+use Ft\CoreBundle\CoreTest\Content;
 use Ft\CoreBundle\Entity\TestResult;
 use Ft\CoreBundle\CoreTest\Helper;
 
@@ -26,12 +27,16 @@ class DefaultController extends Controller
 		 global $ft_http_request;
 		 global $ft_request_id;
 		
+		$time_start = Helper::microtime_float();
+		
         $em = $this->getDoctrine()->getEntityManager();
 
         $entity = $em->getRepository('FtCoreBundle:CoreTest')->find($id);
 
-		$ft_url = 'http://localhost/tests/test-x.html';
-		//$ft_url = 'http://www.htmlhive.com';
+		$ft_url = 'http://localhost/tests/test-h.html';
+		//$ft_url = 'http://www.palcoprincipal.com';
+		//$ft_url = 'http://www.moesbooks.com';
+		$ft_url = 'http://www.ptable.com';
 		
 		$ft_data = Helper::getDataAndSetRequest($ft_url);
 		if(!isset($ft_data)) 
@@ -60,16 +65,17 @@ class DefaultController extends Controller
 		$HTML = new HTML();
 		$Script = new Script();
 		$Filedata = new Filedata();
+		$Content = new Content();
 		
 		$packageName = $entity->getPackageName();			
 		$className = $entity->getClassName();
 
 		//if a record already exists for that test name (class) don't run that test.
 		$ex_result = $em->getRepository('FtCoreBundle:TestResult')->findOneBy(array('ft_request_id' => $id, 'class_name' => $entity->getClassName()));
-		if($ex_result) { continue; }
+		//if($ex_result) { continue; }
 		
 		//THIS IS A POOR WAY TO CHECK IF THE TESTS EXIST. WHAT IF THE SAME TEST NAME EXISTS IN TWO "PACKAGES"?
-		if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className) || method_exists($Filedata,$className)){ 
+		if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className) || method_exists($Filedata,$className) || method_exists($Content,$className)){ 
 		//try {
 			$result_instance = ${$packageName}->$className();
 		//} catch (Exception $e) {	
@@ -117,6 +123,11 @@ class DefaultController extends Controller
 			echo '<br>'.$entity->getClassName().' false.';
 		}
 
+		$time_end = Helper::microtime_float();
+		$time = $time_end - $time_start;
+
+		echo "<br>$time seconds\n";
+				
         return $this->render('FtCoreBundle:Default:index.html.twig');						
 
 	}

@@ -70,6 +70,15 @@ test_result_update:
     pattern:  /test_result_update/{id}
     defaults: { _controller: FtCoreBundle:TestResult:update }
     
+test_result_promote:
+    pattern:  /test_result_promote/{id}/{ft_request_id}
+    defaults: { _controller: FtCoreBundle:TestResult:promote }
+
+
+test_result_demote:
+    pattern:  /test_result_demote/{id}/{ft_request_id}
+    defaults: { _controller: FtCoreBundle:TestResult:demote }
+    
 test_result_filter:
     pattern:  /test_result_filter/{id}
     defaults: { _controller: FtCoreBundle:TestResult:filter }

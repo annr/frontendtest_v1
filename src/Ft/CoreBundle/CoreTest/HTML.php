@@ -96,16 +96,30 @@ class HTML
 
 	public function HasDeeplyNestedTables()
 	{
+		global $ft_dom;
+		$elements = $ft_dom->getElementsByTagName('table');
+        foreach ($elements as $element) { 
+			$nested_tables = $element->getElementsByTagName('table');				
+	        foreach ($nested_tables as $nested) { 
+				$deeply_nested_tables = $element->getElementsByTagName('table');				
+		        foreach ($deeply_nested_tables as $deeply_nested) { 
+					return true;
+		        }
+	        }
+		}
 		return false;			
 	}
 
+	//we just check to see if they have a favicon set in the HTML. If the file is missing, it will show up in brokenlink.
 	public function FaviconMissing()
 	{
-		global $ft_web_root;
-			
-		if(Helper::getHttpResponseCode($ft_web_root . 'favicon.ico') == 404 || Helper::getResourceSizeBytes($ft_web_root . 'favicon.ico') == 0) {
-			return true;				
-		}			
+		//global $ft_web_root;
+	    global $ft_data;
+
+		$pattern = '/.*<link.*href=.*favicon\.ico.*>/';		
+		preg_match($pattern,$ft_data,$match);
+		
+		if(!isset($match[0])) { return true; }		
 		return false;			
 	}
 					
@@ -155,7 +169,7 @@ class HTML
 		global $poorly_designed_catchall;
 		$poorly_designed_catchall = 0;		
 		global $ft_dom;
-		$too_many_threshold = 8;
+		$too_many_threshold = 20;
 		$result_array = array();
 		
 		$elements = $ft_dom->getElementsByTagName('html');
@@ -196,57 +210,158 @@ class HTML
         return false;
     }
 
+
+    public function BrokenLinkDiagnostics()
+    {
+		global $ft_dom;
+		$code = array('');
+		$code[1] = 0;
+		$code[2] = '';
+		$passed_elem_array = array();
+		$url_array = array();
+
+		$elements = $ft_dom->getElementsByTagName('link');
+        foreach ($elements as $element) { 	
+			if($element->hasAttribute('href')) { 				
+				if(!in_array($element->getAttribute('href'),$url_array))
+				{ 				
+					$url = Helper::getAbsoluteResourceLink($element->getAttribute('href'));	
+					$link_time_start = Helper::microtime_float();
+							
+					$headers = get_headers($url, 1);			
+					$header_str = explode(' ',$headers[0]);				
+					if($header_str[1] == '404') {
+						$code[1]++;
+						$code[0] .=  Helper::printCodeWithLineNumber($element);
+					} 
+				
+					$link_time_end = Helper::microtime_float();
+					$link_time = $link_time_end - $link_time_start;
+					
+					$url_array[] = round($link_time,4) . ' :: ' . $element->getAttribute('href') ;						
+				} 
+		 	}
+		 }
+
+		$elements = $ft_dom->getElementsByTagName('a');
+		//if there are > 100 links, let's not do this check for now, or make a trigger to run it manually.
+		if($elements->length > 100) { return false; }
+        foreach ($elements as $element) { 	
+			if($element->hasAttribute('href')) { 				
+				if(!in_array($element->getAttribute('href'),$url_array))
+				{ 				
+					$url = Helper::getAbsoluteResourceLink($element->getAttribute('href'));	
+					$link_time_start = Helper::microtime_float();
+
+					//error_log($url);	
+						
+					$headers = get_headers($url, 1);			
+					$header_str = explode(' ',$headers[0]);				
+					if($header_str[1] == '404') {
+						$code[1]++;
+						$code[0] .=  Helper::printCodeWithLineNumber($element);
+					} 
+				
+					$link_time_end = Helper::microtime_float();
+					$link_time = $link_time_end - $link_time_start;
+					
+					$url_array[] = round($link_time,4) . ' :: ' . $element->getAttribute('href') ;						
+				} 
+		 	}
+		 }
+		
+		var_dump($url_array);
+		return false;
+
+	}
+	
     public function BrokenLink()
     {
 		global $ft_dom;
-		
-		$elements = $ft_dom->getElementsByTagName('a');
 		$code = array('');
-        foreach ($elements as $element) { 
-			//check link status
-			if ($element->hasAttribute('href')) {
-				//link to check:
-				$link = $element->getAttribute('href');
-				
-				//if matches url, skip TODO
-				
-				//also if using javascript: protocol, skip.
-				if(strpos($element->getAttribute('href'),'javascript:') !== false || strpos($element->getAttribute('href'),'mailto:') !== false){
-					continue;
-				}
-									
-				$link = Helper::getAbsoluteResourceLink($link);
-				if(Helper::getHttpResponseCode($link) == 404) {
-				    /* Handle 404 here. */
-				    $code[0] .=  Helper::printCodeWithLineNumber($element);
-					return $code;
-				}										
-			}		        
-		}
+		$code[1] = 0;
+		$code[2] = '';
+		$passed_elem_array = array();
+		$url_array = array();
+
+		$elements = $ft_dom->getElementsByTagName('a');
+
+		//only make this test if there is a reasonable number of links.
+		if($elements->length < 50) { 
+	        foreach ($elements as $element) { 	
+				if($element->hasAttribute('href')) { 				
+					if(!in_array($element->getAttribute('href'),$url_array))
+					{ 				
+						$url = Helper::getAbsoluteResourceLink($element->getAttribute('href'));	
+						//error_log('checking...' . $url);			
+						$headers = get_headers($url, 1);			
+						$header_str = explode(' ',$headers[0]);				
+						if($header_str[1] == '404') {
+							$code[1]++;
+							$code[0] .=  Helper::printCodeWithLineNumber($element);
+						} 
+						$url_array[] = $element->getAttribute('href');						
+					} 
+			 	}
+			 }
+		} 
+		
+		$elements = $ft_dom->getElementsByTagName('link');
+        foreach ($elements as $element) { 	
+			if($element->hasAttribute('href')) { 				
+				if(!in_array($element->getAttribute('href'),$url_array))
+				{ 				
+					$url = Helper::getAbsoluteResourceLink($element->getAttribute('href'));	
+					//error_log('checking...' . $url);			
+					$headers = get_headers($url, 1);			
+					$header_str = explode(' ',$headers[0]);				
+					if($header_str[1] == '404') {
+						$code[1]++;
+						$code[0] .=  Helper::printCodeWithLineNumber($element);
+					} 
+					$url_array[] = $element->getAttribute('href');						
+				} 
+		 	}
+		 }
+		
+		 if($code[0] != '') {
+			if($code[1] > 1) { $code[2] = 's'; }
+			return $code;
+		 }
+		
         return false;
     }
 
     public function BrokenImage()
-    {
+    {		
 		global $ft_dom;
-		
-		$elements = $ft_dom->getElementsByTagName('img');
 		$code = array('');
-        foreach ($elements as $element) { 
-			//check link status
-			if ($element->hasAttribute('src')) {
-				//link to check:
-				$link = $element->getAttribute('src');
-									
-				$link = Helper::getAbsoluteResourceLink($link);
-
-				if(Helper::getHttpResponseCode($link) == 404) {
-				    /* Handle 404 here. */
-				    $code[0] .=  Helper::printCodeWithLineNumber($element);
-					return $code;
-				} 							
-			}		        
-		}
+		$code[1] = 0;
+		$code[2] = '';
+		$passed_elem_array = array();
+		$elements = $ft_dom->getElementsByTagName('img');
+		$url_array = array();
+        foreach ($elements as $element) { 	
+			if($element->hasAttribute('src')) { 				
+				if(!in_array($element->getAttribute('src'),$url_array))
+				{ 				
+					$url = Helper::getAbsoluteResourceLink($element->getAttribute('src'));	
+					$headers = get_headers($url, 1);			
+					$header_str = explode(' ',$headers[0]);				
+					if($header_str[1] == '404') {
+						$code[1]++;
+						$code[0] .=  Helper::printCodeWithLineNumber($element);
+					} 
+					$url_array[] = $element->getAttribute('src');
+				}					
+		 	}
+		 }
+		
+		 if($code[0] != '') {
+			if($code[1] > 1) { $code[2] = 's'; }
+			return $code;
+		 }
+		
         return false;
     }
     public function GifsUsed()
@@ -292,6 +407,8 @@ class HTML
     {
 		$links_array = Helper::getAllDomLinks();
 	    $code = array('');
+		$code[1] = 0;
+		$code[2] = '';
 		foreach($links_array as $link)
 		{	
 			if(strpos($link,'&') !== false)
@@ -299,13 +416,18 @@ class HTML
 				//the next four chars must be amp; (five chars total)
 				if(substr_compare($link,'&amp;',strpos($link,'&'),5) !== false)
 				{
-					$link = Helper::addWhitespaceForReportFormatting($link);
-					$code[0] .= '`'.$link.'`';
+					if($code[1] <= Helper::$max_disp_threshold) { 
+						$link = Helper::addWhitespaceForReportFormatting($link);
+						$code[0] .= '`'.$link.'`';
+					}
+					$code[1]++;
 				}
 			}
 			
 		}
  		if($code[0] != '') {
+			if($code[1] > 1) { $code[2] = 's'; }
+			if($code[1] > Helper::$max_disp_threshold) { $code[0] .= '...'; }
 			return $code;
 		}
        return false;
@@ -498,16 +620,20 @@ class HTML
     public function MissingImgHeightOrWidth()
     {
 		global $ft_dom;
-		$code = array('');	
-			
+		$code = array('');
+		$code[1] = 0; 
+		$code[2] = '';
 		$elements = $ft_dom->getElementsByTagName('img');
         foreach ($elements as $element) { 
 			if (!($element->hasAttribute('width')) || !($element->hasAttribute('height'))) {
-				$code[0] .=  Helper::printCodeWithLineNumber($element);
+				if($code[1] <= Helper::$max_disp_threshold) { $code[0] .= Helper::printCodeWithLineNumber($element); }
+				$code[1]++;
 			}	
 		}
 
 		if($code[0] != '') {
+			if($code[1] > 1) { $code[2] = 's'; }
+			if($code[1] > Helper::$max_disp_threshold) { $code[0] .= '...'; }
 			return $code;
 		}
         return false;

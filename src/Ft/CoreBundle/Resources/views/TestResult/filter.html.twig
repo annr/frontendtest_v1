@@ -1,4 +1,9 @@
 <h1>TestResult list</h1>
+<style>
+.minor {
+	background-color: #f2ecae;
+}
+</style>
 
 <table class="records_list">
     <thead>
@@ -16,7 +21,7 @@
     </thead>
     <tbody>
     {% for entity in entities %}
-        <tr>
+        <tr{% if entity.weight < 10 %} class="minor"{% endif %}>
             <td><a href="{{ path('test_result_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
             <td>{{ entity.ftrequestid }}</td>
            <!-- <td>{{ entity.kind }}</td>
@@ -32,6 +37,12 @@
                     </li>
                     <li>
                         <a href="{{ path('test_result_edit', { 'id': entity.id }) }}">edit</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('test_result_promote', { 'id': entity.id, 'ft_request_id': entity.ftrequestid }) }}">promote</a>
+                    </li>
+                    <li>
+                    <a href="{{ path('test_result_demote', { 'id': entity.id, 'ft_request_id': entity.ftrequestid }) }}">demote</a>
                     </li>
                 </ul>
             </td>

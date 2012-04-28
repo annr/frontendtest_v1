@@ -6,7 +6,7 @@ class Script
 {
 		//until you understand the maleffects better, only return true if they have > 3 scripts in head,
 		//and none of those scripts are optimizely, typekit and jquery...
-	    public function ScriptsInHead()
+	    public function MultipleScriptsInHead()
 	    {
 			global $ft_dom;
 			$elements = $ft_dom->getElementsByTagName('head');			

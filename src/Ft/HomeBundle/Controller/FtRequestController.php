@@ -14,6 +14,7 @@ use Ft\CoreBundle\CoreTest\HTML5;
 use Ft\CoreBundle\CoreTest\HTML;
 use Ft\CoreBundle\CoreTest\Script;
 use Ft\CoreBundle\CoreTest\Filedata;
+use Ft\CoreBundle\CoreTest\Content;
 use Ft\CoreBundle\Entity\TestResult;
 use Ft\CoreBundle\CoreTest\Helper;
 
@@ -29,11 +30,18 @@ class FtRequestController extends Controller
 	{	
 		$em = $this->getDoctrine()->getEntityManager();
         $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);
-
-		$results = $em->getRepository('FtCoreBundle:TestResult')->findBy(
-		    array('ft_request_id' => $id),
-		    array('weight' => 'DESC')
-		);
+		
+		$repository = $this->getDoctrine()
+		    ->getRepository('FtCoreBundle:TestResult');
+		
+		$query = $repository->createQueryBuilder('p')
+		    ->where('p.ft_request_id = :ft_request_id and p.weight >= :weight')
+			->setParameter('ft_request_id', $id)
+		    ->setParameter('weight', $this->container->getParameter('minor_issue_threshold'))
+		    ->orderBy('p.weight', 'DESC')
+		    ->getQuery();
+		
+        $results = $query->getResult();
 
 		$summary = $ft_request->getReportSummary();
 		
@@ -56,10 +64,17 @@ class FtRequestController extends Controller
 		$em = $this->getDoctrine()->getEntityManager();
         $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);
 
-		$results = $em->getRepository('FtCoreBundle:TestResult')->findBy(
-		    array('ft_request_id' => $id),
-		    array('weight' => 'DESC')
-		);
+		$repository = $this->getDoctrine()
+		    ->getRepository('FtCoreBundle:TestResult');
+		
+		$query = $repository->createQueryBuilder('p')
+		    ->where('p.ft_request_id = :ft_request_id and p.weight >= :weight')
+			->setParameter('ft_request_id', $id)
+		    ->setParameter('weight', $this->container->getParameter('minor_issue_threshold'))
+		    ->orderBy('p.weight', 'DESC')
+		    ->getQuery();
+		
+        $results = $query->getResult();
 
 		$summary = $ft_request->getReportSummary();
 		
@@ -70,8 +85,8 @@ class FtRequestController extends Controller
 	    //email report
 	    $message = \Swift_Message::newInstance();
 
-		$cid = $message->embed(\Swift_Image::fromPath('http://www.frontendtest.com/img/logo_sm.png'));
-		//$cid = $message->embed(\Swift_Image::fromPath('http://localhost/frontendtest/web/img/logo_sm.png'));
+		//$cid = $message->embed(\Swift_Image::fromPath('http://www.frontendtest.com/img/logo_sm.png'));
+		$cid = $message->embed(\Swift_Image::fromPath('http://localhost/frontendtest/web/img/logo_sm.png'));
 
 	    $message->setSubject('FrontendTest Report')
 	       ->setFrom('support@frontendtest.com')
@@ -114,7 +129,10 @@ class FtRequestController extends Controller
 		//FtHelper::testMinContentLength($ft_http_request);	
 		FtHelper::setFtDom($ft_url);
 		
-		$suiteAction = $this->suiteAction($ft_request);	
+		$suiteActionRes = $this->suiteAction($ft_request);	
+
+		echo '<br>time: ' . $suiteActionRes;
+		$ft_request->setFtScoreB($suiteActionRes);
 		
 		$top_weight_sample = 7;
 		$top_weight_sum = 0;		
@@ -160,7 +178,7 @@ class FtRequestController extends Controller
 		}
 				
 		if($adjective_str != '') {			
-			$report_summary = sprintf('Thank you for using FrontendTest. We have reviewed the site you submitted and we have discovered that the front-end code' . $adjective_str . 'making the following improvements, listed in order of priority.' );
+			$report_summary = sprintf('Thank you for using FrontendTest. We reviewed the submitted web site and we have discovered that the front-end code' . $adjective_str . 'making the following improvements, listed in order of priority.' );
 			$ft_request->setReportSummary($report_summary);
 			echo $report_summary;
 		}
@@ -213,6 +231,8 @@ class FtRequestController extends Controller
 
 	public function suiteAction($ft_request)
     {
+		//$suite_time_start = Helper::microtime_float();
+		$suite_time_start = time();
 		//query the core test table to determine which tests to run?
         $em = $this->getDoctrine()->getEntityManager();
         $entities = $em->getRepository('FtCoreBundle:CoreTest')->findBy(
@@ -225,8 +245,11 @@ class FtRequestController extends Controller
 		$HTML = new HTML();
 		$Script = new Script();
 		$Filedata = new Filedata();
+		$Content = new Content();
 		
         foreach($entities as $entity) {
+			$test_time_start = Helper::microtime_float();
+			
 			$result_instance = null;
 			//var_dump($entity);
 			//do we have the class?
@@ -239,7 +262,7 @@ class FtRequestController extends Controller
 			//error_log('$ex_result ' . var_dump($ex_result));
 			
 			//THIS IS A POOR WAY TO CHECK IF THE TESTS EXIST. WHAT IF THE SAME TEST NAME EXISTS IN TWO "PACKAGES"?
-			if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className) || method_exists($Filedata,$className)){ 
+			if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className) || method_exists($Filedata,$className) || method_exists($Content,$className)){ 
 			//try {
 				$result_instance = ${$packageName}->$className();
 			//} catch (Exception $e) {	
@@ -284,13 +307,22 @@ class FtRequestController extends Controller
 			}  else {
 				error_log($entity->getClassName().' false.');
 			}
-	
+			$test_time_end = Helper::microtime_float();
+			$test_time = $test_time_end - $test_time_start;
+
+			error_log($test_time . ' seconds.');	
 			
 		}	
 				
 		$em->flush();
 		
-	
+		$suite_time_end = time();
+		$suite_time = $suite_time_end - $suite_time_start;
+
+		error_log("\n\n");
+		error_log($suite_time . ' seconds. (SUITE)');	
+
+		return $suite_time;	
 	}
 
     /**
