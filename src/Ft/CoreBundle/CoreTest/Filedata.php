@@ -83,7 +83,8 @@ class Filedata
 					if(!Helper::isMinified($link))
 					{
 						$code[1]++;
-						$code[0] .= '`'.Helper::printCodeWithLineNumber($element,false) . ' ' . round($bytes_size/1024,1, PHP_ROUND_HALF_UP) .'K`';
+						//$code[0] .= '`'.Helper::printCodeWithLineNumber($element,false) . ' ' . round($bytes_size/1024,1, PHP_ROUND_HALF_UP) .'K`';
+						$code[0] .= Helper::printCodeWithLineNumber($element);
 						//return $code;
 					} 
 				}	
@@ -137,7 +138,8 @@ class Filedata
 					if(!Helper::isMinified($link))
 					{
 						$code[1]++;
-						$code[0] .= '`'.Helper::printCodeWithLineNumber($element,false) . ' (' . round($bytes_size/1024,2, PHP_ROUND_HALF_UP) .'K)`';
+						//$code[0] .= '`'.Helper::printCodeWithLineNumber($element,false) . ' (' . round($bytes_size/1024,2, PHP_ROUND_HALF_UP) .'K)`';
+						$code[0] .= Helper::printCodeWithLineNumber($element);
 						//return $code;
 					} 
 				}	

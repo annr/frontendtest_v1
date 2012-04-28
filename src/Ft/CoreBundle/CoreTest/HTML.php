@@ -270,7 +270,7 @@ class HTML
 		 	}
 		 }
 		
-		var_dump($url_array);
+		//var_dump($url_array);
 		return false;
 
 	}

@@ -222,7 +222,8 @@ class Helper
 	}
 	
 
-	public static function printCodeWithLineNumber($element,$add_tics=true)
+//	public static function printCodeWithLineNumber($element,$add_tics=true)
+    public static function printCodeWithLineNumber($element)
     {	
 		//there is an issue with this code. because an element may have had linebreaks removed, it might not be matched. 
 		//therefore we must try to match the substring before any line breaks. this means that an element may not be accurately matched to it's line. 
@@ -236,8 +237,8 @@ class Helper
 		$doc->appendChild($doc->importNode($element,true));
 		$code_str = trim($doc->saveHTML());
 		
-		$tic = '`';
-		if($add_tics === false) {$tic = '';}
+		//$tic = '`';
+		//if($add_tics === false) {$tic = '';}
 
 		//echo "\n\ncode: \n".$code_str;
 		//if we can find the code in the string, great we're in business.
@@ -293,13 +294,13 @@ class Helper
 			$line += substr_count($text, "\n");
 			//when the line number is 1, it's not valuable.
 			if($line != 1){
-				$code =  $tic.'('. $line . ') '. $code_str . $tic . "  \n\r";				
+				$code =  '`'.'('. $line . ') '. $code_str . '`' . "  \n\r";				
 			} else {
-				$code =  $tic.$code_str . $tic . "  \n\r";					
+				$code =  '`'.$code_str . '`' . "  \n\r";					
 			}
 		} else {
 			//line number not found, so don't print it.
-			$code =  $tic.$code_str . $tic . "  \n\r";	
+			$code =  '`'.$code_str . '`' . "  \n\r";	
 			//error_log('FT ERROR with request id ' . $ft_request_id . ': DOM ELEMENT NOT FOUND IN RAW SOURCE '.$code_str);		
 		}
 		

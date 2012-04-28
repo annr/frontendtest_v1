@@ -25,7 +25,11 @@ ft_request_deliver:
 ft_request_run:
     pattern:  /ft_request_run/{id}
     defaults: { _controller: FtHomeBundle:FtRequest:run }
-            
+    
+ft_request_admin_run:
+    pattern:  /ft_request_admin_run/{id}
+    defaults: { _controller: FtHomeBundle:FtRequest:adminRun }
+                  
 ft_request:
     pattern:  /ft_request/
     defaults: { _controller: FtHomeBundle:FtRequest:index }

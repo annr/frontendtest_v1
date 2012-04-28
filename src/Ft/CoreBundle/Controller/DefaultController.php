@@ -36,7 +36,7 @@ class DefaultController extends Controller
 		$ft_url = 'http://localhost/tests/test-h.html';
 		//$ft_url = 'http://www.palcoprincipal.com';
 		//$ft_url = 'http://www.moesbooks.com';
-		$ft_url = 'http://www.ptable.com';
+		$ft_url = 'http://www.castlerockwinery.com';
 		
 		$ft_data = Helper::getDataAndSetRequest($ft_url);
 		if(!isset($ft_data)) 

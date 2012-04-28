@@ -50,7 +50,8 @@ class FtRequestController extends Controller
 	    //}
 		//$cid =  'http://www.frontendtest.com/img/logo_sm.png';
 
-		$cid =  'http://www.frontendtest.com/img/logo_sm.png';
+		//$cid =  'http://www.frontendtest.com/img/logo_sm.png';
+		$cid =  'http://localhost/frontendtest/web/img/logo_sm.png';
 		
         $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'email' => $ft_request->getEmail(),'results' => $results, 'summary' => $summary));
         $response->headers->set('Content-Type', 'text/html');
@@ -108,6 +109,13 @@ class FtRequestController extends Controller
 	    
 	}
 
+	public function adminRunAction($id)
+	{	
+		error_log('in admin run.');
+		$this->runAction($id);			
+        return $this->redirect($this->generateUrl('ft_request'));		
+	}
+	
 	public function runAction($id)
 	{
 		global $ft_url;
@@ -131,7 +139,6 @@ class FtRequestController extends Controller
 		
 		$suiteActionRes = $this->suiteAction($ft_request);	
 
-		echo '<br>time: ' . $suiteActionRes;
 		$ft_request->setFtScoreB($suiteActionRes);
 		
 		$top_weight_sample = 7;
@@ -161,10 +168,10 @@ class FtRequestController extends Controller
 		        $adjective_str = sprintf($format1, 'is **excellent**!');
 		        break;
 		    case ($score < 16):
-		        $adjective_str = sprintf($format1, 'is **very good**.');
+		        $adjective_str = sprintf($format2, 'is **very good**.');
 		        break;
 		    case ($score < 20):
-		        $adjective_str = sprintf($format1, 'is **good**.');
+		        $adjective_str = sprintf($format2, 'is **good**.');
 		        break;
 		    case ($score < 25):
 		        $adjective_str = sprintf($format3, '**could use some love**.');
@@ -180,15 +187,11 @@ class FtRequestController extends Controller
 		if($adjective_str != '') {			
 			$report_summary = sprintf('Thank you for using FrontendTest. We reviewed the submitted web site and we have discovered that the front-end code' . $adjective_str . 'making the following improvements, listed in order of priority.' );
 			$ft_request->setReportSummary($report_summary);
-			echo $report_summary;
+			//echo $report_summary;
 		}
 				
 	    $em->persist($ft_request);
-	    $em->flush();		
-
-        $response = $this->render('FtHomeBundle:FtRequest:go.txt.twig');
-        $response->headers->set('Content-Type', 'text/plain');
-        return $response;
+	    $em->flush();
 	
 	}
 	
@@ -334,9 +337,11 @@ class FtRequestController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getEntityManager();
+	
+		$query = $em->createQuery('SELECT p FROM FtHomeBundle:FtRequest p ORDER BY p.created DESC')->setMaxResults(30);
 
-        $entities = $em->getRepository('FtHomeBundle:FtRequest')->findAll();
-
+		$entities = $query->getResult();
+		
         return array('entities' => $entities);
     }
 
@@ -360,7 +365,8 @@ class FtRequestController extends Controller
 
         return array(
             'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),        );
+            'delete_form' => $deleteForm->createView(),        
+		);
     }
 
     /**
@@ -372,6 +378,8 @@ class FtRequestController extends Controller
     public function newAction()
     {
         $entity = new FtRequest();
+
+        $entity->setCreated(new \DateTime());
         $form   = $this->createForm(new FtRequestType(), $entity);
 
         return array(
@@ -392,6 +400,7 @@ class FtRequestController extends Controller
         $entity  = new FtRequest();
         $request = $this->getRequest();
         $form    = $this->createForm(new FtRequestType(), $entity);
+
         $form->bindRequest($request);
 
         if ($form->isValid()) {
@@ -399,7 +408,8 @@ class FtRequestController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('ft_request_show', array('id' => $entity->getId())));
+            //return $this->redirect($this->generateUrl('ft_request_show', array('id' => $entity->getId())));
+            return $this->redirect($this->generateUrl('ft_request'));
             
         }
 
@@ -433,6 +443,7 @@ class FtRequestController extends Controller
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
+
     }
 
     /**
@@ -452,6 +463,8 @@ class FtRequestController extends Controller
             throw $this->createNotFoundException('Unable to find FtRequest entity.');
         }
 
+        $entity->setUpdated(new \DateTime());
+
         $editForm   = $this->createForm(new FtRequestType(), $entity);
         $deleteForm = $this->createDeleteForm($id);
 
@@ -463,7 +476,8 @@ class FtRequestController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('ft_request_edit', array('id' => $id)));
+            //return $this->redirect($this->generateUrl('ft_request_edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('ft_request'));
         }
 
         return array(

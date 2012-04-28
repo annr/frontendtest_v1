@@ -4,9 +4,19 @@
 
 ul.horizNav li{
 	display: inline;
-	padding-right: 20px;
+	padding-right: 10px;
 }
+td { font-family: arial, 'san serif'; font-size: smaller;}
 </style>
+
+<ul>
+    <li>
+        <a href="{{ path('ft_request_new') }}">
+            Create a new entry
+        </a>
+    </li>
+</ul>
+
 <table class="records_list">
     <thead>
         <tr>
@@ -20,7 +30,7 @@ ul.horizNav li{
             <th>Moretests_req</th>
             <th>Type</th>-->
             <th># Results</th>
-            <th>Avg Weight</th>
+            <th>Avg Wt</th>
             <th>Score</th>
             <th>Created</th>
           <!--  <th>Updated</th> -->
@@ -55,7 +65,7 @@ ul.horizNav li{
                         <a href="{{ path('ft_request_edit', { 'id': entity.id }) }}">edit</a>
                     </li>
                     <li>
-                        <a href="{{ path('ft_request_run', { 'id': entity.id }) }}">run suite</a>
+                        <a href="{{ path('ft_request_admin_run', { 'id': entity.id }) }}">run suite</a>
                     </li>
                     <li>
                         <a href="../core/test_result_filter/{{ entity.id }}">results</a>
