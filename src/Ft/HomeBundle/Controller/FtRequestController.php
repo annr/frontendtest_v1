@@ -52,8 +52,8 @@ class FtRequestController extends Controller
 	    //}
 		//$cid =  'http://www.frontendtest.com/img/logo_sm.png';
 
-		//$cid =  'http://www.frontendtest.com/img/logo_sm.png';
-		$cid =  'http://localhost/frontendtest/web/img/logo_sm.png';
+		$cid =  'http://www.frontendtest.com/img/logo_sm.png';
+		//$cid =  'http://localhost/frontendtest/web/img/logo_sm.png';
 		
         $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'email' => $ft_request->getEmail(),'results' => $results, 'summary' => $summary));
         $response->headers->set('Content-Type', 'text/html');
@@ -88,8 +88,8 @@ class FtRequestController extends Controller
 	    //email report
 	    $message = \Swift_Message::newInstance();
 
-		//$cid = $message->embed(\Swift_Image::fromPath('http://www.frontendtest.com/img/logo_sm.png'));
-		$cid = $message->embed(\Swift_Image::fromPath('http://localhost/frontendtest/web/img/logo_sm.png'));
+		$cid = $message->embed(\Swift_Image::fromPath('http://www.frontendtest.com/img/logo_sm.png'));
+		//$cid = $message->embed(\Swift_Image::fromPath('http://localhost/frontendtest/web/img/logo_sm.png'));
 
 	    $message->setSubject('FrontendTest Report')
 	       ->setFrom('support@frontendtest.com')
