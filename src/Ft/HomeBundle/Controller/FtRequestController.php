@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Ft\HomeBundle\Entity\FtRequest;
+use Ft\HomeBundle\Entity\Log;
 use Ft\HomeBundle\Form\FtRequestType;
 use Ft\HomeBundle\FtRequest\FtHelper;
 
@@ -15,6 +16,7 @@ use Ft\CoreBundle\CoreTest\HTML;
 use Ft\CoreBundle\CoreTest\Script;
 use Ft\CoreBundle\CoreTest\Filedata;
 use Ft\CoreBundle\CoreTest\Content;
+use Ft\CoreBundle\CoreTest\CSS;
 use Ft\CoreBundle\Entity\TestResult;
 use Ft\CoreBundle\CoreTest\Helper;
 
@@ -111,21 +113,29 @@ class FtRequestController extends Controller
 
 	public function adminRunAction($id)
 	{	
-		error_log('in admin run.');
 		$this->runAction($id);			
         return $this->redirect($this->generateUrl('ft_request'));		
 	}
-	
+
+	public function outputRunAction($id)
+	{	
+		$this->runAction($id);			
+        $response = $this->render('FtHomeBundle:FtRequest:run.html.twig');
+        $response->headers->set('Content-Type', 'text/html');
+        return $response;
+	}
+		
 	public function runAction($id)
 	{
 		global $ft_url;
 		global $ft_data;
 		global $ft_host;
 		global $ft_http_request;
-		
+		global $ft_run_log;
+
         $em = $this->getDoctrine()->getEntityManager();
         $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);
-
+        $ft_run_log = '';
 		$ft_url = $ft_request->getUrl();
 		$ft_data = FtHelper::setFtData($ft_url);
 		
@@ -193,6 +203,7 @@ class FtRequestController extends Controller
 	    $em->persist($ft_request);
 	    $em->flush();
 	
+	
 	}
 	
     public function goAction()
@@ -234,6 +245,9 @@ class FtRequestController extends Controller
 
 	public function suiteAction($ft_request)
     {
+		global $ft_run_log;
+		$logger = $this->get('logger');
+
 		//$suite_time_start = Helper::microtime_float();
 		$suite_time_start = time();
 		//query the core test table to determine which tests to run?
@@ -249,10 +263,11 @@ class FtRequestController extends Controller
 		$Script = new Script();
 		$Filedata = new Filedata();
 		$Content = new Content();
+		$CSS = new CSS();
 		
         foreach($entities as $entity) {
 			$test_time_start = Helper::microtime_float();
-			
+			$outcome = '';
 			$result_instance = null;
 			//var_dump($entity);
 			//do we have the class?
@@ -265,7 +280,7 @@ class FtRequestController extends Controller
 			//error_log('$ex_result ' . var_dump($ex_result));
 			
 			//THIS IS A POOR WAY TO CHECK IF THE TESTS EXIST. WHAT IF THE SAME TEST NAME EXISTS IN TWO "PACKAGES"?
-			if(method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className) || method_exists($Filedata,$className) || method_exists($Content,$className)){ 
+			if(method_exists($CSS,$className) ||method_exists($HTML5,$className) || method_exists($HTML,$className) || method_exists($Script,$className) || method_exists($Filedata,$className) || method_exists($Content,$className)){ 
 			//try {
 				$result_instance = ${$packageName}->$className();
 			//} catch (Exception $e) {	
@@ -278,7 +293,8 @@ class FtRequestController extends Controller
 			if($result_instance) {
 				//merge what is returned with the coretest record. add to result array.
 				//persist test result
-			    error_log($entity->getClassName().' true.');
+				$outcome = 'true';
+				
 		        $result = new TestResult();
 		        $result->setWeight($entity->getWeight());					
 		        $result->setClassName($entity->getClassName());	
@@ -308,22 +324,28 @@ class FtRequestController extends Controller
 					 
 				}
 			}  else {
-				error_log($entity->getClassName().' false.');
+				$outcome = 'false';
 			}
 			$test_time_end = Helper::microtime_float();
 			$test_time = $test_time_end - $test_time_start;
 
-			error_log($test_time . ' seconds.');	
-			
+		    $logger->info('(FT_REQUEST_ID '.$ft_request->getId() . ") " . round($test_time,5) . ' seconds for - '.$outcome.' ' . $entity->getClassName());			
 		}	
-				
-		$em->flush();
-		
+
+
 		$suite_time_end = time();
 		$suite_time = $suite_time_end - $suite_time_start;
 
-		error_log("\n\n");
-		error_log($suite_time . ' seconds. (SUITE)');	
+		$ft_run_log .= ',"suite time": "'.$suite_time.' seconds"';
+		 
+		if($ft_run_log != '') {
+	        $log = new Log();
+	        $log->setFtRequest($ft_request);	
+	        $log->setData($ft_run_log);					
+	        $em->persist($log);				
+		}
+						
+		$em->flush();
 
 		return $suite_time;	
 	}

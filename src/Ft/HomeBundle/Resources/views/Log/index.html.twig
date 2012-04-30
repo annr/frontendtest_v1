@@ -1,0 +1,29 @@
+<h1>Log list</h1>
+
+<table class="records_list">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Ft_request_id</th>
+            <th>Data</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for entity in entities %}
+        <tr>
+            <td><a href="{{ path('log_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+            <td>{{ entity.ftrequestid }}</td>
+            <td>{{ entity.data }}</td>
+            <td>
+                <ul>
+                    <li>
+                        <a href="{{ path('log_show', { 'id': entity.id }) }}">show</a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+

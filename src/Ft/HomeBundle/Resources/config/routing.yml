@@ -10,6 +10,10 @@ _orig:
     pattern:  /homepage_v1/
     defaults: { _controller: FtHomeBundle:HomepageV1:index }
 
+ft_request:
+    pattern:  /ft_request/
+    defaults: { _controller: FtHomeBundle:FtRequest:index }
+        
 _ft_request_go:
     pattern:  /report_request
     defaults: { _controller: FtHomeBundle:FtRequest:go }
@@ -29,10 +33,10 @@ ft_request_run:
 ft_request_admin_run:
     pattern:  /ft_request_admin_run/{id}
     defaults: { _controller: FtHomeBundle:FtRequest:adminRun }
-                  
-ft_request:
-    pattern:  /ft_request/
-    defaults: { _controller: FtHomeBundle:FtRequest:index }
+    
+ft_request_output_run:
+    pattern:  /ft_request_output_run/{id}
+    defaults: { _controller: FtHomeBundle:FtRequest:outputRun }
 
 ft_request_edit:
     pattern:  /ft_request_edit/{id}
@@ -57,4 +61,12 @@ ft_request_show:
 ft_request_update:
     pattern:  /ft_request_update/{id}
     defaults: { _controller: FtHomeBundle:FtRequest:update }
+    
+log:
+    pattern:  /log/
+    defaults: { _controller: FtHomeBundle:Log:index }
+    
+log_show:
+    pattern:  /log_show/{id}
+    defaults: { _controller: FtHomeBundle:Log:show }
      

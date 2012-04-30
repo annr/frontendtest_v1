@@ -277,7 +277,8 @@ class Helper
 		
 		//if code_str has no spaces, and is greater than x chars, add a space to break the line every x chars.		
 		//determine if the test is necessary, and pass in range. this is a dangerous recursive thing!
-		$unbrokencharspans = explode(' ',$code_str);
+		$pattern = '/\s|-/';
+		$unbrokencharspans = preg_split($pattern,$code_str);
 		foreach($unbrokencharspans as $unbrokencharspan) {
 			if(strlen($unbrokencharspan) > 65) { 
 				$start = strpos($code_str,$unbrokencharspan); 
@@ -467,10 +468,15 @@ class Helper
 	public static function DoctypeFirstElementCheck() 
 	{
 		global $ft_data;
+		//echo substr(trim(strtolower($ft_data)),0,300);
 
 		$data_without_comments = Helper::removeCommentsFromString($ft_data);
+	
+		//remove the BOM:
+		$data_without_comments = preg_replace('/\x{EF}\x{BB}\x{BF}/','',$data_without_comments);
 
-		if(strpos(trim(strtolower($data_without_comments)), '<!doctype') === false || strpos(trim(strtolower($data_without_comments)), '<!doctype') != 0) 
+		//what are these special chars that can be in source?
+		if(stripos(trim($data_without_comments), '<!doctype ') === false || stripos(trim($data_without_comments), '<!doctype ') != 0) 
 		{	
 			return false;
 		}
@@ -523,6 +529,7 @@ class Helper
 		} 		
 		return($count);
 	}
+	
 
 	
 	

@@ -19,6 +19,33 @@ class Script
 			}
 	        return false;
 	    }
+
+	    public function ScriptsInHeadTotalFilesizeLarge()
+	    {
+			global $ft_dom;
+			$head = $ft_dom->getElementsByTagName('head');			
+			$code = array('');
+			$elements = $head->item(0)->getElementsByTagName('script');
+			$code[1] = '';
+			$code[2] = 0;
+	        foreach ($elements as $element) { 
+				if ($element->hasAttribute('src')) {
+					$link = Helper::getAbsoluteResourceLink($element->getAttribute('src'));	
+					$code[2] += floatval(Helper::getResourceSizeBytes($link))/1024;					
+					//echo "<br>t". $code[2];					
+					$code[0]++;	
+				}	
+			}
+			
+			if($code[2] > 180)
+			{		
+				$code[2] = round($code[2],2);
+				if($code[0] > 1) { $code[1] = 's'; }
+				return $code;
+			}			
+	        return false;
+	    }
+
 	
 	public function LocalJQueryLink() {
 		return false;

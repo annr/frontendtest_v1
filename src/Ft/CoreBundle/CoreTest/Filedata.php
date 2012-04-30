@@ -17,12 +17,13 @@ class Filedata
 		$elements = $ft_dom->getElementsByTagName('img');
 		$badimg = array();
 		$code[1] = 0;
+		$code[2] = '';
 	    foreach ($elements as $element) { 
 		
 			if($element->hasAttribute('src')) {
 				if ($element->hasAttribute('width') || $element->hasAttribute('height')) {
 					$link = Helper::getAbsoluteResourceLink($element->getAttribute('src'));
-					if(Helper::getHttpResponseCode($link) != 404) { 
+					if(Helper::getHttpResponseCode($link) == 200) { 
 						
 						list($width, $height) = getimagesize($link);
 						if ($element->hasAttribute('width')) {
@@ -97,6 +98,12 @@ class Filedata
 	    return false;
     }
 
+    public function QuestionablyLargeSingleResource()
+    {
+		return false;
+	}
+	
+	
 	public function MultipleLocalStyleSheets()
     {
 	/*

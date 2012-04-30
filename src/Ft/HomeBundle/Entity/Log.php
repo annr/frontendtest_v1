@@ -1,16 +1,16 @@
 <?php
 
-namespace Ft\CoreBundle\Entity;
+namespace Ft\HomeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Ft\CoreBundle\Entity\Report
+ * Ft\HomeBundle\Entity\Log
  *
  * @ORM\Table()
  * @ORM\Entity
  */
-class Report
+class Log
 {
     /**
      * @var integer $id
@@ -22,26 +22,25 @@ class Report
     private $id;
 
     /**
-     * @var integer $ft_request_id
+     * @var bigint $ft_request_id
      *
      * @ORM\Column(name="ft_request_id", type="integer")
      */
     private $ft_request_id;
 
     /**
-     * @var text $html
-     *
-     * @ORM\Column(name="html", type="text")
-     */
-    private $html;
+     * @var FtRequest $ft_request
+ 	 * @ORM\ManyToOne(targetEntity="FtRequest", inversedBy="logs")
+	 * @ORM\JoinColumn(name="ft_request_id", referencedColumnName="id")
+    */
+    protected $ft_request;
 
     /**
-     * @var datetime $created
+     * @var text $data
      *
-     * @ORM\Column(name="created", type="datetime")
+     * @ORM\Column(name="data", type="text")
      */
-    private $created;
-
+    private $data;
 
     /**
      * Get id
@@ -74,42 +73,42 @@ class Report
     }
 
     /**
-     * Set html
+     * Set data
      *
-     * @param text $html
+     * @param text $data
      */
-    public function setHtml($html)
+    public function setData($data)
     {
-        $this->html = $html;
+        $this->data = $data;
     }
 
     /**
-     * Get html
+     * Get data
      *
      * @return text 
      */
-    public function getHtml()
+    public function getData()
     {
-        return $this->html;
+        return $this->data;
     }
 
     /**
-     * Set created
+     * Set ft_request
      *
-     * @param datetime $created
+     * @param Ft\HomeBundle\Entity\FtRequest $ftRequest
      */
-    public function setCreated($created)
+    public function setFtRequest(\Ft\HomeBundle\Entity\FtRequest $ftRequest)
     {
-        $this->created = $created;
+        $this->ft_request = $ftRequest;
     }
 
     /**
-     * Get created
+     * Get ft_request
      *
-     * @return datetime 
+     * @return Ft\HomeBundle\Entity\FtRequest 
      */
-    public function getCreated()
+    public function getFtRequest()
     {
-        return $this->created;
+        return $this->ft_request;
     }
 }

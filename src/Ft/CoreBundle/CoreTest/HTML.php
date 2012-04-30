@@ -126,10 +126,14 @@ class HTML
     public function ScriptBeforeCss()
     {
 		global $ft_dom;
+		global $ft_run_log;
+
 		$elements = $ft_dom->getElementsByTagName('head');
 		$code = array('');
 		$prev_script = null;
 		$print_once = false;
+		$code[1] = 0; //number of css after scripts.
+		$code[2] = 0; //number of scripts before css.
     	if ( $elements->item(0)->hasChildNodes() ) {
 		    $children = $elements->item(0)->childNodes;
 		    foreach( $children as $kid ) {
@@ -141,10 +145,13 @@ class HTML
 						if($kid->hasAttribute('href') && (strpos(strtolower($kid->getAttribute('href')),'.css') !== false)) {
 							if(isset($prev_script)) {
 								if(!$print_once) {
+									$code[1]++;
+									$code[2]++;
 									$code[0] .= Helper::printCodeWithLineNumber($prev_script);
 									$code[0] .= "\nappears before\n\n";
 									$code[0] .= Helper::printCodeWithLineNumber($kid);
 								} else {
+									$code[1]++;
 									$code[0] .= "\nand\n\n";
 									$code[0] .= Helper::printCodeWithLineNumber($kid);
 								}								
@@ -152,12 +159,20 @@ class HTML
 							}
 						}
 					}
-					if($print_once) { $code[0] .= "\n"; }						
+					if($print_once) { $code[0] .= "\n"; }	
 					
 			    }
 		    }
 	    }
+	
+		$ft_run_log .= ',"Number stylesheets after scripts":'. $code[1] . ',"Number scripts before stylesheets":'. $code[2];
+
+		if($code[1] > 1) { $code[1] = 's'; } else { $code[1] = ''; }
+		if($code[2] > 1) { $code[2] = 's'; } else { $code[2] = ''; }
+				
+		//if code is too long, empty and return. 
  		if($code[0] != '') {
+			if(strlen($code[0]) > 300) { $code[0] = ''; }
 			return $code;
 		}	
 
@@ -289,7 +304,11 @@ class HTML
 		//only make this test if there is a reasonable number of links.
 		if($elements->length < 50) { 
 	        foreach ($elements as $element) { 	
-				if($element->hasAttribute('href')) { 				
+				if($element->hasAttribute('href')) { 
+					if(strpos($element->getAttribute('href'),'javascript:') !== false || strpos($element->getAttribute('href'),'mailto:') !== false){
+						error_log('returning from mailto or js:');
+						continue;
+					}				    		
 					if(!in_array($element->getAttribute('href'),$url_array))
 					{ 				
 						$url = Helper::getAbsoluteResourceLink($element->getAttribute('href'));	
@@ -393,6 +412,15 @@ class HTML
 		}						
         return false;
     }
+
+
+    public function DoubleSlashesInUrl()
+    {
+		//besides paired with the protocol, are there redundant slashes?
+		//in what browser does this not work?
+        return false;
+    }
+
 
     public function ManyImagesFlag()
     {
@@ -533,10 +561,11 @@ class HTML
 	*/
 
     //this is the not perfect but optimized version. 
-    public function DeprecatedAttributeOptimized()
+    public function DeprecatedAttributeAlt()
     {
 		global $ft_data;
 		$code = array('');
+	
 		$deprecated_attributes = array('nowrap',
 										'align',
 										'start',
@@ -554,40 +583,137 @@ class HTML
 										//'type',
 										//'value',
 										'width');
-		/*								
-		$deprecated_in_tag['img'] = array('vspace','border','hspace');
-		$deprecated_in_tag['object'] = array('vspace','border','hspace');
-		$deprecated_in_tag['body'] = array('alink','background','bgcolor','link','text','vlink');
-		$deprecated_in_tag['table'] = array('bgcolor');
-		$deprecated_in_tag['td'] = array('bgcolor','nowrap','width');
-		$deprecated_in_tag['tr'] = array('bgcolor');
-		$deprecated_in_tag['th'] = array('bgcolor','nowrap','width');
-		$deprecated_in_tag['hr'] = array('noshade','size','width');
-		$deprecated_in_tag['ol'] = array('start');
-		$deprecated_in_tag['li'] = array('type','value');
-		$deprecated_in_tag['pre'] = array('width');
-		*/						
-		foreach($deprecated_attributes as $deprecated_attribute) 
-		{
-			$strpos = strpos($ft_data,' '.$deprecated_attribute.'=');
-			if($strpos !== false)
+	
+/*									
+		$deprecated_in_tags['img'] = array('vspace','border','hspace','width');
+		$deprecated_in_tags['object'] = array('vspace','border','hspace');
+		$deprecated_in_tags['body'] = array('alink','background','bgcolor','link','text','vlink');
+		$deprecated_in_tags['table'] = array('bgcolor');
+		$deprecated_in_tags['td'] = array('bgcolor','nowrap','width');
+		$deprecated_in_tags['tr'] = array('bgcolor');
+		$deprecated_in_tags['th'] = array('bgcolor','nowrap','width');
+		$deprecated_in_tags['hr'] = array('noshade','size','width');
+		$deprecated_in_tags['ol'] = array('start');
+		$deprecated_in_tags['li'] = array('type','value');
+		$deprecated_in_tags['pre'] = array('width');
+		$deprecated_in_tags['div'] = array('width');
+*/							
+		//foreach($deprecated_in_tags as $key => $attribute_array) 
+		//{
+
+			foreach($deprecated_attributes as $attribute) 
 			{
-				$pattern = '/<.*\s'.$deprecated_attribute.'='.'.*>/';		
-				preg_match($pattern,$ft_data,$match1);
-				//the strpos search is not very good. if it wasn't really found, don't return it. 
-				//the is an issue with content seeming like code to FET.
-				if(isset($match1[0])) {
-					$code[0] = $deprecated_attribute;							
-					$code[1] = substr($match1[0],1,strpos($match1[0],' ')-1);						
-					if($deprecated_attribute == 'width' && strtolower($code[1]) == 'img') { continue; }		
-					$code[2] = '`'.$match1[0].'`';				
-					return $code;
-				} else {
-					//the previous search was simply not very good.
-					continue;
-				}				
-			}
+				//echo "\ntesting " . $attribute . " for $key.\n\n";
+
+				//for efficiency, does the attribute even exist?
+				
+				//get the array of positions for this!!!
+				$strpos = strpos($ft_data,' '.$attribute.'=');
+				if($strpos !== false)
+				{
+					//this is far from a perfect search:
+					//find the "<" backwards from strpos
+					//echo "start reverse search: " . ($strpos - strlen($ft_data));
+					$open_tag_start = strrpos($ft_data,'<',$strpos - strlen($ft_data));
+					$tag = substr($ft_data,$open_tag_start+1,(strpos($ft_data,' ',$open_tag_start) - ($open_tag_start+1)));					
+					if($attribute == 'width' && $tag == 'img') { continue; }		
+					
+					$code[1] = $tag;
+					$code[0] = 	$attribute;										
+					$code[2] = '`'.substr($ft_data,$open_tag_start,((strpos($ft_data,'>',$open_tag_start)+1) - $open_tag_start)).'`';				
+					return $code;						
+
+					//$open_tag = substr($ft_data, $open_tag_start, strpos($ft_data,' ',$open_tag_start));
+					
+					//and then only log if open_tag is $key
+					
+					//$pattern = '/<'.$key.'\s+.*'.$attribute.'=.*>/';	
+							
+					//preg_match($pattern,$ft_data,$match1);
+					//the strpos search is not very good. if it wasn't really found, don't return it. 
+					//the is an issue with content seeming like code to FET.
+					//echo print_r($match1);
+					
+					/*
+					if(isset($match1[0])) {
+						$code[0] = $deprecated_attribute;
+						//we have an issue with results with nested tags. 
+						//this is returned:
+						//<div class="logomain"> <a href="/"><img src="http://www.ekwity.com/images//logos/ekwity_whitelogo.png" alt="Ekwity.com" width="316" height="120"/></a> </div>
+						//therefore let's test the tag from where deprecated element is found.
+												
+						$code[1] = substr($match1[0],1,strpos($match1[0],' ')-1);						
+						if($deprecated_attribute == 'width' && strtolower($code[1]) == 'img') { continue; }		
+						$code[2] = '`'.$match1[0].'`';				
+						return $code;
+					} else {
+						//the previous search was simply not very good.
+						continue;
+					}
+					*/				
+				}
+			
+			//}
 		}	
+		return false;				
+	}
+
+
+    //this is the not perfect but optimized version. 
+    public function DeprecatedAttribute()
+    {
+		global $ft_dom;
+		$code = array('');
+		$code[1] = '';	
+		$code[2] = 0;	
+		$instance_array = array();						
+		$deprecated_in_tags['img'] = array('vspace','border','hspace','align');
+		$deprecated_in_tags['object'] = array('vspace','border','hspace');
+		$deprecated_in_tags['body'] = array('alink','background','bgcolor','link','text','vlink');
+		$deprecated_in_tags['table'] = array('bgcolor','align');
+		$deprecated_in_tags['td'] = array('bgcolor','nowrap','width');
+		$deprecated_in_tags['tr'] = array('bgcolor');
+		$deprecated_in_tags['th'] = array('bgcolor','nowrap','width');
+		$deprecated_in_tags['hr'] = array('noshade','size','width');
+		$deprecated_in_tags['ol'] = array('start');
+		$deprecated_in_tags['li'] = array('type','value');
+		$deprecated_in_tags['pre'] = array('width');
+		$deprecated_in_tags['div'] = array('align');
+		$deprecated_in_tags['p'] = array('align');
+		$deprecated_in_tags['h1'] = array('align');
+		$deprecated_in_tags['h2'] = array('align');
+		$deprecated_in_tags['h3'] = array('align');
+		$deprecated_in_tags['h4'] = array('align');
+		$deprecated_in_tags['h5'] = array('align');
+		$deprecated_in_tags['h6'] = array('align');
+		$deprecated_in_tags['hr'] = array('align','noshade','size','width');
+						
+		foreach($deprecated_in_tags as $key => $attribute_array) 
+		{
+			$elements = $ft_dom->getElementsByTagName($key);
+			foreach($elements as $element) 
+			{
+				foreach($attribute_array as $attribute) 
+				{
+					if($element->hasAttribute($attribute)) {
+						$code[2]++;
+						//don't show too many of these lines. 
+						if($code[2] < 4 && !in_array("$key-$attribute",$instance_array)) { 
+							$code[0] .= '"'.$attribute.'" is a deprecated HTML4 attribute for `<'.$key.">`\n\n";
+						} elseif ($code[2] == 4) {
+							$code[0] .= '...';							
+						}	
+						$instance_array[] = "$key-$attribute";				
+					}
+				}
+			}			
+		}	
+		
+		if($code[0] != '') {
+			if($code[2] > 1) { $code[1] = 's'; }
+			return $code;
+		}		
+		
 		return false;				
 	}
 		
