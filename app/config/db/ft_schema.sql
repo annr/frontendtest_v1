@@ -40,7 +40,7 @@ CREATE TABLE `CoreTest` (
   `created` datetime NOT NULL,
   `updated` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -67,7 +67,40 @@ CREATE TABLE `FtRequest` (
   `ft_score_a` smallint(6) DEFAULT NULL,
   `ft_score_b` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Log`
+--
+
+DROP TABLE IF EXISTS `Log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ft_request_id` int(11) NOT NULL,
+  `data` longtext NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_B7722E25CC9C00BB` (`ft_request_id`),
+  CONSTRAINT `FK_B7722E25CC9C00BB` FOREIGN KEY (`ft_request_id`) REFERENCES `FtRequest` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `Report`
+--
+
+DROP TABLE IF EXISTS `Report`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Report` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ft_request_id` int(11) NOT NULL,
+  `html` longtext NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -89,7 +122,7 @@ CREATE TABLE `TestResult` (
   PRIMARY KEY (`id`),
   KEY `IDX_DA7D8D62CC9C00BB` (`ft_request_id`),
   CONSTRAINT `FK_DA7D8D62CC9C00BB` FOREIGN KEY (`ft_request_id`) REFERENCES `FtRequest` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=293 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=507 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -119,4 +152,4 @@ CREATE TABLE `newsletteremail` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-04-24 11:11:25
+-- Dump completed on 2012-05-01  6:31:50
