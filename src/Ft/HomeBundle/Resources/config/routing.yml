@@ -62,11 +62,11 @@ ft_request_update:
     pattern:  /ft_request_update/{id}
     defaults: { _controller: FtHomeBundle:FtRequest:update }
     
-log:
-    pattern:  /log/
+logger:
+    pattern:  /logger/
     defaults: { _controller: FtHomeBundle:Log:index }
     
-log_show:
-    pattern:  /log_show/{id}
+logger_show:
+    pattern:  /logger_show/{id}
     defaults: { _controller: FtHomeBundle:Log:show }
      

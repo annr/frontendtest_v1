@@ -15,7 +15,7 @@ security:
     access_control:
         - { path: ^/ft_request, roles: ROLE_ADMIN }
         - { path: ^/core, roles: ROLE_ADMIN }
-        - { path: ^/log, roles: ROLE_ADMIN }
+        - { path: ^/logger, roles: ROLE_ADMIN }
 
     providers:
         in_memory:
