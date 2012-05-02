@@ -32,6 +32,8 @@ class Helper
 		}
 
 		\curl_close($ch);
+		//remove the BOM
+		$data = preg_replace('/\x{EF}\x{BB}\x{BF}/','',$data); 
 		
 		//I realize it's weird to set one global var and return another. 
 		return $data;		
@@ -482,7 +484,7 @@ class Helper
 		$data_without_comments = Helper::removeCommentsFromString($ft_data);
 	
 		//remove the BOM:
-		$data_without_comments = preg_replace('/\x{EF}\x{BB}\x{BF}/','',$data_without_comments);
+		//$data_without_comments = preg_replace('/\x{EF}\x{BB}\x{BF}/','',$data_without_comments);
 
 		//what are these special chars that can be in source?
 		if(stripos(trim($data_without_comments), '<!doctype ') === false || stripos(trim($data_without_comments), '<!doctype ') != 0) 

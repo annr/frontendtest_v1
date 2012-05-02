@@ -59,6 +59,7 @@ class DefaultController extends Controller
 		$ft_web_root = strtolower($protocol[0]) . '://' . $ft_host . '/';
 						
 		$ft_dom = new \DomDocument();
+		$ft_dom->preserveWhiteSpace = true;
 		@$ft_dom->loadHTML($ft_data);
 
 		//run whichever tests it can find.

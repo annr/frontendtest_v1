@@ -50,7 +50,7 @@ class FtHelper
 		
 		$ft_dom = new \DomDocument();
 		$ft_dom->preserveWhiteSpace = true;
-
+		$ft_data = preg_replace('/\x{EF}\x{BB}\x{BF}/','',$ft_data); 
 		@$ft_dom->loadHTML($ft_data);
 	}
 	
