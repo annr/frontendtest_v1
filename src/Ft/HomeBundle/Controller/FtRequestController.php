@@ -97,8 +97,9 @@ class FtRequestController extends Controller
 		}
 
 	    $message->setSubject('FrontendTest Report')
-	       ->setFrom('support@frontendtest.com')
+	       ->setFrom($this->container->getParameter('email_report_from'))
 	       ->setTo($ft_request->getEmail())
+	       ->setBcc($this->container->getParameter('email_report_from'))
 	  	   ->setContentType('text/html')
 	       ->setBody($this->renderView('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'email' => $ft_request->getEmail(), 'results' => $results, 'summary' => $summary)));
 
@@ -169,41 +170,41 @@ class FtRequestController extends Controller
 		}
 		
 		$score = $top_weight_sum/$top_weight_sample;
-		
+		$display_score = round(100 - $score);
 		$ft_request->setFtScoreA($score);
 		
-		$format1 = ' %s However, you may want to consider ';
-		$format2 = ' %s Nonetheless, we suggest ';
-		$format3 = ' %s We strongly suggest ';
+		$format1 = ' %s <span style="color:#cccc66">However, you may want to consider ';
+		$format2 = ' %s <span style="color:#ff9900">Nonetheless, we suggest ';
+		$format3 = ' %s <span style="color:#ff0000">We strongly suggest ';
         
 		$adjective_str ="";
 		//just hard-code report summary adjective here FOR NOW. 
 		switch ($score) {
 		    case ($score < 8):
-		        $adjective_str = sprintf($format1, 'is **nearly perfect**!!');
+		        $adjective_str = sprintf($format1, 'is \_**nearly perfect**\_ (FET Score '.$display_score.').');
 		        break;
 		    case ($score < 12):
-		        $adjective_str = sprintf($format1, 'is **excellent**!');
+		        $adjective_str = sprintf($format1, 'is **excellent**! (FET Score '.$display_score.')');
 		        break;
 		    case ($score < 16):
-		        $adjective_str = sprintf($format2, 'is **very good**.');
+		        $adjective_str = sprintf($format2, 'is **very good**. (FET Score '.$display_score.')');
 		        break;
 		    case ($score < 20):
-		        $adjective_str = sprintf($format2, 'is **good**.');
+		        $adjective_str = sprintf($format2, 'is **good**. (FET Score '.$display_score.')');
 		        break;
 		    case ($score < 25):
-		        $adjective_str = sprintf($format3, '**could use some love**.');
+		        $adjective_str = sprintf($format3, '**could use some love**. (FET Score '.$display_score.')');
 		        break;
 		    case ($score < 35):
-		        $adjective_str = sprintf($format3, '**can be improved**.');
+		        $adjective_str = sprintf($format3, '**can be improved**. (FET Score '.$display_score.')');
 		        break;
 		    default:
-		        $adjective_str = sprintf($format3, '**can be much improved**.');
-		        break;		
+		        $adjective_str = sprintf($format3, '\_**can be much improved**\_ (FET Score '.$display_score.').');
+		        break;
 		}
 				
 		if($adjective_str != '') {			
-			$report_summary = sprintf('Thank you for using FrontendTest. We reviewed the submitted web site and we have discovered that the front-end code' . $adjective_str . 'making the following improvements, listed in order of priority.' );
+			$report_summary = sprintf('Thank you for using FrontendTest. By reviewing the submitted web site we have discovered that the front-end code' . $adjective_str . 'making the following improvements, listed in order of priority.</span>' );
 			$ft_request->setReportSummary($report_summary);
 			//echo $report_summary;
 		}

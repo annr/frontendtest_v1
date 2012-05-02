@@ -71,6 +71,7 @@ jms_security_extra:
     secure_all_services: false
     
 parameters:
+    email_report_from: support@frontendtest.com
     minor_issue_threshold: 10
     
     

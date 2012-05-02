@@ -68,14 +68,23 @@ class HTML
 	//we just check to see if they have a favicon set in the HTML. If the file is missing, it will show up in brokenlink.
 	public function FaviconMissing()
 	{
-		//global $ft_web_root;
-	    global $ft_data;
+		global $ft_dom;
+	    //global $ft_data;
 
-		$pattern = '/.*<link.*href=.*favicon\.ico.*>/';		
-		preg_match($pattern,$ft_data,$match);
+		//$pattern = '/.*<link.*href=.*favicon\.ico.*>/';		
+		//preg_match($pattern,$ft_data,$match);
 		
-		if(!isset($match[0])) { return true; }		
-		return false;			
+		//if(!isset($match[0])) { return true; }
+		
+		//unfortunately is does not need to be called favicon. re-do test.
+		$head = $ft_dom->getElementsByTagName('head');		
+		$elements = $head->item(0)->getElementsByTagName('link');
+		
+        foreach ($elements as $element) { 
+			if($element->hasAttribute('rel') && strpos($element->getAttribute('rel'),'icon') !== false) { return false; }		
+		}
+				
+		return true;			
 	}
 					
     public function ScriptBeforeCss()

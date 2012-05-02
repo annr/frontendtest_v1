@@ -34,7 +34,7 @@ class DefaultController extends Controller
 
         $entity = $em->getRepository('FtCoreBundle:CoreTest')->find($id);
 
-		$ft_url = 'http://localhost/tests/test-h.html';
+		$ft_url = 'http://localhost/tests/test-x.html';
 		//$ft_url = 'http://www.palcoprincipal.com';
 		//$ft_url = 'http://www.moesbooks.com';
 		//$ft_url = 'http://www.castlerockwinery.com';
