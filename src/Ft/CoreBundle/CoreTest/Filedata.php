@@ -2,6 +2,8 @@
 
 namespace Ft\CoreBundle\CoreTest;
 
+use Ft\CoreBundle\CoreTest\Helper;
+
 class Filedata
 {
 
@@ -11,6 +13,7 @@ class Filedata
 	
 	public function IncorrectImagePixelSize()
 	{
+		//todo: make sure set inline style height and width also match.
 		global $ft_dom;
 		$code = array('');	
 		
@@ -21,12 +24,18 @@ class Filedata
 	    foreach ($elements as $element) { 
 		
 			if($element->hasAttribute('src')) {
+				//if((!$element->hasAttribute('width') && $element->hasAttribute('style')) && Helper::hasInlineStyleAttribute($element->getAttribute('style'),'width')) { echo "width set inline."; }
+				
 				if ($element->hasAttribute('width') || $element->hasAttribute('height')) {
 					$link = Helper::getAbsoluteResourceLink($element->getAttribute('src'));
+					
 					if(Helper::getHttpResponseCode($link) == 200) { 
 						
 						list($width, $height) = getimagesize($link);
+						
 						if ($element->hasAttribute('width')) {
+							//echo "\n\nwidth:" . $element->getAttribute('width') . "\n";
+
 							if($element->getAttribute('width') != $width) {
 								if($code[1] <= Helper::$max_disp_threshold) { $code[0] .= Helper::printCodeWithLineNumber($element) . "\nshould be width=\"$width\""; }
 								$badimg[] = $element;
@@ -34,6 +43,7 @@ class Filedata
 							}
 						}
 						if ($element->hasAttribute('height')) {
+
 							if($element->getAttribute('height') != $height) {
 								if($code[1] <= Helper::$max_disp_threshold) {
 									if(in_array($element, $badimg)) {

@@ -10,7 +10,7 @@ class HTML5
 	    {
 	        return false;
 	    }
-	
+
 	    public function NotHtml5Doctype()
 	    {
 			global $ft_dom;
@@ -34,6 +34,7 @@ class HTML5
 
 	    public function Html5ElementsWOShim()
 	    {
+			$new_html5_elements = "article aside bdi command details summary figure figcaption footer header hgroup mark meter nav progress ruby rt rp section time wbr audio video source embed track canvas datalist keygen output";	
 	        return false;
 	    }
 	

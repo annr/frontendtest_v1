@@ -124,7 +124,16 @@ class Helper
 		
 
 	}
+
+    public static function hasInlineStyleAttribute($element, $attribute)
+    {
+		if($element->hasAttribute('style')) {
+			if (stripos($element->getAttribute('style'),$attribute)) { return true; }			
+		}
+		return false;
+	}
 	
+		
     public static function checkElementHref($element)
     {
 		//check link status

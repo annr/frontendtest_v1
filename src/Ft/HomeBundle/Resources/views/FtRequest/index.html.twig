@@ -2,7 +2,7 @@
 
 <style>
 
-ul.horizNav li{
+ul.horizNav li {
 	display: inline;
 	padding-right: 10px;
 }
@@ -65,8 +65,11 @@ td { font-family: arial, 'san serif'; font-size: smaller;}
                         <a href="{{ path('ft_request_edit', { 'id': entity.id }) }}">edit</a>
                     </li>
                     <li>
-                        <a href="{{ path('ft_request_admin_run', { 'id': entity.id }) }}">run suite</a>
+                        <a href="{{ path('ft_request_admin_run', { 'id': entity.id }) }}">run core</a>
                     </li>
+                    <li>
+                        <a href="{{ path('ft_request_output_run', { 'id': entity.id }) }}">run w/output</a>
+                    </li
                     <li>
                         <a href="../core/test_result_filter/{{ entity.id }}">results</a>
                     </li>
