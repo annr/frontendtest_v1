@@ -1,8 +1,8 @@
 #! /bin/sh
-
+echo 'You will be prompted for your root database password'
 /usr/local/mysql/bin/mysqldump -u root -p frontendtest CoreTest > app/config/db/ft_core_test.sql
 
 git status
 git add .
-git commit -m 'autocommit'
+git commit -m '$1' 
 git push
