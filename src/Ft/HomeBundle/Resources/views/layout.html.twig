@@ -34,22 +34,22 @@
 		<form id="signup">
 			<div class="formRow">
 		  	 <label for="url">Web site to test<!-- (http://...)--></label><br>
-				<input type="url" name="url" id="url" placeholder="http://www.yourwebsite.com" autofocus="autofocus" style="width: 380px">
+				<input type="text" name="url" id="url" placeholder="www.yourwebsite.com" autofocus="autofocus" style="width: 380px">
 			</div>
 			<div class="formRow">
 		  	 <label for="email">Email to send report</label> (same domain)<br>
 				<input type="email" name="email" id="email" placeholder="email@yourwebsite.com" style="width: 380px">
 			</div>
 				<input type="checkbox" name="wantsMoreHelp" id="wantsMoreHelp">&nbsp; <label for="wantsMoreHelp" class="smallLabel">I’m interested in having a web expert review my site</label><br>
-			<input type="submit" class="button" value="Get Report">	<img src="{{ asset('img/loading.gif') }}" width="40" height="40" alt="loading" class="loading" style="margin-bottom:10px;margin-left:10px; display:none;">
-					
+			<input type="submit" class="button" value="Get Free Report">	<img src="{{ asset('img/loading.gif') }}" width="40" height="40" alt="loading" class="loading" style="margin-bottom:10px;margin-left:10px; display:none;">
+			<input type="hidden" name="xbxrx" id="xbxrx" value="dvomp">		
 		</form>				
 		<p id="confirmFtRequest">&nbsp;<br>&nbsp;</p>			
 	</div>
 	
 	<div class="infoColumn" style="position:relative;">
 		
-		<h2 class="marginBottom">Find out how to make your web site better, faster, and future-proof</h2>
+		<h2 class="marginBottom">Find out what you should do to improve your web site. Make it better, faster, and future-proof.</h2>
 		<!--
 		<h2 class="marginBottom">We describe your biggest, quickest front-end wins in a detailed custom report.</h2>
 		<h2 class="marginBottom">We explain your most important front-end improvements in a detailed, custom report.</h2>-->
@@ -127,8 +127,7 @@
 						<table cellspacing="0" border="0" cellpadding="0" width="600">
 														<tr>
 								<td class="content-copy" valign="top" style="padding: 20px 20px 0; color: #000; font-size: 16px; font-family: Georgia; line-height: 24px;" colspan="2">
-									<p>Thank you for using FrontendTest. We have reviewed the site you submitted and we have discovered that the front-end code <strong>can be improved</strong>. We strongly suggest making the following improvements, listed in order of priority.</p>
-
+						<p>Thank you for using FrontendTest. By reviewing the submitted web site we have discovered that the front-end code &#95;<strong>could use some love</strong>&#95; (FET Score 66). <span style="color:#ff0000">We strongly suggest making the following improvements, listed in order of priority.</span></p>
 								</td>
 							</tr>
 							<tr>
@@ -221,14 +220,16 @@
 								</tr>
 																							<tr>
 																	<td class="article-title" height="45" valign="top" style="padding: 14px 20px 0; font-family: Georgia; font-size: 20px; font-weight: bold;" width="600" colspan="2">
-																		No favicon included<br />
+																		Favicon not included<br />
 																	</td>
 																</tr>
 																<tr>
 																	<td class="content-copy" valign="top" style="padding: 0 20px; color: #000; font-size: 14px; font-family: Georgia; line-height: 20px;" colspan="2">
-																		<p>Favicons are 16x16 pixel images that appear in browsers next to location bars, bookmarks and tabs. They improve the user experience and they are easy to make. To create a favicon you can use an <a href="http://www.favicon.cc/">online tool</a> or install a <a href="http://www.telegraphics.com.au/sw/">Photoshop plugin</a>. Name the file favicon.ico, put it in your root web directory, and add the following to the <code>&lt;head&gt;</code> element of your HTML:</p>
+																		<p>Favicons are graphics that appear in browsers next to location bars, bookmarks and tabs. They improve the user experience and they are easy to make and add. Just create a 16x16 or 32x32 .gif, .png or .ico&#42; image, upload it to your server, and point to it using the following tag included in <code>&lt;head&gt;</code>:</p>
 
-								<p><code>&lt;link rel="icon" type="image/x-icon" href="/favicon.ico"&gt;</code></p>
+																		<p><code>&lt;link rel="icon" type="image/x-icon" href="/path/to/favicon"&gt;</code></p>
+
+																		<p>You can also put an ICO file format graphic called "favicon.ico" in your root web directory - without needing to include the tag above - but this is <a href="http://www.w3.org/2005/10/howto-favicon">not the current recommended method</a>.</p>
 
 																	</td>
 																</tr>
@@ -302,8 +303,16 @@
     s.parentNode.insertBefore(g,s)}(document,'script'));
 
 	jQuery.extend(jQuery.validator.messages, {
-	    url: "Please enter a valid URL, inluding http:// or https://"
+	    url: "Please enter a valid URL, including http:// or https://"
 	});
+	
+	//custom validation rule - text only
+    $.validator.addMethod("customUrl", 
+        function(value, element) {
+            return /^(http[s]?:\/\/)?[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/.*)?$/.test(value);
+        }, 
+        "Please enter a valid URL."
+    );
 		 
     $(document).ready(function() {		
 		
@@ -311,7 +320,7 @@
             rules: {
                 url: {
 				  required: true,
-				  url: true
+				  customUrl: true
 				},
                 email: {
 				  required: true,
@@ -319,27 +328,57 @@
 				}
             },	
 			submitHandler: function() {	
+				$('#confirmFtRequest').html('');
 				$('.loading').show();
 				var confirmFtRequestMsg = '<span class="formSubmittedMsg">Thanks! A detailed report will be sent to ' + $('#email').val()+ '.</span><br>Email any questions to <a href="mailto:support@frontendtest.com?subject=submit">support@frontendtest.com</a>.';
 				// if domains do not match, customize message
-				var domain =  '@'+$('#url').val().substr(2 + $('#url').val().indexOf('//')).replace('www.','');
-				domain = domain.substr(0, domain.indexOf('/'));
+				
+				var domain = $('#url').val().replace(/^http[s]?:\/\//,''); 
+				if(domain.indexOf('/') !== -1) {
+					domain = domain.substr(0,domain.indexOf('/'));					
+				}
+
+          		domain = domain.substr(domain.search(/[a-zA-Z0-9\-]+\.[a-zA-Z]{2,3}$/));			
 
 				if ($('#email').val().indexOf(domain) == -1) { 
-					var confirmFtRequestMsg = 'Request submitted. <span class="formSubmittedMsgAlert">Note: for an automatic report, the email address and site domains must match.</span> To override, please email <a href="mailto:support@frontendtest.com?subject=override">support@frontendtest.com</a>.';
-				} 							
+					console.log('no match, unsetting...');
+					$('#xbxrx').val('xxxxx');
+					var confirmFtRequestMsg = 'Request submitted. <span class="formSubmittedMsgAlert">For an automatic report, the email address and site domains must match.</span> Email <a href="mailto:support@frontendtest.com?subject=override">support@frontendtest.com</a> to request report.';
+				} 	
+
+				console.log($('#xbxrx').val());
+				
+				//replace with valid URL for submission.
+				//if there is no protocol, assume http://
+				if($('#url').val().search(/^http[s]?:\/\//) == -1) {
+					$('#url').val('http://'+$('#url').val());
+				}
+				
 				$.ajax({
 				  type: "POST",
-				  url: "{{ path('_ft_request_go') }}",
+				  url: "{{ path('_ft_request_check_url') }}",
 				  data: $("#signup").serialize(),
 				  success: function(data) {
-				  	//if(data=='true') {
-						$('#confirmFtRequest').html(confirmFtRequestMsg);
+				  	if(data=='valid') {	
+						$.ajax({
+						  type: "POST",
+						  url: "{{ path('_ft_request_go') }}",
+						  data: $("#signup").serialize(),
+						  success: function(data) {
+						  	//if(data=='true') {
+								$('#confirmFtRequest').html(confirmFtRequestMsg);
+								$('#confirmFtRequest').show();				
+								$('.loading').hide();											
+							//}
+						  }	
+						});									
+					} else {
+						$('#confirmFtRequest').html('<span class="formSubmittedMsgAlert">The submitted URL does not point to an HTML document. Try again?</span>');
 						$('#confirmFtRequest').show();				
-						$('.loading').hide();			
-					//}
+						$('.loading').hide();
+					}
 				  }	
-				});							
+				});						
 				//form.submit();
 			}
         });

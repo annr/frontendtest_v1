@@ -3,6 +3,7 @@
 namespace Ft\CoreBundle\CoreTest;
 
 use Ft\CoreBundle\CoreTest\Helper;
+use Ft\HomeBundle\FtRequest\FtHelper;
 
 class HTML
 {
@@ -69,7 +70,7 @@ class HTML
 	public function FaviconMissing()
 	{
 		global $ft_dom;
-	    //global $ft_data;
+	    global $ft_web_root;
 
 		//$pattern = '/.*<link.*href=.*favicon\.ico.*>/';		
 		//preg_match($pattern,$ft_data,$match);
@@ -80,10 +81,19 @@ class HTML
 		$head = $ft_dom->getElementsByTagName('head');		
 		$elements = $head->item(0)->getElementsByTagName('link');
 		
+		if(Helper::http200Test($ft_web_root . 'favicon.ico')) { return false; }
+
+		$found_favicon = false;				
         foreach ($elements as $element) { 
-			if($element->hasAttribute('rel') && strpos($element->getAttribute('rel'),'icon') !== false) { return false; }		
+			//rel must be "icon" or "shortcut icon".
+			if($element->hasAttribute('rel') && ($element->getAttribute('rel') == 'icon' || $element->getAttribute('rel') == 'shortcut icon')) { 
+				$found_favicon = true;
+			}		
 		}
-				
+	
+		if($found_favicon) {
+			return false;
+		}
 		return true;			
 	}
 					
@@ -99,6 +109,7 @@ class HTML
 		$print_once = false;
 		$code[1] = 0; //number of css after scripts.
 		$code[2] = 0; //number of scripts before css.
+		
     	if ( $elements->item(0)->hasChildNodes() ) {
 		    $children = $elements->item(0)->childNodes;
 		    foreach( $children as $kid ) {
@@ -254,6 +265,88 @@ class HTML
 		return false;
 
 	}
+
+    public function BrokenResource()
+    {
+		global $ft_dom;
+		$code = array('');
+		$code[1] = 0;
+		$code[2] = '';
+		$code[3] = '';
+		$code[4] = 'image';
+		$passed_elem_array = array();
+		$url_array = array();
+		$max_resource_tests = 50;
+
+		//the kinds of tags that a resource can be in are script, a, img, link, object, "input type=image src" iframe.
+		//specifically: 
+		// src: img, input, script, frame, iframe
+		// href: a, link, area, base
+		
+		//$srcs = array('img','input', 'script', 'frame', 'iframe');
+		//$hrefs = array('a','link', 'area', 'base');
+
+		//limited tests:
+		$srcs = array('input', 'script', 'frame', 'iframe');
+		$hrefs = array('link', 'area', 'base');
+
+        foreach ($srcs as $src) { 	
+			$elements = $ft_dom->getElementsByTagName($src);
+	        foreach ($elements as $element) { 
+				//don't try to do too many.
+				if(count($url_array) > $max_resource_tests) {
+					$code[3] = "\n_PLEASE NOTE: By default, FrontendTest does not check more than $max_resource_tests resources. If you would like all of the page's resources tested, please contact [support@frontendtest.com](mailto:support@frontendtest.com?subject=maxResourceTestLimitHit)._";
+					continue;
+				}
+					
+				if($element->hasAttribute('src')) { 				
+					if(!in_array($element->getAttribute('src'),$url_array))
+					{ 				
+						$url = Helper::getAbsoluteResourceLink($element->getAttribute('src'));			
+						if(Helper::httpBadStatusCode($url)) { 
+							$code[1]++;
+							$code[0] .=  Helper::printCodeWithLineNumber($element);
+							if(Helper::likelyPixel($element)) { $code[4] = 'pixel'; }
+						} 
+						$url_array[] = $element->getAttribute('src');
+					}					
+			 	}
+			 }			
+		}
+
+        foreach ($hrefs as $href) { 	
+			$elements = $ft_dom->getElementsByTagName($href);
+	        foreach ($elements as $element) { 	
+				//don't try to do too many.
+				if(count($url_array) > $max_resource_tests) {
+					$code[3] = "\n_PLEASE NOTE: By default, FrontendTest does not check more than $max_resource_tests resources. If you would like all of the page's resources tested, please contact [support@frontendtest.com](mailto:support@frontendtest.com?subject=maxResourceTestLimitHit)._";
+					continue;
+				}
+				
+				if($element->hasAttribute('href')) { 				
+					if(strpos($element->getAttribute('href'),'javascript:') !== false || strpos($element->getAttribute('href'),'mailto:') !== false){
+						continue;
+					}				    		
+					if(!in_array($element->getAttribute('href'),$url_array))
+					{ 				
+						$url = Helper::getAbsoluteResourceLink($element->getAttribute('href'));	
+						if(Helper::httpBadStatusCode($url)) { 
+							$code[1]++;
+							$code[0] .=  Helper::printCodeWithLineNumber($element);
+						} 
+						$url_array[] = $element->getAttribute('href');
+					}					
+			 	}
+			 }			
+		}
+				
+		if($code[0] != '') {
+			if($code[1] > 1) { $code[2] = 's'; }
+			return $code;
+		}
+		
+		return false;
+	}
 	
     public function BrokenLink()
     {
@@ -261,45 +354,28 @@ class HTML
 		$code = array('');
 		$code[1] = 0;
 		$code[2] = '';
+		$code[3] = '';
 		$passed_elem_array = array();
 		$url_array = array();
+		$max_resource_tests = 50;
 
 		$elements = $ft_dom->getElementsByTagName('a');
-
 		//only make this test if there is a reasonable number of links.
-		if($elements->length < 50) { 
-	        foreach ($elements as $element) { 	
-				if($element->hasAttribute('href')) { 
-					if(strpos($element->getAttribute('href'),'javascript:') !== false || strpos($element->getAttribute('href'),'mailto:') !== false){
-						error_log('returning from mailto or js:');
-						continue;
-					}				    		
-					if(!in_array($element->getAttribute('href'),$url_array))
-					{ 				
-						$url = Helper::getAbsoluteResourceLink($element->getAttribute('href'));	
-						//error_log('checking...' . $url);			
-						$headers = get_headers($url, 1);			
-						$header_str = explode(' ',$headers[0]);				
-						if($header_str[1] == '404') {
-							$code[1]++;
-							$code[0] .=  Helper::printCodeWithLineNumber($element);
-						} 
-						$url_array[] = $element->getAttribute('href');						
-					} 
-			 	}
-			 }
-		} 
-		
-		$elements = $ft_dom->getElementsByTagName('link');
         foreach ($elements as $element) { 	
-			if($element->hasAttribute('href')) { 				
+			//don't try to do too many.
+			if(count($url_array) > $max_resource_tests) {
+				$code[3] = "\n_PLEASE NOTE: By default, FrontendTest does not check more than $max_resource_tests links. If you would like all of the page's links tested, please contact [support@frontendtest.com](mailto:support@frontendtest.com?subject=maxResourceTestLimitHit)._";
+				continue;
+			}
+			if($element->hasAttribute('href')) { 
+				if(strpos($element->getAttribute('href'),'javascript:') !== false || strpos($element->getAttribute('href'),'mailto:') !== false){
+					//error_log('returning from mailto or js:');
+					continue;
+				}				    		
 				if(!in_array($element->getAttribute('href'),$url_array))
 				{ 				
 					$url = Helper::getAbsoluteResourceLink($element->getAttribute('href'));	
-					//error_log('checking...' . $url);			
-					$headers = get_headers($url, 1);			
-					$header_str = explode(' ',$headers[0]);				
-					if($header_str[1] == '404') {
+					if(Helper::httpBadStatusCode($url)) { 
 						$code[1]++;
 						$code[0] .=  Helper::printCodeWithLineNumber($element);
 					} 
@@ -307,6 +383,7 @@ class HTML
 				} 
 		 	}
 		 }
+
 		
 		 if($code[0] != '') {
 			if($code[1] > 1) { $code[2] = 's'; }
@@ -322,17 +399,23 @@ class HTML
 		$code = array('');
 		$code[1] = 0;
 		$code[2] = '';
+		$code[3] = '';
 		$passed_elem_array = array();
 		$elements = $ft_dom->getElementsByTagName('img');
 		$url_array = array();
-        foreach ($elements as $element) { 	
+		$max_resource_tests = 50;
+		
+        foreach ($elements as $element) { 
+			//don't try to do too many.
+			if(count($url_array) > $max_resource_tests) {
+				$code[3] = "\n_PLEASE NOTE: By default, FrontendTest does not check more than $max_resource_tests images. If you would like all of the page's images tested, please contact [support@frontendtest.com](mailto:support@frontendtest.com?subject=maxResourceTestLimitHit)._";
+				continue;
+			}	
 			if($element->hasAttribute('src')) { 				
 				if(!in_array($element->getAttribute('src'),$url_array))
 				{ 				
-					$url = Helper::getAbsoluteResourceLink($element->getAttribute('src'));	
-					$headers = get_headers($url, 1);			
-					$header_str = explode(' ',$headers[0]);				
-					if($header_str[1] == '404') {
+					$url = Helper::getAbsoluteResourceLink($element->getAttribute('src'));			
+					if(Helper::httpBadStatusCode($url)) { 
 						$code[1]++;
 						$code[0] .=  Helper::printCodeWithLineNumber($element);
 					} 
@@ -411,7 +494,7 @@ class HTML
 				{
 					if($code[1] <= Helper::$max_disp_threshold) { 
 						$link = Helper::addWhitespaceForReportFormatting($link);
-						$code[0] .= '`'.$link.'`';
+						$code[0] .= '`'.$link.'` ';
 					}
 					$code[1]++;
 				}
@@ -695,8 +778,8 @@ class HTML
 		$elements = $ft_dom->getElementsByTagName('img');
 
         foreach ($elements as $element) { 
-			if (!$element->hasAttribute('alt') || $element->getAttribute('alt') == '') {
-				$code[0] .=  Helper::printCodeWithLineNumber($element);					
+			if ((!$element->hasAttribute('alt') || $element->getAttribute('alt') == '') && !Helper::likelyPixel($element)) {				
+				$code[0] .=  Helper::printCodeWithLineNumber($element);									
 			}	
 		}	
 
@@ -713,17 +796,20 @@ class HTML
 		$code[1] = 0; 
 		$code[2] = '';
 		$elements = $ft_dom->getElementsByTagName('img');
-		
+
         foreach ($elements as $element) { 	
 			//exit if img points to another server (for now). it is likely a pixel.
 			
 			//if ($element->hasAttribute('width')) { echo "\nwidth: " . $element->getAttribute('width'); }
 			//if ($element->hasAttribute('height')) { echo "\nheight: " . $element->getAttribute('height'); }
+			
+			//continue for now if class is applied. they might be setting height and width that way.
+			if($element->hasAttribute('class') && $element->getAttribute('class') != '') { continue; }
 			if($element->hasAttribute('src') && (strpos($element->getAttribute('src'),'pixel') !== false || strpos($element->getAttribute('src'),'doubleclick') !== false || strpos($element->getAttribute('src'),'shareasale') !== false )) { continue; }
 						
 			if ((!$element->hasAttribute('width') && !Helper::hasInlineStyleAttribute($element,'width')) || (!$element->hasAttribute('height') && !Helper::hasInlineStyleAttribute($element,'width'))) {
+				$code[1]++;				
 				if($code[1] <= Helper::$max_disp_threshold) { $code[0] .= Helper::printCodeWithLineNumber($element); }
-				$code[1]++;
 			}	
 		}
 

@@ -18,6 +18,10 @@ _ft_request_go:
     pattern:  /report_request
     defaults: { _controller: FtHomeBundle:FtRequest:go }
 
+_ft_request_check_url:
+    pattern:  /report_check_url
+    defaults: { _controller: FtHomeBundle:FtRequest:checkSubmittedUrl }
+        
 ft_request_preview:
     pattern:  /ft_request_preview/{id}
     defaults: { _controller: FtHomeBundle:FtRequest:preview }

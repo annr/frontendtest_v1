@@ -79,54 +79,6 @@ class Helper
 		return $link;
     }
 
-
-    public static function checkLinkArray($link_array)
-    {
-	/*
-		$handles = array();
-		foreach($link_array as $link) {
-			$handles[] = curl_init($link);
-		}
-
-        //for testing....
-		//curl_setopt($handle, CURLOPT_FRESH_CONNECT);
-
-		curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
-
-		$response = curl_exec($handle);
-		$info = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-		curl_close($handle);			
-		return $info;	
-
-		// set URL and other appropriate options
-		curl_setopt($ch1, CURLOPT_URL, "http://www.example.com/");
-		curl_setopt($ch1, CURLOPT_HEADER, 0);
-		curl_setopt($ch2, CURLOPT_URL, "http://www.php.net/");
-		curl_setopt($ch2, CURLOPT_HEADER, 0);
-
-		//create the multiple cURL handle
-		$mh = curl_multi_init();
-
-		//add the two handles
-		curl_multi_add_handle($mh,$ch1);
-		curl_multi_add_handle($mh,$ch2);
-
-		$running=null;
-		//execute the handles
-		do {
-		    curl_multi_exec($mh,$running);
-		} while($running > 0);
-
-		//close all the handles
-		curl_multi_remove_handle($mh, $ch1);
-		curl_multi_remove_handle($mh, $ch2);
-		curl_multi_close($mh);
-	*/
-	return false;	
-		
-
-	}
-
     public static function hasInlineStyleAttribute($element, $attribute)
     {
 		if($element->hasAttribute('style')) {
@@ -163,7 +115,38 @@ class Helper
 			return false;										
 		}
 	}
+
+    public static function http200Test($url)
+	{
+		$headers = get_headers($url, 1);
+		$header_str = explode(' ',$headers[0]);	
+		if($header_str[1] == '200') {
+			return true;
+		}
+		return false;		
+	}
 	
+	public static function httpHtmlTypeTest($url)
+	{
+		$headers = get_headers($url, 1);
+		if(strpos($headers["Content-Type"],'text/html') !== false) {
+			return true;
+		} 	
+		return false;		
+	}
+
+    public static function httpBadStatusCode($url)
+	{
+		$headers = get_headers($url, 1);
+		$header_str = explode(' ',$headers[0]);
+
+		$bad_codes = array('400','404','408','410');
+		if(in_array($header_str[1],$bad_codes)) {
+			return true;
+		}
+		return false;		
+	}
+		
 	public static function isLocalFile($page_link) {
 		//FUNCTION NOT DONE!!!		
 		
@@ -539,6 +522,17 @@ class Helper
 			if($element->hasAttribute('src') && strpos($element->getAttribute('src'),'ajax.googleapis') === false && strpos($element->getAttribute('src'),'optimizely') === false) { $count++; }
 		} 		
 		return($count);
+	}
+	
+	public static function likelyPixel($element)
+	{
+		if($element->hasAttribute('width') &&  $element->getAttribute('width') == '1') { return true; }
+		if($element->hasAttribute('src')) {
+			$pattern = '/\.gif|\.png|\.jpg/';
+			preg_match($pattern,$element->getAttribute('src'),$match);
+			if(!isset($match[0])){ return true;}
+		}
+		return false;
 	}
 	
 

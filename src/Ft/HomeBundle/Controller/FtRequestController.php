@@ -28,30 +28,42 @@ use Ft\CoreBundle\CoreTest\Helper;
 class FtRequestController extends Controller
 {
 
+	private function getReportResults($id)
+	{
+		//write this better!!!!
+		$em = $this->getDoctrine()->getEntityManager();
+		$repository = $this->getDoctrine()
+		    ->getRepository('FtCoreBundle:TestResult');
+
+		$query = $em->createQuery('select count(c.weight) from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id . ' and c.weight >= '.$this->container->getParameter('minor_issue_threshold'));
+        $count_major = $query->getResult();
+
+		if($count_major[0][1] > 4) {
+			$query = $repository->createQueryBuilder('p')
+			    ->where('p.ft_request_id = :ft_request_id and p.weight >= :weight')
+				->setParameter('ft_request_id', $id)
+			    ->setParameter('weight', $this->container->getParameter('minor_issue_threshold'))
+			    ->orderBy('p.weight', 'DESC')
+			    ->getQuery();			
+		} elseif ($count_major[0][1] == 4) {
+			$query = $em->createQuery('select p from Ft\CoreBundle\Entity\TestResult p where p.ft_request_id = ' .$id . ' ORDER BY p.weight desc ')->setMaxResults(7);
+		} elseif ($count_major[0][1] == 3) {
+				$query = $em->createQuery('select p from Ft\CoreBundle\Entity\TestResult p where p.ft_request_id = ' .$id . ' ORDER BY p.weight desc ')->setMaxResults(8);
+		} else {
+			$query = $em->createQuery('select p from Ft\CoreBundle\Entity\TestResult p where p.ft_request_id = ' .$id . ' ORDER BY p.weight desc ');		
+		}	
+		
+        return $query->getResult();		
+	}
+	
 	public function previewAction($id)
 	{	
 		$em = $this->getDoctrine()->getEntityManager();
-        $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);
+        $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);	
 		
-		$repository = $this->getDoctrine()
-		    ->getRepository('FtCoreBundle:TestResult');
-		
-		$query = $repository->createQueryBuilder('p')
-		    ->where('p.ft_request_id = :ft_request_id and p.weight >= :weight')
-			->setParameter('ft_request_id', $id)
-		    ->setParameter('weight', $this->container->getParameter('minor_issue_threshold'))
-		    ->orderBy('p.weight', 'DESC')
-		    ->getQuery();
-		
-        $results = $query->getResult();
-
+        $results = $this->getReportResults($id);
 		$summary = $ft_request->getReportSummary();
 		
-	    //if (!$results) {
-	        //throw $this->xxxXXX('There are no results.');
-	    //}
-		//$cid =  'http://www.frontendtest.com/img/logo_sm.png';
-
 		$cid =  'http://www.frontendtest.com/img/logo_sm.png';
 		if($_SERVER["SERVER_NAME"] == 'localhost') {
 			$cid =  'http://localhost/frontendtest/web/img/logo_sm.png';
@@ -59,8 +71,7 @@ class FtRequestController extends Controller
 		
         $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'email' => $ft_request->getEmail(),'results' => $results, 'summary' => $summary));
         $response->headers->set('Content-Type', 'text/html');
-        return $response;
-	    
+        return $response;	    
 	}
 
 
@@ -69,18 +80,7 @@ class FtRequestController extends Controller
 		$em = $this->getDoctrine()->getEntityManager();
         $ft_request = $em->getRepository('FtHomeBundle:FtRequest')->findOneById($id);
 
-		$repository = $this->getDoctrine()
-		    ->getRepository('FtCoreBundle:TestResult');
-		
-		$query = $repository->createQueryBuilder('p')
-		    ->where('p.ft_request_id = :ft_request_id and p.weight >= :weight')
-			->setParameter('ft_request_id', $id)
-		    ->setParameter('weight', $this->container->getParameter('minor_issue_threshold'))
-		    ->orderBy('p.weight', 'DESC')
-		    ->getQuery();
-		
-        $results = $query->getResult();
-
+        $results = $this->getReportResults($id);
 		$summary = $ft_request->getReportSummary();
 		
 	    //if (!$results) {
@@ -160,18 +160,35 @@ class FtRequestController extends Controller
 
 		$ft_request->setFtScoreB($suiteActionRes);
 		
-		$top_weight_sample = 7;
+		$top_weight_sample = 8;
 		$top_weight_sum = 0;		
 		//use top weighted results to get auto score
-		$query = $em->createQuery('select c.weight from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id . ' ORDER BY c.weight desc ')->setMaxResults($top_weight_sample);;
+		$query = $em->createQuery('select c.weight from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id . ' ORDER BY c.weight desc ')->setMaxResults($top_weight_sample);
 		$results = $query->getResult();
 		foreach($results as $result) {
 			$top_weight_sum = $top_weight_sum + $result['weight'];
 		}
+
+		$query = $em->createQuery('select count(c.weight) from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id . ' and c.weight > 50');
+		$count1 = $query->getResult();
+
+		$query = $em->createQuery('select count(c.weight) from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id . ' and c.weight between 10 and 50');
+		$count2 = $query->getResult();
+
+		$query = $em->createQuery('select count(c.weight) from Ft\CoreBundle\Entity\TestResult c where c.ft_request_id = ' .$id . ' and c.weight < 10');
+		$count3 = $query->getResult();
+
+		//echo "1: " . $count1[0][1] . ", 2: " . $count2[0][1] . ", 3: " . $count3[0][1];
 		
-		$score = $top_weight_sum/$top_weight_sample;
-		$display_score = round(100 - $score);
+		$score = $top_weight_sum/$top_weight_sample + ($count1[0][1] * 3) + ($count2[0][1] * 2) + $count3[0][1];
+		
+		//echo "\n\n<br>".$score;
+		
 		$ft_request->setFtScoreA($score);
+		
+		// 1 is as bad as a web site can get. 
+		$display_score = 1;		
+		if($score < 100) { $display_score = round(100 - $score); }
 		
 		$format1 = ' %s <span style="color:#cccc66">However, you may want to consider ';
 		$format2 = ' %s <span style="color:#ff9900">Nonetheless, we suggest ';
@@ -183,20 +200,20 @@ class FtRequestController extends Controller
 		    case ($score < 8):
 		        $adjective_str = sprintf($format1, 'is \_**nearly perfect**\_ (FET Score '.$display_score.').');
 		        break;
-		    case ($score < 12):
-		        $adjective_str = sprintf($format1, 'is **excellent**! (FET Score '.$display_score.')');
-		        break;
-		    case ($score < 16):
-		        $adjective_str = sprintf($format2, 'is **very good**. (FET Score '.$display_score.')');
+		    case ($score < 14):
+		        $adjective_str = sprintf($format1, 'is \_**excellent**\_ (FET Score '.$display_score.').');
 		        break;
 		    case ($score < 20):
-		        $adjective_str = sprintf($format2, 'is **good**. (FET Score '.$display_score.')');
+		        $adjective_str = sprintf($format2, 'is \_**very good**\_ (FET Score '.$display_score.').');
 		        break;
 		    case ($score < 25):
-		        $adjective_str = sprintf($format3, '**could use some love**. (FET Score '.$display_score.')');
+		        $adjective_str = sprintf($format2, 'is \_**good**\_ (FET Score '.$display_score.').');
 		        break;
 		    case ($score < 35):
-		        $adjective_str = sprintf($format3, '**can be improved**. (FET Score '.$display_score.')');
+		        $adjective_str = sprintf($format3, '\_**could use some love**\_ (FET Score '.$display_score.').');
+		        break;
+		    case ($score < 45):
+		        $adjective_str = sprintf($format3, '\_**can be improved**\_ (FET Score '.$display_score.').');
 		        break;
 		    default:
 		        $adjective_str = sprintf($format3, '\_**can be much improved**\_ (FET Score '.$display_score.').');
@@ -213,6 +230,20 @@ class FtRequestController extends Controller
 	    $em->flush();
 	
 	
+	}
+
+    public function checkSubmittedUrlAction()
+    {
+	  //assume innocent until proven guilty (I guess).	
+	  $result = 'valid';	
+	  if (Helper::httpBadStatusCode($_POST['url'])) { $result = 'invalid'; }
+	  //also make sure it's an html document.
+	
+	  if (!Helper::httpHtmlTypeTest($_POST['url'])) { $result = 'invalid'; }
+
+      $response = $this->render('FtHomeBundle:FtRequest:checkurl.txt.twig', array('result' => $result));
+      $response->headers->set('Content-Type', 'text/plain');
+      return $response;
 	}
 	
     public function goAction()
@@ -232,9 +263,10 @@ class FtRequestController extends Controller
       $em->persist($ft_request);
       $em->flush();
 
-	  //run this manually for now!!!!!
-	
-      //$runAction = $this->runAction($ft_request->getId());
+	  //if the domain matches, send report automatically.
+	  if(isset($_POST['xbxrx']) && $_POST['xbxrx'] == 'dvomp') {
+	      $runAction = $this->runAction($ft_request->getId());
+	  }
 
       //email support@ft with details.
 
@@ -273,6 +305,7 @@ class FtRequestController extends Controller
 		$Filedata = new Filedata();
 		$Content = new Content();
 		$CSS = new CSS();
+
 		
         foreach($entities as $entity) {
 			$test_time_start = Helper::microtime_float();
@@ -339,6 +372,9 @@ class FtRequestController extends Controller
 			$test_time = $test_time_end - $test_time_start;
 
 		    $logger->info('(FT_REQUEST_ID '.$ft_request->getId() . ") " . round($test_time,5) . ' seconds for - '.$outcome.' ' . $entity->getClassName());			
+
+			$em->flush();
+
 		}	
 
 

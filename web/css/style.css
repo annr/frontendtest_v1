@@ -232,6 +232,9 @@ cursor: pointer;
 	color: #c17f00;
 }
 
+.formSubmittedMsgAlert {
+	color: #F00;
+}
 
 label.error {
 	font-size: 0.7em;
@@ -243,12 +246,16 @@ input.imgButton {
 	padding:0;
 }
 .sampleReportIcon {
-	position:absolute;bottom:-130px; right:70px;cursor:pointer;
+	position:absolute;bottom:-90px; right:60px;cursor:pointer;
 }
 
 .sampleReport p {
 	margin-bottom: 1.0em;
 }
+.sampleReport a {
+	text-decoration: underline;
+}
+
 
 .ui-widget-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:#000 url(../img/ui-bg_flat_0_000000_40x100.png) 50% 50% repeat-x; opacity:.40; filter:Alpha(Opacity=40); }
 

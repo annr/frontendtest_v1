@@ -10,7 +10,7 @@ class FtHelper
 		global $ft_url;
 		$url = $ft_url;
 		if(!($ft_http_request['http_code'] == '200')) {
-			echo 'HTTP RESPONSE CODE OTHER THAN 200 FOR: '.$url . "\n\rexiting....";
+			//echo 'HTTP RESPONSE CODE OTHER THAN 200 FOR: '.$url . "\n\rexiting....";
 			error_log('HTTP RESPONSE CODE OTHER THAN 200 FOR: '.$url);
 			exit;			
 		} 
@@ -21,7 +21,7 @@ class FtHelper
 		global $ft_url;
 		$url = $ft_url;
 		if((strpos($ft_http_request['content_type'],'text/html') != 0) && $ft_http_request['content_type'] != 'application/xhtml+xml') {
-			echo 'NOT A SUPPORTED CONTENT TYPE ('.$ft_http_request['content_type'].'): '.$url . "\n\rexiting....";
+			//echo 'NOT A SUPPORTED CONTENT TYPE ('.$ft_http_request['content_type'].'): '.$url . "\n\rexiting....";
 			error_log('NOT A SUPPORTED CONTENT TYPE ('.$ft_http_request['content_type'].'): '.$url);
 			exit;			
 		}
@@ -32,7 +32,7 @@ class FtHelper
 		global $ft_url;
 		$url = $ft_url;
 		if(intval($ft_http_request['download_content_length']) < $min_length ) {
-			echo "HTTP RESPONSE HAS VERY LITTLE CODE. NOT MUCH TO TEST? (".$url . ")\n\rexiting....";
+			//echo "HTTP RESPONSE HAS VERY LITTLE CODE. NOT MUCH TO TEST? (".$url . ")\n\rexiting....";
 			error_log('HTTP RESPONSE HAS VERY LITTLE CODE. NOT MUCH TO TEST? ('.$url . ')');
 			exit;			
 		} 
@@ -50,11 +50,10 @@ class FtHelper
 		
 		$ft_dom = new \DomDocument();
 		$ft_dom->preserveWhiteSpace = true;
-		$ft_data = preg_replace('/\x{EF}\x{BB}\x{BF}/','',$ft_data); 
 		@$ft_dom->loadHTML($ft_data);
+
 	}
 	
-
     public static function setMiscFtGlobals($request_header)
 	{
 		global $ft_host;
@@ -101,6 +100,29 @@ class FtHelper
 
 		\curl_close($ch);
 		
+		$data = trim($data);
+		preg_match('/\x{EF}\x{BB}\x{BF}/',$data,$match);		
+		if(isset($match[0])) {
+			$data = preg_replace('/\x{EF}\x{BB}\x{BF}/','',$data); 
+		}
+		
+		//for paul irish the showoff, replace mysterious doctype with HTML5.
+		$public_str_start_assumption = '-//W3C//DTD ';	
+		$doctype_str_assumption = '<!doctype html public "';	
+		$doctype_pos = stripos($data,$doctype_str_assumption);
+		
+		if($doctype_pos !== false) {
+			$public_str_pos = $doctype_pos + strlen($doctype_str_assumption);
+			$public_str_pos_end = strpos($data,'"',$public_str_pos) - $public_str_pos;
+			$public_str = substr($data,$public_str_pos,$public_str_pos_end);
+			if(isset($public_str) && (strlen($public_str) < 50) && strpos($public_str,$public_str_start_assumption) === false) {
+				//replace whatever the hell it is with nothing, to make the HTML5 doctype
+				$data = str_ireplace(' public "'.$public_str.'"','',$data);
+			}
+		} //else {
+			//to-do: send an email or log an error here!!!!
+		//}
+
 		//I realize it's weird to set one global var and return another. 
 		return $data;		
 	}

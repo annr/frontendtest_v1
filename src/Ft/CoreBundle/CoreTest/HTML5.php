@@ -23,12 +23,12 @@ class HTML5
 			//now what kind of document is it? put document type in %1%
 			//if it's an HTML5 document, return false
 			$start_str_assumption = '-//W3C//DTD ';			
-			if($ft_dom->doctype != null && $ft_dom->doctype->publicId != '') {			
+			if($ft_dom->doctype != null && $ft_dom->doctype->publicId != '') {		
 				$code[0] = substr($ft_dom->doctype->publicId,strlen($start_str_assumption),strrpos($ft_dom->doctype->publicId,'//') - strlen($start_str_assumption));
 			}
 			if($code[0] != '') {
 				return $code;
-			}			
+			}		
 	        return false;
 	    }
 

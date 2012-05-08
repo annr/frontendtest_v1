@@ -15,21 +15,26 @@ class Filedata
 	{
 		//todo: make sure set inline style height and width also match.
 		global $ft_dom;
-		$code = array('');	
-		
+		$code = array('');			
 		$elements = $ft_dom->getElementsByTagName('img');
+		$img_array = array();
 		$badimg = array();
 		$code[1] = 0;
 		$code[2] = '';
+		$max_resource_tests = 50;
+
 	    foreach ($elements as $element) { 
-		
+			//don't try to do too many.
+			if(count($img_array) > $max_resource_tests) { continue; }
+			if(Helper::likelyPixel($element)) { continue; }
 			if($element->hasAttribute('src')) {
 				//if((!$element->hasAttribute('width') && $element->hasAttribute('style')) && Helper::hasInlineStyleAttribute($element->getAttribute('style'),'width')) { echo "width set inline."; }
+				if(in_array($element->getAttribute('src'),$img_array)) { continue; }
 				
 				if ($element->hasAttribute('width') || $element->hasAttribute('height')) {
 					$link = Helper::getAbsoluteResourceLink($element->getAttribute('src'));
 					
-					if(Helper::getHttpResponseCode($link) == 200) { 
+					if(Helper::http200Test($link)) { 
 						
 						list($width, $height) = getimagesize($link);
 						
@@ -47,7 +52,7 @@ class Filedata
 							if($element->getAttribute('height') != $height) {
 								if($code[1] <= Helper::$max_disp_threshold) {
 									if(in_array($element, $badimg)) {
-										$code[0] .= "\n and height=\"$height\"";
+										$code[0] .= "\n and height=\"$height\"(" .$element->getAttribute('src') . ")";
 									} else {
 										$code[0] .= Helper::printCodeWithLineNumber($element) . "\nshould be height=\"$height\"";
 										$code[1]++;									
@@ -58,6 +63,8 @@ class Filedata
 					}
 					if(in_array($element, $badimg)) { $code[0] .= "\n\n"; }						
 				}
+				$img_array[] = $element->getAttribute('src');
+				
 			}
 		}
 
@@ -88,7 +95,7 @@ class Filedata
 				
 				$bytes_size = floatval(Helper::getResourceSizeBytes($link));
 
-				if($bytes_size > 5000)
+				if($bytes_size > (5 * 1024))
 				{	
 					//see if the script is not minified.
 					if(!Helper::isMinified($link))
@@ -149,7 +156,8 @@ class Filedata
 				if(strpos($element->getAttribute('href'),'.min.') !==false) { continue; }
 				$link = Helper::getAbsoluteResourceLink($element->getAttribute('href'));					
 				$bytes_size = floatval(Helper::getResourceSizeBytes($link));
-				if($bytes_size > 1000)
+
+				if($bytes_size > (5 * 1024))
 				{	
 					//see if the script is not minified.
 					if(!Helper::isMinified($link))
