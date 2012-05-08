@@ -234,21 +234,51 @@ class FtRequestController extends Controller
 
     public function checkSubmittedUrlAction()
     {
-	  //assume innocent until proven guilty (I guess).	
-	  $result = 'valid';	
-	  if (Helper::httpBadStatusCode($_POST['url'])) { $result = 'invalid'; }
-	  //also make sure it's an html document.
+	    //assume innocent until proven guilty (I guess).	
+	    $result = 'valid';
 	
-	  if (!Helper::httpHtmlTypeTest($_POST['url'])) { $result = 'invalid'; }
+		//THIS IS A MESS. I can't use get_headers because a bad URL will break the script.
+	
+		$handle = curl_init($_GET['url']);
+		curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 
-      $response = $this->render('FtHomeBundle:FtRequest:checkurl.txt.twig', array('result' => $result));
-      $response->headers->set('Content-Type', 'text/plain');
-      return $response;
+		/* Get the HTML or whatever is linked in $url. */
+		$response = curl_exec($handle);
+
+		/* Check for 404 (file not found). */
+		$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+		//echo "\n\n code: " . $httpCode; 
+		
+		$bad_codes = array('0','400','404','408','410');
+		if(in_array($httpCode,$bad_codes)) {
+			$result = 'invalid';
+		} //elseif (Helper::httpBadStatusCode($_GET['url'])) { $result = 'invalid'; }
+	    //also make sure it's an html document.
+	    
+		//do type test only if you know if won't break.
+	    if($httpCode != '0') {
+		    if (!Helper::httpHtmlTypeTest($_GET['url'])) { $result = 'invalid'; }
+		}
+
+        $response = $this->render('FtHomeBundle:FtRequest:checkurl.txt.twig', array('result' => $result));
+        $response->headers->set('Content-Type', 'text/plain');
+        return $response;
 	}
 	
     public function goAction()
     {
+      $em = $this->getDoctrine()->getEntityManager();
+
+	  //guard against multiple submits
+	  $ex_request = $em->createQuery('SELECT p FROM FtHomeBundle:FtRequest p where p.email = :email and p.url = :url')
+		->setParameter('email', $_POST['email'])
+		->setParameter('url', $_POST['url'])
+		//->setParameter('recent', new \DateTime('10 minutes ago'))
+		->getResult();
 	
+	  if($ex_request) { error_log("has requested report. "); error_log(gettype($ex_request)); } else { error_log("has NOT requested report. "); }
+
+/*	
       $ft_request = new FtRequest();
       $ft_request->setEmail($_POST['email']);
       $ft_request->setUrl($_POST['url']);
@@ -259,7 +289,6 @@ class FtRequestController extends Controller
 	  if (isset($_POST['wantsMoreHelp']) && $_POST['wantsMoreHelp'] == 'on') { $wantsMoreHelp_bool = 1; }
       $ft_request->setMoretestsReq($wantsMoreHelp_bool);
 
-      $em = $this->getDoctrine()->getEntityManager();
       $em->persist($ft_request);
       $em->flush();
 
@@ -278,7 +307,7 @@ class FtRequestController extends Controller
         ->setBody($this->renderView('FtHomeBundle:FtRequest:email.html.twig', array('email' => $_POST['email'], 'url' => $_POST['url'])));
 
       $this->get('mailer')->send($message);
-
+*/
       $response = $this->render('FtHomeBundle:FtRequest:go.txt.twig');
       $response->headers->set('Content-Type', 'text/plain');
       return $response;

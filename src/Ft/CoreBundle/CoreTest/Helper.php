@@ -129,9 +129,15 @@ class Helper
 	public static function httpHtmlTypeTest($url)
 	{
 		$headers = get_headers($url, 1);
-		if(strpos($headers["Content-Type"],'text/html') !== false) {
+		//this is either a string or an array!!!! 
+		//error_log(gettype($headers["Content-Type"]));
+		//var_dump($headers["Content-Type"]);
+
+		if(gettype($headers["Content-Type"]) == 'string' && strpos($headers["Content-Type"],'text/html') !== false) {
 			return true;
-		} 	
+		} elseif (gettype($headers["Content-Type"]) == 'array' && strpos($headers["Content-Type"][0],'text/html') !== false) {			
+			return true;
+		}
 		return false;		
 	}
 
