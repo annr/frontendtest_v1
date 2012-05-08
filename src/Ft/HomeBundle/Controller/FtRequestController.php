@@ -237,9 +237,8 @@ class FtRequestController extends Controller
 	    //assume innocent until proven guilty (I guess).	
 	    $result = 'valid';
 	
-		//THIS IS A MESS. I can't use get_headers because a bad URL will break the script.
-	
-		$handle = curl_init($_GET['url']);
+		//THIS IS A MESS. I can't use get_headers because a bad URL will break the script.	
+		$handle = curl_init($_POST['url']);
 		curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
 
 		/* Get the HTML or whatever is linked in $url. */
@@ -252,12 +251,12 @@ class FtRequestController extends Controller
 		$bad_codes = array('0','400','404','408','410');
 		if(in_array($httpCode,$bad_codes)) {
 			$result = 'invalid';
-		} //elseif (Helper::httpBadStatusCode($_GET['url'])) { $result = 'invalid'; }
+		} //elseif (Helper::httpBadStatusCode($_POST['url'])) { $result = 'invalid'; }
 	    //also make sure it's an html document.
 	    
 		//do type test only if you know if won't break.
 	    if($httpCode != '0') {
-		    if (!Helper::httpHtmlTypeTest($_GET['url'])) { $result = 'invalid'; }
+		    if (!Helper::httpHtmlTypeTest($_POST['url'])) { $result = 'invalid'; }
 		}
 
         $response = $this->render('FtHomeBundle:FtRequest:checkurl.txt.twig', array('result' => $result));
@@ -269,46 +268,48 @@ class FtRequestController extends Controller
     {
       $em = $this->getDoctrine()->getEntityManager();
 
+	  $result = 'false';
 	  //guard against multiple submits
-	  $ex_request = $em->createQuery('SELECT p FROM FtHomeBundle:FtRequest p where p.email = :email and p.url = :url')
+	  $recent_request = $em->createQuery('SELECT p FROM FtHomeBundle:FtRequest p where p.email = :email and p.url = :url and p.created > :recent')
 		->setParameter('email', $_POST['email'])
 		->setParameter('url', $_POST['url'])
-		//->setParameter('recent', new \DateTime('10 minutes ago'))
+		->setParameter('recent', new \DateTime('1 hour ago'))
 		->getResult();
 	
-	  if($ex_request) { error_log("has requested report. "); error_log(gettype($ex_request)); } else { error_log("has NOT requested report. "); }
+	  if(empty($recent_request)) { 
+		  $result = 'true';
+	
+	      $ft_request = new FtRequest();
+	      $ft_request->setEmail($_POST['email']);
+	      $ft_request->setUrl($_POST['url']);
+	      $ft_request->setCreated(new \DateTime('now'));
+	      $ft_request->setType('FREE');
 
-/*	
-      $ft_request = new FtRequest();
-      $ft_request->setEmail($_POST['email']);
-      $ft_request->setUrl($_POST['url']);
-      $ft_request->setCreated(new \DateTime('now'));
-      $ft_request->setType('FREE');
+	      $wantsMoreHelp_bool = null;
+		  if (isset($_POST['wantsMoreHelp']) && $_POST['wantsMoreHelp'] == 'on') { $wantsMoreHelp_bool = 1; }
+	      $ft_request->setMoretestsReq($wantsMoreHelp_bool);
 
-      $wantsMoreHelp_bool = null;
-	  if (isset($_POST['wantsMoreHelp']) && $_POST['wantsMoreHelp'] == 'on') { $wantsMoreHelp_bool = 1; }
-      $ft_request->setMoretestsReq($wantsMoreHelp_bool);
+	      $em->persist($ft_request);
+	      $em->flush();
 
-      $em->persist($ft_request);
-      $em->flush();
+		  //if the domain matches, send report automatically.
+		  if(isset($_POST['xbxrx']) && $_POST['xbxrx'] == 'dvomp') {
+		      $runAction = $this->runAction($ft_request->getId());
+		      $deliverAction = $this->deliverAction($ft_request->getId());
+		  }
 
-	  //if the domain matches, send report automatically.
-	  if(isset($_POST['xbxrx']) && $_POST['xbxrx'] == 'dvomp') {
-	      $runAction = $this->runAction($ft_request->getId());
-	      $deliverAction = $this->deliverAction($ft_request->getId());
+	      //email support@ft with details.
+
+	      $message = \Swift_Message::newInstance()
+	        ->setSubject('FrontendTest Request')
+	        ->setFrom('support@frontendtest.com')
+	        ->setTo('support@frontendtest.com')
+	        ->setBody($this->renderView('FtHomeBundle:FtRequest:email.html.twig', array('email' => $_POST['email'], 'url' => $_POST['url'])));
+
+	      $this->get('mailer')->send($message);
 	  }
 
-      //email support@ft with details.
-
-      $message = \Swift_Message::newInstance()
-        ->setSubject('FrontendTest Request')
-        ->setFrom('support@frontendtest.com')
-        ->setTo('support@frontendtest.com')
-        ->setBody($this->renderView('FtHomeBundle:FtRequest:email.html.twig', array('email' => $_POST['email'], 'url' => $_POST['url'])));
-
-      $this->get('mailer')->send($message);
-*/
-      $response = $this->render('FtHomeBundle:FtRequest:go.txt.twig');
+      $response = $this->render('FtHomeBundle:FtRequest:go.txt.twig', array('result' => $result));
       $response->headers->set('Content-Type', 'text/plain');
       return $response;
 
