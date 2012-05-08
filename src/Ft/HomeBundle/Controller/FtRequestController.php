@@ -374,10 +374,9 @@ class FtRequestController extends Controller
 
 		    $logger->info('(FT_REQUEST_ID '.$ft_request->getId() . ") " . round($test_time,5) . ' seconds for - '.$outcome.' ' . $entity->getClassName());			
 
-			$em->flush();
+			//$em->flush();
 
 		}	
-
 
 		$suite_time_end = time();
 		$suite_time = $suite_time_end - $suite_time_start;

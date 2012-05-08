@@ -341,13 +341,10 @@
           		domain = domain.substr(domain.search(/[a-zA-Z0-9\-]+\.[a-zA-Z]{2,3}$/));			
 
 				if ($('#email').val().indexOf(domain) == -1) { 
-					console.log('no match, unsetting...');
 					$('#xbxrx').val('xxxxx');
 					var confirmFtRequestMsg = 'Request submitted. <span class="formSubmittedMsgAlert">For an automatic report, the email address and site domains must match.</span> Email <a href="mailto:support@frontendtest.com?subject=override">support@frontendtest.com</a> to request report.';
 				} 	
 
-				console.log($('#xbxrx').val());
-				
 				//replace with valid URL for submission.
 				//if there is no protocol, assume http://
 				if($('#url').val().search(/^http[s]?:\/\//) == -1) {
