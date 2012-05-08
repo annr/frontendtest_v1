@@ -12,13 +12,13 @@
     <tbody>
     {% for entity in entities %}
         <tr>
-            <td><a href="{{ path('log_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
+            <td><a href="{{ path('logger_show', { 'id': entity.id }) }}">{{ entity.id }}</a></td>
             <td>{{ entity.ftrequestid }}</td>
             <td>{{ entity.data }}</td>
             <td>
                 <ul>
                     <li>
-                        <a href="{{ path('log_show', { 'id': entity.id }) }}">show</a>
+                        <a href="{{ path('logger_show', { 'id': entity.id }) }}">show</a>
                     </li>
                 </ul>
             </td>

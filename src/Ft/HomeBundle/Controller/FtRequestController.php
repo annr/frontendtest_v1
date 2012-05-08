@@ -374,14 +374,12 @@ class FtRequestController extends Controller
 
 		    $logger->info('(FT_REQUEST_ID '.$ft_request->getId() . ") " . round($test_time,5) . ' seconds for - '.$outcome.' ' . $entity->getClassName());			
 
-			//$em->flush();
-
 		}	
 
 		$suite_time_end = time();
 		$suite_time = $suite_time_end - $suite_time_start;
 
-		$ft_run_log .= ',"suite time": "'.$suite_time.' seconds"';
+		$ft_run_log .= ',"suite time": "'.$suite_time.' seconds"' . ', "peak_memory": "'. memory_get_peak_usage() . '"';
 		 
 		if($ft_run_log != '') {
 	        $log = new Log();
@@ -389,6 +387,9 @@ class FtRequestController extends Controller
 	        $log->setData($ft_run_log);					
 	        $em->persist($log);				
 		}
+		
+		$logger->info('(FT_REQUEST_ID '.$ft_request->getId() . ") memory_get_peak_usage:" . memory_get_peak_usage());
+		$logger->info('');
 						
 		$em->flush();
 

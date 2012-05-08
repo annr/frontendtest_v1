@@ -33,7 +33,7 @@ class LogController extends Controller
     /**
      * Finds and displays a Log entity.
      *
-     * @Route("/{id}/show", name="log_show")
+     * @Route("/{id}/show", name="logger_show")
      * @Template()
      */
     public function showAction($id)
