@@ -30,7 +30,6 @@ td { font-family: arial, 'san serif'; font-size: smaller;}
             <th>Moretests_req</th>
             <th>Type</th>-->
             <th># Results</th>
-            <th>Avg Wt</th>
             <th>Score</th>
             <th>Created</th>
           <!--  <th>Updated</th> -->
@@ -51,7 +50,6 @@ td { font-family: arial, 'san serif'; font-size: smaller;}
             <td>{{ entity.moretestsreq }}</td>
             <td>{{ entity.type }}</td>-->
 			<td>{% render "FtCoreBundle:TestResult:count" with {'id': entity.id} %}</td>
-			<td>{% render "FtCoreBundle:TestResult:averageWeight" with {'id': entity.id} %}</td>
            <td>{{ entity.ftscorea }}</td> 
            <td>{% if entity.created %}{{ entity.created|date('Y-m-d H:i:s') }}{% endif%}</td>
            <!-- <td>{% if entity.updated %}{{ entity.updated|date('Y-m-d H:i:s') }}{% endif%}</td> -->

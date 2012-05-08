@@ -29,6 +29,7 @@ class TestResultController extends Controller
         return $this->render('FtCoreBundle:TestResult:filter.html.twig', array('entities' => $entities));
     }
 
+/*
     public function averageWeightAction($id)
     {
         $em = $this->getDoctrine()->getEntityManager();
@@ -40,6 +41,7 @@ class TestResultController extends Controller
         return $this->render('FtCoreBundle:TestResult:averageWeight.txt.twig', array('number_results' => round($num[0][1],2)));
 
     }
+*/
 
     public function countAction($id)
     {
