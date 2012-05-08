@@ -266,6 +266,7 @@ class FtRequestController extends Controller
 	  //if the domain matches, send report automatically.
 	  if(isset($_POST['xbxrx']) && $_POST['xbxrx'] == 'dvomp') {
 	      $runAction = $this->runAction($ft_request->getId());
+	      $deliverAction = $this->deliverAction($ft_request->getId());
 	  }
 
       //email support@ft with details.
