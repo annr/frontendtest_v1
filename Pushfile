@@ -1,6 +1,8 @@
 #! /bin/sh
 
+/usr/local/mysql/bin/mysqldump -u root -p frontendtest CoreTest > app/config/db/ft_core_test.sql
+
 git status
 git add .
 git commit -m 'autocommit'
-pit push
+git push
