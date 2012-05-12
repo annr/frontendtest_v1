@@ -49,9 +49,9 @@ class HTML5
 	        return false;
 	    }
 		
-	    public function ClassNameSameAsHtml5Element()
+	    public function DivClassNameOrIdSimilarToHtml5Element()
 	    {	
-		/*
+		
 			global $poorly_designed_catchall;
 			global $poorly_designed_catchall_element_array;
 			
@@ -62,29 +62,30 @@ class HTML5
 			//THE WAY THIS IS WRITTEN, IT WILL ONLY FIND ONE EXAMPLE. SHOULD BE IMPROVED.
 			global $ft_dom;
 			$code = array('');
-
-			$html5_elements = "a abbr address area article aside audio b base bb bdo blockquote br button canvas caption cite code col colgroup command datagrid datalist dd del details dfn div dl dt em embed eventsource fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 header hgroup hr html i iframe img input ins kbd keygen label legend li link mark map menu meta meter nav noscript object ol optgroup option output p param pre progress q ruby rp rt samp script section select small source span strong style sub summary sup tbody td textarea tfoot th thead time tr ul var video wbr ";
-	        //loop through classes and if any appear in this string (with spaces), return true
+			$code[1] = 0; 
 			
-			$html5_elements_array = explode(' ',$html5_elements);
+			//$html5_elements = "a abbr address area article aside audio b base bb bdo blockquote br button canvas caption cite code col colgroup command datagrid datalist dd del details dfn div dl dt em embed eventsource fieldset figcaption figure footer form h1 h2 h3 h4 h5 h6 header hgroup hr html i iframe img input ins kbd keygen label legend li link mark map menu meta meter nav noscript object ol optgroup option output p param pre progress q ruby rp rt samp script section select small source span strong style sub summary sup tbody td textarea tfoot th thead time tr ul var video wbr ";
+			$html5_elements_suspicious = "navigation navbar headerbar footerbar menubar title heading abbr address article aside blockquote button canvas caption cite code col colgroup command datagrid datalist details em fieldset figcaption figure footer header hgroup hr label legend li menu meter nav noscript object ol optgroup output p param pre progress section small source span strong sub summary sup tbody tfoot thead time ul var video ";
+	        //loop through classes and if any appear in this string (with spaces), return true
+		
+			$html5_elements_array = explode(' ',$html5_elements_suspicious);
 			
 			$doctype = $ft_dom->firstChild;
-			$body_html = $ft_dom->getElementsByTagName('body');
+			$elements = $ft_dom->getElementsByTagName('div');
 			
+			//only search divs for now. 			
 			//outer foreach will only loop once.			
-			foreach($body_html as $html_node) {
-				foreach($html5_elements_array as $html5_element) {
-					Helper::recursivelySearchAttributeValue($html_node,'class',$html5_element);
+			foreach($elements as $element) {
+				if(($element->hasAttribute('class') && in_array($element->getAttribute('class'),$html5_elements_array)) || ($element->hasAttribute('id') && in_array($element->getAttribute('id'),$html5_elements_array))) {
+					$code[1]++;					
+					$code[0] .=  Helper::printCodeWithLineNumber($element);	
 				}
-			}
-	        foreach ($poorly_designed_catchall_element_array as $element) { 
-				$code[0] .=  Helper::printCodeWithLineNumber($element);	
 			}
 										
 			if($code[0] != '') {
+				if($code[1] > 1) { $code[1] = 's'; } else  { $code[1] = ''; }
 				return $code;
-			}
-			*/		
+			}				
 
 	        return false;
 	    }

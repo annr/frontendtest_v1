@@ -14,6 +14,8 @@ class HTML
 		global $poorly_designed_catchall;	   
 		global $poorly_designed_catchall_element_array;
 		$code = array('');
+		$code[1] = 0;
+		$code[2] = '';
 		$poorly_designed_catchall = array();		
 		$poorly_designed_catchall_element_array = array();	
 			
@@ -26,10 +28,10 @@ class HTML
 				
 		if(!empty($poorly_designed_catchall_element_array)) { 
 			foreach($poorly_designed_catchall_element_array as $element) {
-				$code[0] .= $element;
+				$code[0] .= ' - ' . $element . "\n";
+				$code[1]++;
 			}
-			$code[1] = '';
-			if(count($poorly_designed_catchall_element_array) > 1) { $code[1] = 's'; }
+			if(count($poorly_designed_catchall_element_array) > 1) { $code[2] = 's'; } else { $code[1] = ''; }
 			return $code;
 		}
 				
@@ -96,8 +98,51 @@ class HTML
 		}
 		return true;			
 	}
-					
+		
+	//this new function does not loop,
+	//but the retired version had issues.			
     public function ScriptBeforeCss()
+    {
+		global $ft_dom;
+		global $ft_run_log;
+
+		$elements = $ft_dom->getElementsByTagName('head');
+		
+		$code = array('');
+		$print_once = false;
+		$code[1] = 0; //number of scripts before css.
+		$plural_str = 's';
+		$conjugate_str = '';
+		
+    	if ( $elements->item(0)->hasChildNodes() ) {
+		    $children = $elements->item(0)->childNodes;
+		    foreach( $children as $kid ) {
+		    	if ( $kid->nodeType == XML_ELEMENT_NODE ) {
+			        if($kid->tagName == 'script' && $kid->hasAttribute('src')) {
+						$code[1]++;
+					} elseif ($kid->tagName == 'link') {
+						if($kid->hasAttribute('href') && (strpos(strtolower($kid->getAttribute('href')),'.css') !== false)) {
+							if($code[1] > 0) {
+								if($code[1] == 1) {$plural_str = ''; $conjugate_str = 's';}										
+								//$code[0] .= Helper::printCodeWithLineNumber($prev_script);
+								$code[0] .= $code[1] . " script" . $plural_str . " appear" .$conjugate_str. " before\n\n";
+								$code[0] .= Helper::printCodeWithLineNumber($kid);
+								$ft_run_log .= ',"Number scripts before stylesheets":'. $code[1];									
+								$code[1] = $plural_str;
+								return $code;
+							}
+						}
+					}
+					
+			    }
+		    }
+	    }
+	
+		return false;
+    }
+
+
+    public function ScriptBeforeCssRetired()
     {
 		global $ft_dom;
 		global $ft_run_log;
@@ -117,12 +162,12 @@ class HTML
 			        if($kid->tagName == 'script' && $kid->hasAttribute('src')) {
 						$prev_script = $kid;
 						$print_once = false;	
+						$code[2]++;
 					} elseif ($kid->tagName == 'link') {
 						if($kid->hasAttribute('href') && (strpos(strtolower($kid->getAttribute('href')),'.css') !== false)) {
 							if(isset($prev_script)) {
 								if(!$print_once) {
-									$code[1]++;
-									$code[2]++;
+									$code[1]++;									
 									$code[0] .= Helper::printCodeWithLineNumber($prev_script);
 									$code[0] .= "\nappears before\n\n";
 									$code[0] .= Helper::printCodeWithLineNumber($kid);
@@ -276,7 +321,7 @@ class HTML
 		$code[4] = 'image';
 		$passed_elem_array = array();
 		$url_array = array();
-		$max_resource_tests = 50;
+		$max_resource_tests = 25;
 
 		//the kinds of tags that a resource can be in are script, a, img, link, object, "input type=image src" iframe.
 		//specifically: 
@@ -295,20 +340,21 @@ class HTML
 	        foreach ($elements as $element) { 
 				//don't try to do too many.
 				if(count($url_array) > $max_resource_tests) {
-					$code[3] = "\n_PLEASE NOTE: By default, FrontendTest does not check more than $max_resource_tests resources. If you would like all of the page's resources tested, please contact [support@frontendtest.com](mailto:support@frontendtest.com?subject=maxResourceTestLimitHit)._";
+					$code[3] = "\n_PLEASE NOTE: By default, FrontendTest does not check more than $max_resource_tests non-image, non-link resources. If you would like all of the page's resources tested, please contact [support@frontendtest.com](mailto:support@frontendtest.com?subject=maxResourceTestLimitHit)._";
 					continue;
 				}
 					
-				if($element->hasAttribute('src')) { 				
-					if(!in_array($element->getAttribute('src'),$url_array))
+				if($element->hasAttribute('src')) { 	
+					$trimmed_url = 	trim($element->getAttribute('src'));		
+					if(!in_array($trimmed_url,$url_array))
 					{ 				
-						$url = Helper::getAbsoluteResourceLink($element->getAttribute('src'));			
+						$url = Helper::getAbsoluteResourceLink($trimmed_url);			
 						if(Helper::httpBadStatusCode($url)) { 
 							$code[1]++;
 							$code[0] .=  Helper::printCodeWithLineNumber($element);
 							if(Helper::likelyPixel($element)) { $code[4] = 'pixel'; }
 						} 
-						$url_array[] = $element->getAttribute('src');
+						$url_array[] = $trimmed_url;
 					}					
 			 	}
 			 }			
@@ -319,7 +365,7 @@ class HTML
 	        foreach ($elements as $element) { 	
 				//don't try to do too many.
 				if(count($url_array) > $max_resource_tests) {
-					$code[3] = "\n_PLEASE NOTE: By default, FrontendTest does not check more than $max_resource_tests resources. If you would like all of the page's resources tested, please contact [support@frontendtest.com](mailto:support@frontendtest.com?subject=maxResourceTestLimitHit)._";
+					$code[3] = "\n_PLEASE NOTE: By default, FrontendTest does not check more than $max_resource_tests non-image, non-link resources. If you would like all of the page's resources tested, please contact [support@frontendtest.com](mailto:support@frontendtest.com?subject=maxResourceTestLimitHit)._";
 					continue;
 				}
 				
@@ -357,7 +403,7 @@ class HTML
 		$code[3] = '';
 		$passed_elem_array = array();
 		$url_array = array();
-		$max_resource_tests = 50;
+		$max_resource_tests = 30;
 
 		$elements = $ft_dom->getElementsByTagName('a');
 		//only make this test if there is a reasonable number of links.
@@ -403,7 +449,7 @@ class HTML
 		$passed_elem_array = array();
 		$elements = $ft_dom->getElementsByTagName('img');
 		$url_array = array();
-		$max_resource_tests = 50;
+		$max_resource_tests = 30;
 		
         foreach ($elements as $element) { 
 			//don't try to do too many.
@@ -651,8 +697,6 @@ class HTML
 
 			foreach($deprecated_attributes as $attribute) 
 			{
-				//echo "\ntesting " . $attribute . " for $key.\n\n";
-
 				//for efficiency, does the attribute even exist?
 				
 				//get the array of positions for this!!!
@@ -774,7 +818,7 @@ class HTML
     {
 		global $ft_dom;
 		$code = array('');
-		
+	/*	
 		$elements = $ft_dom->getElementsByTagName('img');
 
         foreach ($elements as $element) { 
@@ -787,6 +831,28 @@ class HTML
 			return $code;
 		}				
         return false;
+*/
+
+		$code[1] = 0; 
+		$code[2] = '';
+		$elements = $ft_dom->getElementsByTagName('img');
+
+		foreach ($elements as $element) { 	
+			if ((!$element->hasAttribute('alt') || $element->getAttribute('alt') == '') && !Helper::likelyPixel($element)) {				
+				$code[1]++;				
+				if($code[1] <= Helper::$max_disp_threshold) { $code[0] .= Helper::printCodeWithLineNumber($element); }
+			}		
+			if ((!$element->hasAttribute('width') && !Helper::hasInlineStyleAttribute($element,'width')) || (!$element->hasAttribute('height') && !Helper::hasInlineStyleAttribute($element,'width'))) {
+			}	
+		}
+
+		if($code[0] != '') {
+			if($code[1] > 1) { $code[2] = 's'; }
+			if($code[1] > Helper::$max_disp_threshold) { $code[0] .= '...'; }
+			return $code;
+		}
+		return false;
+
     }
 
     public function MissingImgHeightOrWidth()
@@ -805,6 +871,7 @@ class HTML
 			
 			//continue for now if class is applied. they might be setting height and width that way.
 			if($element->hasAttribute('class') && $element->getAttribute('class') != '') { continue; }
+			if($element->hasAttribute('id') && $element->getAttribute('id') != '') { continue; }
 			if($element->hasAttribute('src') && (strpos($element->getAttribute('src'),'pixel') !== false || strpos($element->getAttribute('src'),'doubleclick') !== false || strpos($element->getAttribute('src'),'shareasale') !== false )) { continue; }
 						
 			if ((!$element->hasAttribute('width') && !Helper::hasInlineStyleAttribute($element,'width')) || (!$element->hasAttribute('height') && !Helper::hasInlineStyleAttribute($element,'width'))) {
@@ -821,13 +888,35 @@ class HTML
         return false;
     }
 
-    public function JavascriptInHref()
+    public function MissingActionInForm()
+    {
+		//usually there are not so many forms on a page. So for now, don't limit results.
+		global $ft_dom;
+		$code = array('');
+		$code[1] = 0;
+		$elements = $ft_dom->getElementsByTagName('form');
+        foreach ($elements as $element) { 
+			if (!$element->hasAttribute('action')) {
+				$code[1]++;
+				$code[0] .=  Helper::printCodeWithLineNumber($element);
+			}	
+		}			
+
+		if($code[0] != '') {
+			if($code[1] > 1) { $code[1] = 's'; } else { $code[1] = ''; }
+			return $code;
+		}
+				
+        return false;
+    }
+
+    public function LoneHashInHref()
     {
 		global $ft_dom;
 		$code = array('');
 		$elements = $ft_dom->getElementsByTagName('a');
         foreach ($elements as $element) { 
-			if ($element->hasAttribute('href') && (strpos($element->getAttribute('href'),'javascript:') !== false)) {
+			if ($element->hasAttribute('href') && $element->getAttribute('href') == '#') {
 				$code[0] .=  Helper::printCodeWithLineNumber($element);
 			}	
 		}			
@@ -876,6 +965,32 @@ class HTML
 		}		
 	    return false;
     }
+
+    public function InsignificantOrNoContent()
+    {	
+		global $ft_dom;
+
+		$elements = $ft_dom->getElementsByTagName('body');
+		$code_str = '';
+		$doc=new \DOMDocument();
+		$doc->preserveWhiteSpace = false; 
+		
+		//even if the html doc does not have a body tag (which is optional), php is going to give it one IF there is ANY content. 
+		//that is, if it has content like this: <!doctype html><title>hey</title><p>hi ann!</p>
+		//php returns <body><p>hi ann!</p></body> when getting a string with saveHTML()
+		if($elements->length == 0) {
+			return true;
+		} else {			
+			$doc->appendChild($doc->importNode($elements->item(0),true));
+			$code_str = trim($doc->saveHTML());
+			if(strlen($code_str) < 100) {
+				return true;
+			}
+		}
+		
+	    return false;
+    }
+
 
 	
 	

@@ -71,14 +71,13 @@ textarea { overflow: auto; vertical-align: top; resize: vertical; }
 input:valid, textarea:valid {  }
 input:invalid, textarea:invalid { background-color: #f0dddd; }
 */
-
 table { border-collapse: collapse; border-spacing: 0; }
 td { vertical-align: top; }
 
 .chromeframe { margin: 0.2em 0; background: #ccc; color: black; padding: 0.2em 0; }
 
 h1 {
-	font-size: 1.6em;
+	font-size: 2.3em;
 	font-weight: 700;
 }
 
@@ -100,13 +99,12 @@ h3, .whyTest {
 	font-size: 1.3em;
 }
 
-.infoColumn p, .formColumn p {
-	margin: 20px 0 0;
-    font-size: 1.0em;
+.infoColumn p {
+	margin: 24px 0;
 }
 
 header, footer, .main {
-    width: 710px;
+    width: 700px;
     margin: 0 auto;
 }
 
@@ -133,8 +131,9 @@ header ul {
 header ul li {
 	display: block;
 	float: left;
-	margin: 0 5px 0 0;
-	padding: 8px 15px 4px;
+	margin: 0 3px 0 0;
+	padding: 0 10px;
+	line-height: 32px;
 	font-size: 0.9em;
 	text-transform: lowercase;
 	background-color: #f6f6f5;	
@@ -152,15 +151,6 @@ header ul li a {
 	text-decoration: none;
     color: #000;
 }
-
-header ul li a:visited {
-    color: #000;
-}
-
-header ul li a:hover {
-    color: #999;
-}
-
 header ul li.right {
 	float: right;
 }
@@ -170,8 +160,6 @@ header img {
     left: -7px;
     margin: 20px 0;
 }
-
-/*
 .score-bg {
     margin: 20px auto;
 }
@@ -180,7 +168,6 @@ header img {
 background: url(../img/score-bg.png) center 20px no-repeat;
 height: 360px;
 }
-*/
 
 .main {
 	border-top-right-radius: 15px;
@@ -192,12 +179,11 @@ height: 360px;
 .mainWrapper {
     width: 100%;
     background-color: #FFF;
-    padding-top: 40px;
+    padding-top: 20px;
 }
 
 
 footer {
-    padding: 20px 0;
 	font-size: 0.8em;
 	clear: both;
 }
@@ -211,28 +197,30 @@ div.formColumn, div.infoColumn {
 }
 
 div.infoColumn {
-	width: 280px;
+	width: 220px;
     margin-left: 20px;
 }
 
 div.infoColumn ul {
     padding-left: 20px;
+    
 }
 
-.sampleReportIcon {
-display: block;
-	margin: 20px auto;
-}
 
-label.visibleLabel { font-size: larger;}
+div.formColumn label { font-size: larger;}
 
 .formColumn {
-	width: 400px;
+	width: 460px;
     
 }
 
 .newsletterFormSubmitMsg {
 	color: #AAA;
+}
+
+
+.formColumn p {
+	font-size: 0.9em;
 }
 
 .indicatorLights {
@@ -262,21 +250,8 @@ input.newsletterSignupField {
 	font-size: 0.8em;
 }
 
-label.floatedCheckboxLabel {
-	font-size:0.9em;    
-    float: left;
-    width: 92%;
-    margin-left: 8px;
-    
-}
-input.floatedCheckbox {
-    margin-top: 12px; 
-    margin-left: 1px;
-    float: left;
-}
-
-.mousetype {
-    font-size: 75%;
+div.formColumn label.smallLabel {
+	font-size:0.9em;
 }
 
 .testButton {
@@ -309,15 +284,16 @@ margin-left: 10px;
    background: -moz-linear-gradient(top, #9c6, #690);
    background: -ms-linear-gradient(top, #9c6, #690);
    background: -o-linear-gradient(top, #9c6, #690);
-   padding: 10px 13px;
+   padding: 10px 24px;
    -webkit-border-radius: 6px;
    -moz-border-radius: 6px;
    border-radius: 6px;
  /*  text-shadow: rgba(0,0,0,.7) 0 1px 0; */
  text-shadow: rgba(20,20,20,.5) 1px 2px 0;
    color: white;
-   font-size: 18pt;
+   font-size: 20pt;
    font-weight: bold;
+   margin: 24px 0 0;
 cursor: pointer;
 }
 .button:hover, .button:active {
@@ -333,15 +309,16 @@ cursor: pointer;
 }
 
 label.error {
+	font-size: 0.7em;
 	color: red;
 	display: block;
 }
-.formRow {
-    margin-bottom: 16px;
-    overflow: auto;
-}
+
 input.imgButton {
 	padding:0;
+}
+.sampleReportIcon {
+	position:absolute;bottom:-70px; right:50px;cursor:pointer;
 }
 
 .sampleReport p {

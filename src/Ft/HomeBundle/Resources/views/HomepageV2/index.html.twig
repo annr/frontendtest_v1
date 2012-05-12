@@ -13,7 +13,7 @@
   <meta name="description" content="This free tool runs a suite of tests and returns a detailed, prioritized list of what you can do to make your site better. Optimize for an evolving web.">
   <meta name="keywords" content="html5, css3, JavaScript, semantic html, minification, cross-browser compatibility, deprecated elements, broken links, css specificity, correctly sized images, favicon, javascript pseudo-protocol, duplicate IDs, optimized graphics, pngs vs gifs, blocking scripts, html5 doctype, font-size, font-face, too many inline styles, unused code">
   <meta name="viewport" content="width=device-width">
-  <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/style_v2.css') }}">
 </head>
 <body>
 
@@ -25,11 +25,11 @@
   </header>
 -->
   <header>
-	<a href="/"><img src="{{ asset('img/logo-new.png') }}" width="230" height="47" alt="FrontendTest for improving web sites"></a>
+	<img src="{{ asset('img/logo-new.png') }}" width="230" height="47" alt="FrontendTest for improving web sites">
 	<ul>
-		<li{{ home_tab_style }}><a href="{{ path('FtHomeBundle_homepage') }}">Tester</a></li>
-		<li{{ faq_tab_style }}><a href="{{ path('FtHomeBundle_faq') }}">FAQ / What we test</a></li>
-		<!--<li><a href='/compare/browser/index.html'>Blog</a></li>-->
+		<li class='selected'><a href='/index.html'>Test web site</a></li>
+		<li><a href='/results/desktop.html'>FAQ / What we test</a></li>
+		<li><a href='/compare/browser/index.html'>Blog</a></li>
 	</ul>
   </header>
 
@@ -37,16 +37,61 @@
 
   <div role="main" class="main">
 	
-    {% block content %}
-
-    {% endblock %}
-
+	<div class="formColumn">				
+		<form id="testSite">
+			<div class="formRow">
+		  	 <label for="url">Web site<!-- (http://...)--></label><br>
+				<input type="text" name="url" id="url" placeholder="www.yourwebsite.com" autofocus="autofocus" style="width: 340px"><input type="submit" class="testButton" value="Test">
+			</div>
+			<img src="{{ asset('img/loading.gif') }}" width="40" height="40" alt="loading" class="loading" style="margin-bottom:10px;margin-left:10px; display:none;">
+		</form>				
+		
+		<div class="scoreArea">
+		
+		</div>
+		
+		<form id="getReport">
+			<div class="formRow">
+		  	 <label for="email">Email to send report</label> (same domain)<br>
+				<input type="email" name="email" id="email" placeholder="email@yourwebsite.com" style="width: 350px">
+			</div>
+				<input type="checkbox" name="wantsMoreHelp" id="wantsMoreHelp">&nbsp; <label for="wantsMoreHelp" class="smallLabel">I’m interested in having a web expert review my site</label><br>
+			<input type="submit" class="button" value="Get Free Report">	<img src="{{ asset('img/loading.gif') }}" width="40" height="40" alt="loading" class="loading" style="margin-bottom:10px;margin-left:10px; display:none;">
+			<input type="hidden" name="testUrl" id="testUrl" value="">		
+			<input type="hidden" name="xbxrx" id="xbxrx" value="dvomp">		
+		</form>				
+		<p id="confirmFtRequest">&nbsp;<br>&nbsp;</p>
+		
+					
 	</div>
-	</div>
+	
+	<div class="infoColumn" style="position:relative;">
+		
+		<h2 class="marginBottom">Find out what you should do to make your web site better, faster, and future-proof</h2>
+		<!--
+		<h2 class="marginBottom">We describe your biggest, quickest front-end wins in a detailed custom report.</h2>
+		<h2 class="marginBottom">We explain your most important front-end improvements in a detailed, custom report.</h2>-->
+			
+		<h3>Discover</h3>
+		<ul>
+			<li>Poorly optimized resources</li>
+			<li>Errors and unused code</li>
+			<li>Out-of-date practices</li>
+			<li>Improvements for mobile</li>
+			<!--<li>Design wins</li>-->
+	 	</ul>		
+	
+<div style="float: right;"><img src="{{ asset('img/view_sample_report.png') }}" width="153" height="187" alt="View Sample Report" class="sampleReportIcon"></div>
+
+		
+	</div>	
+</div>
+
+</div>
 
 <footer>
 	<p>
-  	Questions? &nbsp;Email <a href="mailto:support@frontendtest.com?subject=questions">support@frontendtest.com</a>
+  	<b>Questions?</b> &nbsp;Email <a href="mailto:support@frontendtest.com?subject=questions">support@frontendtest.com</a>
   	</p>
 	&copy;2012 FrontendTest.com
 </footer>
@@ -305,7 +350,7 @@
 			submitHandler: function() {	
 				$('#confirmFtRequest').html('');
 				$('.loading').show();
-				var confirmFtRequestMsg = '<p><span class="formSubmittedMsg">Thanks! A detailed report will be sent to ' + $('#email').val()+ '.</span></p><p>Email questions to <a href="mailto:support@frontendtest.com?subject=submit">support@frontendtest.com</a>.</p>';
+				var confirmFtRequestMsg = '<span class="formSubmittedMsg">Thanks! A detailed report will be sent to ' + $('#email').val()+ '.</span><br>Email any questions to <a href="mailto:support@frontendtest.com?subject=submit">support@frontendtest.com</a>.';
 				// if domains do not match, customize message
 				
 				var domain = $('#url').val().replace(/^http[s]?:\/\//,''); 
@@ -317,7 +362,7 @@
 
 				if ($('#email').val().indexOf(domain) == -1) { 
 					$('#xbxrx').val('xxxxx');
-					var confirmFtRequestMsg = '<p>Request submitted. <span class="formSubmittedMsgAlert">For an automatic report, the email address and site domains must match.</span></p><p>Email <a href="mailto:support@frontendtest.com?subject=override">support@frontendtest.com</a> to request report.</p>';
+					var confirmFtRequestMsg = 'Request submitted. <span class="formSubmittedMsgAlert">For an automatic report, the email address and site domains must match.</span> Email <a href="mailto:support@frontendtest.com?subject=override">support@frontendtest.com</a> to request report.';
 				} 	
 
 				//replace with valid URL for submission.

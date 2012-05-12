@@ -1,1 +1,47 @@
 {% extends "FtHomeBundle::layout.html.twig" %}
+
+{% block content %}
+
+	<div class="formColumn">				
+		<form id="signup">
+			<div class="formRow">
+		  	 <label for="url" class="visibleLabel">Web site to test<!-- (http://...)--></label><br>
+				<input type="text" name="url" id="url" placeholder="www.yourwebsite.com" autofocus="autofocus" style="width: 360px">
+			</div>
+			<div class="formRow">
+		  	 <label for="email" class="visibleLabel">Email to send report</label> (same domain)<br>
+				<input type="email" name="email" id="email" placeholder="email@yourwebsite.com" style="width: 360px">
+				<span class="mousetype">(We will not share your email address)</span>
+			</div>
+			<div class="formRow">
+				<input type="checkbox" name="wantsMoreHelp" id="wantsMoreHelp" class="floatedCheckbox">&nbsp; <label for="wantsMoreHelp" class="floatedCheckboxLabel">I’m interested in having a front-end expert review<br>this web site</label>
+			</div>
+			<input type="submit" class="button" value="Get Free Report">	<img src="{{ asset('img/loading.gif') }}" width="40" height="40" alt="loading" class="loading" style="margin-bottom:10px;margin-left:10px; display:none;">
+			<input type="hidden" name="xbxrx" id="xbxrx" value="dvomp">		
+		</form>				
+		<div id="confirmFtRequest"></div>		
+	</div>
+	
+	<div class="infoColumn" style="position:relative;">
+		
+		<h2 class="marginBottom">Find out what you should do to make your web site better, faster, and future-proof</h2>
+		<!--
+		<h2 class="marginBottom">We describe your biggest, quickest front-end wins in a detailed custom report.</h2>
+		<h2 class="marginBottom">We explain your most important front-end improvements in a detailed, custom report.</h2>-->
+			
+		<h3>Discover</h3>
+		<ul>
+			<li>Poorly optimized resources</li>
+			<li>Errors and unused code</li>
+			<li>Out-of-date practices</li>
+			<li>Improvements for mobile</li>
+			<!--<li>Design wins</li>-->
+	 	</ul>		
+	
+<img src="{{ asset('img/view_sample_report-grid.png') }}" width="140" height="168" alt="View Sample Report" class="sampleReportIcon">
+
+		
+	</div>	
+
+
+{% endblock %}

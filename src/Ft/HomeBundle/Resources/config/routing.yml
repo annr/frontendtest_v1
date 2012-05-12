@@ -1,7 +1,11 @@
 FtHomeBundle_homepage:
     pattern:  /
     defaults: { _controller: FtHomeBundle:Default:index }
-    
+
+FtHomeBundle_faq:
+    pattern:  /faq
+    defaults: { _controller: FtHomeBundle:Default:faq }
+       
 _newsletter_email:
     pattern:  /newsletter_email
     defaults: { _controller: FtHomeBundle:NewsletterEmail:index }
@@ -9,6 +13,10 @@ _newsletter_email:
 _orig:
     pattern:  /homepage_v1/
     defaults: { _controller: FtHomeBundle:HomepageV1:index }
+    
+_v2:
+    pattern:  /homepage_v2/
+    defaults: { _controller: FtHomeBundle:HomepageV2:index }
 
 ft_request:
     pattern:  /ft_request/

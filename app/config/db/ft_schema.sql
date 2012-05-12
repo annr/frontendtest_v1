@@ -40,7 +40,7 @@ CREATE TABLE `CoreTest` (
   `created` datetime NOT NULL,
   `updated` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -67,7 +67,7 @@ CREATE TABLE `FtRequest` (
   `ft_score_a` smallint(6) DEFAULT NULL,
   `ft_score_b` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -84,7 +84,7 @@ CREATE TABLE `Log` (
   PRIMARY KEY (`id`),
   KEY `IDX_B7722E25CC9C00BB` (`ft_request_id`),
   CONSTRAINT `FK_B7722E25CC9C00BB` FOREIGN KEY (`ft_request_id`) REFERENCES `FtRequest` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,7 +122,25 @@ CREATE TABLE `TestResult` (
   PRIMARY KEY (`id`),
   KEY `IDX_DA7D8D62CC9C00BB` (`ft_request_id`),
   CONSTRAINT `FK_DA7D8D62CC9C00BB` FOREIGN KEY (`ft_request_id`) REFERENCES `FtRequest` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=507 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=875 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `htmlrecord`
+--
+
+DROP TABLE IF EXISTS `htmlrecord`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `htmlrecord` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ft_request_id` int(11) NOT NULL,
+  `html` longtext NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `IDX_E90A1504CC9C00BB` (`ft_request_id`),
+  CONSTRAINT `FK_E90A1504CC9C00BB` FOREIGN KEY (`ft_request_id`) REFERENCES `FtRequest` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -152,4 +170,4 @@ CREATE TABLE `newsletteremail` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-05-01  6:31:50
+-- Dump completed on 2012-05-11 19:12:33

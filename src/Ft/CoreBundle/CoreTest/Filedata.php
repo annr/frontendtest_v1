@@ -91,6 +91,9 @@ class Filedata
         foreach ($elements as $element) { 
 			if ($element->hasAttribute('src') && strpos($element->getAttribute('src'),'.min.') === false && strpos($element->getAttribute('src'),'optimizely.com') === false) {
 				//if ".min." is in the name, don't bother :)				
+
+				if(strpos($element->getAttribute('href'),'googleapis') !==false) { continue; }
+
 				$link = Helper::getAbsoluteResourceLink($element->getAttribute('src'));	
 				
 				$bytes_size = floatval(Helper::getResourceSizeBytes($link));
@@ -154,9 +157,12 @@ class Filedata
 //			if ($element->hasAttribute('href') && strpos($element->getAttribute('href'),'.min.') ===false) {
 				//if ".min." is in the name, don't bother :)				
 				if(strpos($element->getAttribute('href'),'.min.') !==false) { continue; }
+				if(strpos($element->getAttribute('href'),'googleapis') !==false) { continue; }
 				$link = Helper::getAbsoluteResourceLink($element->getAttribute('href'));					
 				$bytes_size = floatval(Helper::getResourceSizeBytes($link));
 
+				//echo '<br>' . $bytes_size . ' (' . round($bytes_size/1024,2, PHP_ROUND_HALF_UP) .'K)' . ': ' . $element->getAttribute('href') . '<br>';
+				
 				if($bytes_size > (5 * 1024))
 				{	
 					//see if the script is not minified.
@@ -165,7 +171,6 @@ class Filedata
 						$code[1]++;
 						//$code[0] .= '`'.Helper::printCodeWithLineNumber($element,false) . ' (' . round($bytes_size/1024,2, PHP_ROUND_HALF_UP) .'K)`';
 						$code[0] .= Helper::printCodeWithLineNumber($element);
-						//return $code;
 					} 
 				}	
 			}	

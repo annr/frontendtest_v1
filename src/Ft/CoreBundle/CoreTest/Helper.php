@@ -118,7 +118,8 @@ class Helper
 
     public static function http200Test($url)
 	{
-		$headers = get_headers($url, 1);
+		$headers = @get_headers($url, 1);
+		if(!$headers) { return false;}
 		$header_str = explode(' ',$headers[0]);	
 		if($header_str[1] == '200') {
 			return true;
@@ -128,10 +129,13 @@ class Helper
 	
 	public static function httpHtmlTypeTest($url)
 	{
-		$headers = get_headers($url, 1);
+		$headers = @get_headers($url, 1);
 		//this is either a string or an array!!!! 
 		//error_log(gettype($headers["Content-Type"]));
 		//var_dump($headers["Content-Type"]);
+		
+		//if get headers returns false, you can't test. 
+		if(!$headers) { return false;}
 
 		if(gettype($headers["Content-Type"]) == 'string' && strpos($headers["Content-Type"],'text/html') !== false) {
 			return true;
@@ -144,12 +148,37 @@ class Helper
     public static function httpBadStatusCode($url)
 	{
 		$headers = get_headers($url, 1);
+		
+		//not being able to get headers is an indication (to me!) that it has a bad status code. 
+		//it's the case with http://mdch.at/lG4hzm linked from http://mdchat.org/		
+		if(!$headers) { return true; }
+				
 		$header_str = explode(' ',$headers[0]);
-
 		$bad_codes = array('400','404','408','410');
+		
 		if(in_array($header_str[1],$bad_codes)) {
-			return true;
-		}
+			//var_dump($header_str);
+			//echo $url;
+			
+			//this extra test is required for certain web sites that do not want their content spidered.
+			//it won't be easy to catch all of these kinds of cases, but the specific case I'm fixing:
+			// www.mdchat.org with URLs such as
+			// http://www.scribd.com/embeds/48466709/content?start_page=1&view_mode=list&access_key=key-1ocsvs7iik05cs4ry0lh
+			//is handled in this case
+			$handle = curl_init($url);
+			curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+			curl_setopt($handle, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0");
+			/* Get the HTML or whatever is linked in $url. */
+			$response = curl_exec($handle);
+			$info = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+			//echo "INFO: " . $info;
+
+			curl_close($handle);
+			//var_dump($response);
+			if(in_array($info,$bad_codes)) {
+				return true;
+		    }
+		}	
 		return false;		
 	}
 		
@@ -202,23 +231,30 @@ class Helper
 		 \curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		 \curl_setopt($ch, CURLOPT_MAXREDIRS, 10); //follow up to 10 redirections - avoids loops
 		 $data = \curl_exec($ch);
-		\curl_close($ch);
+		 $info = \curl_getinfo($ch, CURLINFO_SIZE_DOWNLOAD);
+		 \curl_close($ch);
 		
-		//how big is data? If we just get a bit of it, we should be able to tell if it's minified or not. 
-		//sometime the top is minified and the bottom is not. 
-		$sample_chunk_data = substr($data,0,2000);
+		 // this script may be inefficient. we should be able to look at part of the data to see if it's minified. However, I'm doing what I
+		 // think is the best test for ow.		
+		 // looking at unminified vs partly minified files I've discovered this:
+		 //   not minified: 5672 bytes, 509 whitespace: 509/5672 = 0.08973906911142 (.09)
+		 //     
+		 //   partly minified: 81131 bytes, 2674 whitespace: 2674/81131 = 0.03432719922101 (.034)
+		 //		
+		 // therefore we can consider a file with such a ratio as .07 to be unminified or poorly minified.
 		
-		//find linebreaks, whitespace and tabs in data:
-		if(substr_count($sample_chunk_data, "\n") > 10 || substr_count($sample_chunk_data, "\r") > 10)
-		{
-			return false;
-		}
+		 $total_whitespace = substr_count($data, ' ') + substr_count($data, "\n") + substr_count($data, "\r") + substr_count($data, "\r"); 
+
+		 if($total_whitespace/$info > 0.07)
+		 {	
+	 		 return false;
+		 }
 		
-		//the threshold is very easy: it's either minified or not. 
-		//however, the percent that can be saved should be shown to the user as well. 
-		//this is an important to-do.		
+		 //the threshold is very easy: it's either minified or not. 
+		 //however, the percent that can be saved should be shown to the user as well. 
+		 //this is an important to-do.		
 	
-		return true;
+		 return true;
 	}
 	
 
@@ -393,10 +429,16 @@ class Helper
 	public static function recursivelyGetDuplicateAttributeValue( $node, $attribute_name ) {
 	   global $poorly_designed_catchall;
 	   global $poorly_designed_catchall_element_array;
+	   //global $poorly_designed_catchall_instances;
 				
 	   if ($node->hasAttribute($attribute_name) !== false) { 
+			//if it's in the collected attribute values AND not already in the catchall element array
 			if(in_array($node->getAttribute($attribute_name),$poorly_designed_catchall)) {
-				$poorly_designed_catchall_element_array[] = $node->getAttribute($attribute_name);
+				if(!in_array($node->getAttribute($attribute_name),$poorly_designed_catchall_element_array)) {
+					$poorly_designed_catchall_element_array[] = $node->getAttribute($attribute_name);					
+				} //else {
+					//$poorly_designed_catchall_instances++;
+				//}
 			} else {
 				$poorly_designed_catchall[] = $node->getAttribute($attribute_name);				
 			}
@@ -411,24 +453,28 @@ class Helper
 	   }
 	}	
 
-	public static function recursivelySearchAttributeValue( $node, $attribute_name, $attribute_value ) {
+	//this function does not work right!!! I loops over the dom many times.
+	public static function recursivelySearchAttributeValue( $node, $attribute_name, $attribute_value, $tag) {
 	   global $poorly_designed_catchall;
 	   global $poorly_designed_catchall_element_array;
-				
-	   if ($node->hasAttribute($attribute_name) !== false && $node->getAttribute($attribute_name) == $attribute_value) { 
-			$poorly_designed_catchall++; 
-			$poorly_designed_catchall_element_array[] = $node;
-	   }
+
+		if($tag == '' || ($tag != '' && $node->nodeName == $tag)) {
+			if ($node->hasAttribute($attribute_name) !== false && $node->getAttribute($attribute_name) == $attribute_value) { 
+				$poorly_designed_catchall++; 
+				$poorly_designed_catchall_element_array[] = $node;
+		   }
+		}
+						
 	   if ( $node->hasChildNodes() ) {
 	     $children = $node->childNodes;
 	     foreach( $children as $kid ) {
 	       if ( $kid->nodeType == XML_ELEMENT_NODE ) {
-	         Helper::recursivelySearchAttributeValue( $kid,$attribute_name, $attribute_value  );
+	         Helper::recursivelySearchAttributeValue( $kid,$attribute_name, $attribute_value, $tag );
 	       }
 	     }
 	   }
 	}
-		
+	
 	public static function str_insert($insertstring, $intostring, $offset) {
 	   $part1 = substr($intostring, 0, $offset);
 	   $part2 = substr($intostring, $offset);

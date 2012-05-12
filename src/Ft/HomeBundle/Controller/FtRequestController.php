@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Ft\HomeBundle\Entity\FtRequest;
 use Ft\HomeBundle\Entity\Log;
+use Ft\HomeBundle\Entity\HtmlRecord;
 use Ft\HomeBundle\Form\FtRequestType;
 use Ft\HomeBundle\FtRequest\FtHelper;
 
@@ -156,6 +157,11 @@ class FtRequestController extends Controller
 		//FtHelper::testMinContentLength($ft_http_request);	
 		FtHelper::setFtDom($ft_url);
 		
+	    $record = new HtmlRecord();
+	    $record->setHtml($ft_data);
+	    $record->setCreated(new \DateTime('now'));
+        $record->setFtRequest($ft_request);	
+			
 		$suiteActionRes = $this->suiteAction($ft_request);	
 
 		$ft_request->setFtScoreB($suiteActionRes);
@@ -190,7 +196,7 @@ class FtRequestController extends Controller
 		$display_score = 1;		
 		if($score < 100) { $display_score = round(100 - $score); }
 		
-		$format1 = ' %s <span style="color:#cccc66">However, you may want to consider ';
+		$format1 = ' %s <span style="color:#999900">However, you may want to consider ';
 		$format2 = ' %s <span style="color:#ff9900">Nonetheless, we suggest ';
 		$format3 = ' %s <span style="color:#ff0000">We strongly suggest ';
         
@@ -227,8 +233,8 @@ class FtRequestController extends Controller
 		}
 				
 	    $em->persist($ft_request);
+	    $em->persist($record);
 	    $em->flush();
-	
 	
 	}
 
@@ -275,13 +281,16 @@ class FtRequestController extends Controller
 		->setParameter('url', $_POST['url'])
 		->setParameter('recent', new \DateTime('1 hour ago'))
 		->getResult();
-	
+		
 	  if(empty($recent_request)) { 
 		  $result = 'true';
 	
 	      $ft_request = new FtRequest();
 	      $ft_request->setEmail($_POST['email']);
 	      $ft_request->setUrl($_POST['url']);
+	      if (array_key_exists('SERVER_ADDR', $_SERVER)) { $ft_request->setIp($_SERVER['SERVER_ADDR']); }	      
+	      if (array_key_exists('HTTP_USER_AGENT', $_SERVER)) { $ft_request->setEnvironment($_SERVER['HTTP_USER_AGENT']); }	      
+	      if (array_key_exists('HTTP_REFERER', $_SERVER)) { $ft_request->setNotes("referer: " . $_SERVER['HTTP_REFERER']); }	      
 	      $ft_request->setCreated(new \DateTime('now'));
 	      $ft_request->setType('FREE');
 
