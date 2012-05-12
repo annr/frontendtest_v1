@@ -25,9 +25,9 @@ body { margin: 0; font-size: 1.2em; line-height: 1.4; font-family: "scrivano"; }
 ::selection { background: #fe57a1; color: #fff; text-shadow: none; }
 
 a, .fauxLink { color: #00e; text-decoration: none;}
-.fauxLink { cursor:pointer; }
+.fauxLink, .closePopup { cursor:pointer; }
 a:visited { color: #551a8b; }
-a:hover { color: #06e; }
+a:hover, .fauxLink:hover { color: #06e; text-decoration: underline;}
 a:focus { outline: thin dotted; }
 a:hover, a:active { outline: 0; }
 abbr[title] { border-bottom: 1px dotted; }
@@ -265,7 +265,7 @@ input.newsletterSignupField {
 label.floatedCheckboxLabel {
 	font-size:0.9em;    
     float: left;
-    width: 92%;
+    width: 91%;
     margin-left: 8px;
     
 }
