@@ -96,7 +96,7 @@ h2.marginBottom {
 	margin-bottom: 20px;
 }
 
-h3, .whyTest {
+h3 {
 	font-size: 1.3em;
 }
 
@@ -112,21 +112,6 @@ header, footer, .main {
     padding-right: 10px;
 }
 
-header h1 {
-	font-weight: bold;
-	font-size: 0.9em;
-	text-align: left;
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-	color: #bbb;
-	padding: 8px 0;
-	margin: 0 auto;
-	width: 630px;
-}
-header h1 em {
-	font-style: normal;
-	color: #666;
-}
 header ul {
 	margin: 0;
 	overflow:hidden;
@@ -140,12 +125,6 @@ header ul li {
 	font-size: 0.9em;
 	text-transform: lowercase;
 	background-color: #f6f6f5;	
-	-webkit-border-top-left-radius: 6px;
-	-moz-border-radius-topleft: 6px;
-	border-top-left-radius: 6px;	
-	-webkit-border-top-right-radius: 6px;
-	-moz-border-radius-topright: 6px;
-	border-top-right-radius: 6px;
 }
 header ul li.selected {
 	background-color: #FFF;
@@ -185,18 +164,13 @@ height: 360px;
 */
 
 .main {
-	border-top-right-radius: 15px;
-	border-bottom-right-radius: 15px;
 	background: #FFF;
-    overflow: auto;
 }
 
 .mainWrapper {
-    width: 100%;
-    background-color: #FFF;
-    padding-top: 40px;
-    border: 1px solid red;
+    background-color: #fff;
     overflow: auto;
+    padding-top: 40px;
 }
 
 
