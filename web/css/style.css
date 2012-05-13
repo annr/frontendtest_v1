@@ -14,8 +14,7 @@ audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
 audio:not([controls]) { display: none; }
 [hidden] { display: none; }
 
-html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;}
-body {background-color: #FFF;}
+html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #eae9e1;}
 
 /* html, button, input, select, textarea { font-family: sans-serif; color: #222; } */
 
@@ -106,11 +105,12 @@ h3 {
     font-size: 1.0em;
 }
 
-header, footer {
-background-color: #eae9e1;
+.mainWrapper {
+    background-color: #fff;
+ 
 }
 
-.headerWrapper, .footerWrapper, .main {
+header, footer, .main {
     width: 710px;
     margin: 0 auto;
     padding-left: 10px;
@@ -118,14 +118,10 @@ background-color: #eae9e1;
 }
 
 header ul {
-
-}
-
-header ul {
+	margin: 0;
 	overflow:hidden;
 	list-style-type: none;
 }
-
 header ul li {
 	display: block;
 	float: left;
@@ -134,15 +130,6 @@ header ul li {
 	font-size: 0.9em;
 	text-transform: lowercase;
 	background-color: #f6f6f5;	
-    
-	-webkit-border-top-left-radius: 6px;
-	-moz-border-radius-topleft: 6px;
-	border-top-left-radius: 6px;	
-
-	-webkit-border-top-right-radius: 6px;
-	-moz-border-radius-topright: 6px;
-	border-top-right-radius: 6px;
-    
 }
 header ul li.selected {
 	background-color: #FFF;
