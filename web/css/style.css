@@ -105,10 +105,10 @@ h3 {
     font-size: 1.0em;
 }
 
-
-.main, .mainWrapper  {
+.mainWrapper {
+    width: 100%;
+    display: inline-block;
     background-color: #fff;
-    overflow: auto;
 }
 
 header, footer, .main {
@@ -127,7 +127,8 @@ header ul li {
 	display: block;
 	float: left;
 	margin: 0 5px 0 0;
-	padding: 8px 15px 4px;
+	padding: 10px 15px 6px;
+    line-height: 100%;
 	font-size: 0.9em;
 	text-transform: lowercase;
 	background-color: #f6f6f5;
@@ -331,19 +332,18 @@ input.imgButton {
 .clearfix { *zoom: 1; }
 
 @media (max-width: 640px) {
-.main {
-width: 400px;
-}
+    .main {
+        width: 400px;
+    }
 
-.infoColumn {
-width: 360px;
-margin-top: 40px;
-}
+    .infoColumn {
+        width: 360px;
+        margin-top: 40px;
+    }
 
-.infoColumn h2 {
-    text-align: center;
-}
-
+    .infoColumn h2 {
+        text-align: center;
+    }
 }
 
 @media print {
