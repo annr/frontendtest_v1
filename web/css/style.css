@@ -105,16 +105,19 @@ h3 {
     font-size: 1.0em;
 }
 
-.mainWrapper {
+.main, .mainWrapper  {
     background-color: #fff;
- 
+    overflow: auto;
+}
+.main {
+    padding-top: 40px;
 }
 
 header, footer, .main {
     width: 710px;
     margin: 0 auto;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 header ul {
@@ -129,7 +132,15 @@ header ul li {
 	padding: 8px 15px 4px;
 	font-size: 0.9em;
 	text-transform: lowercase;
-	background-color: #f6f6f5;	
+	background-color: #f6f6f5;
+    	
+	-webkit-border-top-left-radius: 6px;
+	-moz-border-radius-topleft: 6px;
+	border-top-left-radius: 6px;	
+
+	-webkit-border-top-right-radius: 6px;
+	-moz-border-radius-topright: 6px;
+	border-top-right-radius: 6px;
 }
 header ul li.selected {
 	background-color: #FFF;
@@ -211,34 +222,9 @@ label.visibleLabel { font-size: larger;}
 	color: #AAA;
 }
 
-.indicatorLights {
-	letter-spacing: 4px;
-	font-size: 65px;
-	line-height: 20%;
-	font-family: sans-serif;
-}
-.indicatorGreen {
-	color: #6c3;
-}
-
-.indicatorOrange {
-	color: #fc3;
-}
-
-.indicatorRed {
-	color: #f30;
-}
-
 input {
 	padding: 8px;
 }
-
-input.newsletterSignupField {
-	padding: 2px;
-	font-size: 0.8em;
-}
-
-
 .mousetype {
     font-size: 80%;
 }
