@@ -19,9 +19,8 @@
 			<input type="submit" class="button" value="Get Free Report">	<img src="{{ asset('img/loading.gif') }}" width="40" height="40" alt="loading" class="loading" style="margin-bottom:10px;margin-left:10px; display:none;">
 			<input type="hidden" name="xbxrx" id="xbxrx" value="dvomp">		
 		</form>				
-		<div id="confirmFtRequest">
-		
-		</div>
+		<p id="confirmFtRequest">
+		</p>
 				
 	</div>
 	
@@ -47,7 +46,7 @@
 
 <!--<img src="{{ asset('img/view_sample_report-grid.png') }}" width="140" height="168" alt="View Sample Report" class="sampleReportIcon">-->
 
-		
+		<p>&nbsp;</p>
 	</div>	
 	
 	
@@ -308,7 +307,7 @@
 				submitHandler: function() {	
 					$('#confirmFtRequest').html('');
 					$('.loading').show();
-					var confirmFtRequestMsg = '<p><span class="formSubmittedMsg">Thanks! A detailed report will be sent to ' + $('#email').val()+ '.</span></p><p>Email questions to <a href="mailto:support@frontendtest.com?subject=submit">support@frontendtest.com</a>.</p>';
+					var confirmFtRequestMsg = '<p><span class="formSubmittedMsg">Thanks! A detailed report will be sent to ' + $('#email').val()+ '.</span></p>';
 					// if domains do not match, customize message
 
 					var domain = $('#url').val().replace(/^http[s]?:\/\//,''); 
