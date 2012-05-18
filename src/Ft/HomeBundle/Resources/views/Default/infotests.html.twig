@@ -1,0 +1,47 @@
+{% extends "FtHomeBundle::layout.html.twig" %}
+
+{% block content %}
+
+<h1>Core Tests</h1>
+<h4 class="marginBottom">FrontendTest asks the following questions, calculates a score, and prepares detailed suggestions based on the results.</h4>
+
+<ol class="contentCopy">
+<li>Are stylesheets and scripts optimally ordered?</li>
+<li>Are images properly sized?</li>
+<li>Is CSS specificity leveraged vs. used improperly?</li>
+<li>Can dated code be cleaned up and written more efficiently? </li>
+<li>Is the doctype up-to-date?</li>
+<li>Are there any broken links or resources?</li>
+<li>Is font-face bulletproof?</li>
+<li>Is the doctype the first element?</li>
+<li>Should one graphic type &ndash; GIF, PNG, JPG &ndash; be replaced by another?</li>
+<li>Are large scripts minified?</li>
+<li>Are large style sheets minified?</li>
+<li>Does the page use newly introduced HTML5 elements without a shim?</li>
+<li>Is the page properly semantic? For example, is content marked up as bold when it should be a title?</li>
+<li>If doctype is HTML5, is HTML5 used beneficially?</li>
+<li>Are links used improperly with hash tags or the javascript protocol?</li>
+<li>Are required attributes missing?</li>
+<li>Are deprecated elements used?</li>
+<li>Are deprecated attributes used?</li>
+<li>Are ID attribute values unique to the page?</li>
+<li>Are tables improperly used? For example, are nested tables used for layout?</li>
+<li>Have graphics been made of text?</li>
+<li>Do elements match doctype?</li>
+<li>Is document.write() used in a crippling way?</li>
+<li>Is the Google Library API used for caching benefits?</li>
+<li>Are any large resources causing bottlenecks?</li>
+<li>Is the same resource inefficiently downloaded twice?</li>
+<li>Is there a favicon?</li>
+<li>Is the title element missing?</li>
+<li>Is any metadata content empty?</li>
+<li>Are ampersands unescaped in links?</li>
+</ol>
+
+
+{% endblock %}
+
+
+{% block contentBottom %}
+
+{% endblock %}

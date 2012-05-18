@@ -24,7 +24,8 @@
 	<a href="/"><img src="{{ asset('img/logo-new.png') }}" width="230" height="47" alt="FrontendTest for improving web sites"></a>
 	<ul>
 		<li{{ home_tab_style }}><a href="{{ path('FtHomeBundle_homepage') }}">Tester</a></li>
-		<li{{ faq_tab_style }}><a href="{{ path('FtHomeBundle_faq') }}">FAQ / What we test</a></li>
+		<li{{ infotests_tab_style }}><a href="{{ path('FtHomeBundle_infotests') }}">What we test</a></li>
+		<li{{ faq_tab_style }}><a href="{{ path('FtHomeBundle_faq') }}">FAQ</a></li>
 	</ul>
 	</div>
   </header>
@@ -47,6 +48,11 @@
 <p>Email <a href="mailto:support@frontendtest.com?subject=questions">support@frontendtest.com</a></p>
 	<p class="copyright">&copy;2012 FrontendTest.com</p>
 </footer>
+
+{% block contentBottom %}
+
+ {% endblock %}
+
 
 </body>
 </html>

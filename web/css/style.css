@@ -92,7 +92,7 @@ h2 {
 	font-size: 1.3em;
 }
 
-h2.marginBottom {
+.marginBottom {
 	margin-bottom: 20px;
 }
 
@@ -118,6 +118,7 @@ h3 {
 
 .main {
 	padding-bottom: 20px;
+	padding-top: 40px;
 }
 
 header, footer, .main {
@@ -202,9 +203,6 @@ footer p {
 	font-size: 1.0em;
 }
 
-.formColumn, .infoColumn {
-    margin-top: 40px;
-}
 .formColumn {
 	display: inline-block;
 	width: 380px;
@@ -221,6 +219,23 @@ footer p {
 .sampleReportIcon {
 display: block;
 	margin: 20px auto;
+}
+
+.contentCopy {
+	font-size: smaller;
+	font-family: verdana, arial, 'san serif';
+}
+.contentCopy, .indentedList {
+	margin-left: 40px;
+}
+
+.indentedList {
+	margin-top: 10px;
+}
+
+
+.sectionTitle {
+	margin-top: 20px;
 }
 
 label.visibleLabel { font-size: larger;}
@@ -344,11 +359,14 @@ input.imgButton {
 
     .infoColumn {
         width: 360px;
-        margin-top: 40px;
     }
 
     .infoColumn h2 {
         text-align: center;
+    }
+    .main {
+    	padding-top: 20px;
+ 		padding-bottom: 20px;
     }
 }
 

@@ -5,6 +5,10 @@ FtHomeBundle_homepage:
 FtHomeBundle_faq:
     pattern:  /faq
     defaults: { _controller: FtHomeBundle:Default:faq }
+    
+FtHomeBundle_infotests:
+    pattern:  /what_we_test
+    defaults: { _controller: FtHomeBundle:Default:infoTests }
        
 _newsletter_email:
     pattern:  /newsletter_email
