@@ -59,7 +59,7 @@ class HTML
         foreach ($elements as $element) { 
 			$nested_tables = $element->getElementsByTagName('table');				
 	        foreach ($nested_tables as $nested) { 
-				$deeply_nested_tables = $element->getElementsByTagName('table');				
+				$deeply_nested_tables = $nested->getElementsByTagName('table');				
 		        foreach ($deeply_nested_tables as $deeply_nested) { 
 					return true;
 		        }
