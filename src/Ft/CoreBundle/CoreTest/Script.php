@@ -53,6 +53,7 @@ class Script
 	
 	public function ScriptTagHasType() {
 		global $ft_data;
-		return array(substr_count($ft_data,'text/javascript'));
+		$count = substr_count($ft_data,'text/javascript');
+		if ($count > 2) { return array(substr_count($ft_data,'text/javascript')); } else { return false; } 
 	}
 }

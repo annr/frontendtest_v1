@@ -798,13 +798,15 @@ class HTML
 						$instance_array[] = "$key-$attribute";				
 					}
 				}
+				
+				//this is imperfect because it only finds the first depecated attribute. This is a very common result. Fix ASAP.
+				if($code[0] != '') {
+					if($code[2] > 1) { $code[1] = 's'; }
+					return $code;
+				}
 			}			
 		}	
-		
-		if($code[0] != '') {
-			if($code[2] > 1) { $code[1] = 's'; }
-			return $code;
-		}		
+				
 		
 		return false;				
 	}
