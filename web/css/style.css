@@ -370,7 +370,9 @@ input.imgButton {
     	padding-top: 20px;
  		padding-bottom: 20px;
  		width: 88%;
+ 		margin: 0;
     }
+
 }
 
 @media print {
