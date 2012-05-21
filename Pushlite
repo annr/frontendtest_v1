@@ -1,0 +1,8 @@
+#! /bin/sh
+
+# usage: ./Pushfile 'git comment'
+
+git status
+git add .
+git commit -m '$1' 
+git push

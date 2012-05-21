@@ -107,8 +107,7 @@ h3 {
 
 .mainWrapper {
     width: 100%;
-    display: inline-block;
-    
+    display: inline-block;    
 }
 
 .mainWrapper, .main  {
@@ -132,6 +131,7 @@ header ul {
 	overflow:hidden;
 	list-style-type: none;
 }
+
 header ul li {
 	display: block;
 	float: left;
@@ -150,9 +150,11 @@ header ul li {
 	-moz-border-radius-topright: 6px;
 	border-top-right-radius: 6px;
 }
+
 header ul li.selected {
 	background-color: #FFF;
 }
+
 header ul li a {
 	text-decoration: none;
     color: #000;
@@ -367,6 +369,7 @@ input.imgButton {
     .main {
     	padding-top: 20px;
  		padding-bottom: 20px;
+ 		width: 88%;
     }
 }
 
