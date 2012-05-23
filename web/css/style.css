@@ -241,7 +241,7 @@ display: block;
 }
 
 label.visibleLabel { font-size: larger;}
-
+.floatedCheckbox { margin-left: 1px; }
 .newsletterFormSubmitMsg {
 	color: #AAA;
 }
@@ -312,10 +312,14 @@ label.error {
 }
 .formRow {
     margin-bottom: 16px;
-    overflow: auto;
+
 }
 input.imgButton {
 	padding:0;
+}
+
+.fixedWidthTable {
+	width: 600px;
 }
 
 .sampleReport p {
@@ -372,6 +376,10 @@ input.imgButton {
  		width: 92%;
  		margin: 0;
     }
+    
+    .fixedWidthTable {
+	width: 100%;
+}
 
 }
 
