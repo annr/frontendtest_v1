@@ -1,0 +1,102 @@
+<table cellspacing="0" border="0" style="background: #eae9e1;" cellpadding="0" width="100%">
+	
+	<tr>
+		<td>
+			<table cellspacing="0" width="100%" cellpadding="0">
+				<tr>
+					<td valign="top">						
+						<table cellspacing="0" border="0" align="center" cellpadding="0" width="600">			
+							<tr>
+							<td>									
+								<table cellspacing="0" width="600">
+									<tr>
+										<td class="main-title" style="padding-top: 10px;">
+											<br />&nbsp;<img src="{{cid}}" height="47" width="220" alt="FrontendTest logo">
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td valign="top">
+								<table cellspacing="0" width="600" cellpadding="0">
+									<tr>
+										<td class="date" valign="top" style="color: #999; text-align: left; font-size: 11px; font-family: Verdana;padding-bottom:12px;">
+										<br />&nbsp; Report prepared
+										{% if email != 'support@frontendtest.com' %}
+											for</span> <span style="color: #000">{{email}}</span> 
+										{% endif %}										
+											 <span style="text-transform: uppercase;">on</span> {{date}}<br />&nbsp; 
+											Test URL: <a href="{{url}}">{{url}}</a><br />
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>		
+		</td>
+	</tr>		
+	<tr>		
+		<td valign="top">
+			<table cellspacing="0" border="0" align="center" style="background: #fff;" cellpadding="0" width="600">			
+				<tr>
+					<td>
+						<!-- content -->
+						<table cellspacing="0" border="0" cellpadding="0" width="600">
+							{% if summary != '' %}
+							<tr>
+								<td class="content-copy" valign="top" style="padding: 30px 20px 0; color: #000; font-size: 16px; font-family: Georgia; line-height: 24px;" colspan="2">
+									{{summary|markdown}}
+								</td>
+							</tr>
+							{% endif %}
+							{% for result in results %}
+								<tr>
+									<td class="article-title" height="45" valign="top" style="padding: 14px 20px; font-family: Georgia; font-size: 20px; font-weight: bold;" width="600" colspan="2">
+										<br />{{result.heading|replace({'%url%':url})}}<br />
+									</td>
+								</tr>
+								<tr>
+									<td class="content-copy" valign="top" style="padding: 0 20px; color: #000; font-size: 14px; font-family: Georgia; line-height: 20px;" colspan="2">
+										{{result.body|replace({'%url%':url})|markdown}}
+									</td>
+								</tr>								
+							{% else %}
+							<tr>
+								<td>
+							    No results were found.
+								</td>
+							</tr>
+							{% endfor %}
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+				</tr>
+			</table>
+			<table cellspacing="0" width="600" cellpadding="0" align="center" style="background: #fcfcde;" >
+				<tr>
+					<td valign="top">
+						<table cellspacing="0" width="100%" cellpadding="0">
+							<tr>
+								<td class="copyright" height="80" valign="top" style="border-top:1px solid #CCC;font-family: Verdana; font-size: 14px;line-height: 24px;padding:20px;">
+									Was this report valuable? Please recommend <a href="http://www.frontendtest.com/">FrontendTest</a> to others and/or give us 
+									<a href="mailto:support@frontendtest.com?subject=feedback">feedback</a>.
+									<br /><br />Thanks!
+									<br /><br /><b>Questions?</b> Email <a href="mailto:support@frontendtest.com?subject=report">support@frontendtest.com</a>						 
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			
+		</td>
+	
+	</tr>
+	
+</table>

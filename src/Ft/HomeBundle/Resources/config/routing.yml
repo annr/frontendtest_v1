@@ -29,7 +29,15 @@ ft_request:
 _ft_request_go:
     pattern:  /report_request
     defaults: { _controller: FtHomeBundle:FtRequest:go }
+    
+_ft_request_ajax_get:
+    pattern:  /report_request_ajax_get
+    defaults: { _controller: FtHomeBundle:FtRequest:getReportAjax }
 
+_ft_request_get:
+    pattern:  /report_request_get
+    defaults: { _controller: FtHomeBundle:FtRequest:getReport }
+                
 _ft_request_check_url:
     pattern:  /report_check_url
     defaults: { _controller: FtHomeBundle:FtRequest:checkSubmittedUrl }
@@ -85,4 +93,3 @@ logger:
 logger_show:
     pattern:  /logger_show/{id}
     defaults: { _controller: FtHomeBundle:Log:show }
-     

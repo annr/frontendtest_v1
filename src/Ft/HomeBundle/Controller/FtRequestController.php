@@ -67,7 +67,7 @@ class FtRequestController extends Controller
 		
 		$cid =  'http://www.frontendtest.com/img/logo_sm.png';
 		if($_SERVER["SERVER_NAME"] == 'localhost') {
-			$cid =  'http://localhost/frontendtest/web/img/logo_sm.png';
+			$cid =  'http://localhost/frontendtest_v1/web/img/logo_sm.png';
 		}
 		
         $response = $this->render('FtCoreBundle:Report:email.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'email' => $ft_request->getEmail(),'results' => $results, 'summary' => $summary));
@@ -92,7 +92,7 @@ class FtRequestController extends Controller
 	    $message = \Swift_Message::newInstance();
 		
 		if($_SERVER["SERVER_NAME"] == 'localhost') {
-			$cid = $message->embed(\Swift_Image::fromPath('http://localhost/frontendtest/web/img/logo_sm.png'));
+			$cid = $message->embed(\Swift_Image::fromPath('http://localhost/frontendtest_v1/web/img/logo_sm.png'));
 		} else {
 			$cid = $message->embed(\Swift_Image::fromPath('http://www.frontendtest.com/img/logo_sm.png'));			
 		}
@@ -317,6 +317,114 @@ class FtRequestController extends Controller
 
 	      $this->get('mailer')->send($message);
 	  }
+
+      $response = $this->render('FtHomeBundle:FtRequest:go.txt.twig', array('result' => $result));
+      $response->headers->set('Content-Type', 'text/plain');
+      return $response;
+
+    }
+
+	//this is going to return an ID if successful.
+    public function getReportAction()
+    {
+ 	  global $ft_run_log;
+	  $logger = $this->get('logger');
+
+	  $em = $this->getDoctrine()->getEntityManager();
+		
+	  $result = 0;
+	  $user_email = 'support@frontendtest.com';
+      if(isset($_POST['email']) && $_POST['email'] != '') { $user_email = $_POST['email']; } 
+
+      $ft_request = new FtRequest();
+      $ft_request->setEmail($user_email);
+      $ft_request->setUrl($_POST['url']);
+      if (array_key_exists('SERVER_ADDR', $_SERVER)) { $ft_request->setIp($_SERVER['SERVER_ADDR']); }	      
+      if (array_key_exists('HTTP_USER_AGENT', $_SERVER)) { $ft_request->setEnvironment($_SERVER['HTTP_USER_AGENT']); }	      
+      if (array_key_exists('HTTP_REFERER', $_SERVER)) { $ft_request->setNotes("referer: " . $_SERVER['HTTP_REFERER']); }	      
+      $ft_request->setCreated(new \DateTime('now'));
+      $ft_request->setType('FREE');
+
+      $em->persist($ft_request);
+      $em->flush();
+
+      $runAction = $this->runAction($ft_request->getId());
+
+	  //we are going to assume that if the app did not explode at this point, it worked
+	  $result = $ft_request->getId();
+
+	  //if the domain matches, send report automatically.
+	  if(isset($_POST['email'])) {
+	      $deliverAction = $this->deliverAction($ft_request->getId());
+	  }
+
+      //email support@ft with details.
+
+      $message = \Swift_Message::newInstance()
+        ->setSubject('FrontendTest Request')
+        ->setFrom('support@frontendtest.com')
+        ->setTo('support@frontendtest.com')
+        ->setBody($this->renderView('FtHomeBundle:FtRequest:email.html.twig', array('email' => $user_email, 'url' => $_POST['url'])));
+
+      $this->get('mailer')->send($message);
+	
+      $results = $this->getReportResults($ft_request->getId());
+		$summary = $ft_request->getReportSummary();
+		
+		$cid =  'http://www.frontendtest.com/img/logo_sm.png';
+		if($_SERVER["SERVER_NAME"] == 'localhost') {
+			$cid =  'http://localhost/frontendtest_v1/web/img/logo_sm.png';
+		}
+		
+      $response = $this->render('FtCoreBundle:Report:inline.html.twig', array('cid' => $cid, 'date' => date("D M j G:i:s T Y"), 'url' => $ft_request->getUrl(), 'email' => $ft_request->getEmail(),'results' => $results, 'summary' => $summary));
+      $response->headers->set('Content-Type', 'text/html');
+      return $response;
+
+    }
+
+	//this is going to return an ID if successful.
+    public function getReportAjaxAction()
+    {
+ 	  global $ft_run_log;
+	  $logger = $this->get('logger');
+
+	  $em = $this->getDoctrine()->getEntityManager();
+		
+	  $result = 0;
+	  $user_email = 'support@frontendtest.com';
+      if(isset($_POST['email']) && $_POST['email'] != '') { $user_email = $_POST['email']; } 
+
+      $ft_request = new FtRequest();
+      $ft_request->setEmail($user_email);
+      $ft_request->setUrl($_POST['url']);
+      if (array_key_exists('SERVER_ADDR', $_SERVER)) { $ft_request->setIp($_SERVER['SERVER_ADDR']); }	      
+      if (array_key_exists('HTTP_USER_AGENT', $_SERVER)) { $ft_request->setEnvironment($_SERVER['HTTP_USER_AGENT']); }	      
+      if (array_key_exists('HTTP_REFERER', $_SERVER)) { $ft_request->setNotes("referer: " . $_SERVER['HTTP_REFERER']); }	      
+      $ft_request->setCreated(new \DateTime('now'));
+      $ft_request->setType('FREE');
+
+      $em->persist($ft_request);
+      $em->flush();
+
+      $runAction = $this->runAction($ft_request->getId());
+
+	  //we are going to assume that if the app did not explode at this point, it worked
+	  $result = $ft_request->getId();
+
+	  //if the domain matches, send report automatically.
+	  if(isset($_POST['email'])) {
+	      $deliverAction = $this->deliverAction($ft_request->getId());
+	  }
+
+      //email support@ft with details.
+
+      $message = \Swift_Message::newInstance()
+        ->setSubject('FrontendTest Request')
+        ->setFrom('support@frontendtest.com')
+        ->setTo('support@frontendtest.com')
+        ->setBody($this->renderView('FtHomeBundle:FtRequest:email.html.twig', array('email' => $user_email, 'url' => $_POST['url'])));
+
+      $this->get('mailer')->send($message);
 
       $response = $this->render('FtHomeBundle:FtRequest:go.txt.twig', array('result' => $result));
       $response->headers->set('Content-Type', 'text/plain');
